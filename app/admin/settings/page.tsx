@@ -1,133 +1,67 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import api from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Shield, User, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
-
-interface UserData {
-    id: number;
-    email: string;
-    roles: string[];
-    name: string;
-}
+import { Settings, ShieldCheck, Globe, Bell, Zap } from 'lucide-react';
 
 export default function AdminSettingsPage() {
-    const [users, setUsers] = useState<UserData[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [updating, setUpdating] = useState<number | null>(null);
-
-    const fetchUsers = async () => {
-        try {
-            const response = await api.get('/admin/users');
-            setUsers(response.data);
-        } catch (err: unknown) {
-            console.error(err);
-            toast.error("Failed to load users");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchUsers();
-    }, []);
-
-    const handleRoleUpdate = async (userId: number, newRole: string) => {
-        try {
-            setUpdating(userId);
-            const response = await api.patch(`/admin/users/${userId}/role`, { roles: [newRole] });
-            setUsers(users.map(u => u.id === userId ? { ...u, roles: response.data.user.roles } : u));
-            toast.success("User role updated successfully");
-        } catch (err: unknown) {
-            console.error(err);
-            toast.error("Failed to update role");
-        } finally {
-            setUpdating(null);
-        }
-    };
-
-    if (loading) return <div className="text-primary font-black animate-pulse text-center py-20 uppercase tracking-widest">INITIALIZING SECURITY PROTOCOLS...</div>;
-
     return (
         <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div>
-                <h1 className="text-4xl font-black text-foreground tracking-tighter mb-2">SYSTEM <span className="text-primary">SETTINGS</span></h1>
-                <p className="text-muted-foreground font-medium">Configure global parameters and manage administrator privileges.</p>
+                <h1 className="text-4xl font-black text-foreground tracking-tighter mb-2 italic uppercase">SYSTEM <span className="text-primary not-italic">Settings</span></h1>
+                <p className="text-muted-foreground font-medium uppercase text-[10px] tracking-widest leading-loose">Global Environment Control & System Optimization.</p>
             </div>
 
-            <Card className="bg-card border-border rounded-3xl overflow-hidden shadow-sm">
-                <CardHeader className="p-10 border-b border-border">
-                    <CardTitle className="text-xl font-bold flex items-center text-foreground">
-                        <Shield className="mr-3 h-6 w-6 text-primary" />
-                        Role Management
-                    </CardTitle>
-                    <CardDescription className="text-muted-foreground font-medium mt-2">
-                        Elevate users to administrators or revoke access levels.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="p-0">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead>
-                                <tr className="border-b border-border bg-secondary/30">
-                                    <th className="p-6 text-xs font-black uppercase tracking-widest text-muted-foreground">User</th>
-                                    <th className="p-6 text-xs font-black uppercase tracking-widest text-muted-foreground">Current Rank</th>
-                                    <th className="p-6 text-xs font-black uppercase tracking-widest text-muted-foreground text-right">Assign New Role</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-border">
-                                {users.map((u) => (
-                                    <tr key={u.id} className="hover:bg-secondary/50 transition-colors group">
-                                        <td className="p-6">
-                                            <div className="flex items-center">
-                                                <div className="h-10 w-10 rounded-full bg-secondary border border-border flex items-center justify-center font-bold text-muted-foreground mr-4">
-                                                    <User className="h-4 w-4" />
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm font-bold text-foreground group-hover:text-primary transition-colors uppercase tracking-tight">{u.name || 'ANONYMOUS'}</p>
-                                                    <p className="text-[10px] text-muted-foreground font-medium">{u.email}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="p-6">
-                                            <div className="flex gap-2">
-                                                {u.roles.map(role => (
-                                                    <Badge key={role} variant="outline" className={`text-[9px] font-black border-none px-2 py-0.5 ${role.includes('ADMIN') ? 'bg-primary/10 text-primary' : 'bg-secondary text-muted-foreground'}`}>
-                                                        {role.replace('ROLE_', '')}
-                                                    </Badge>
-                                                ))}
-                                            </div>
-                                        </td>
-                                        <td className="p-6 text-right">
-                                            <div className="flex justify-end items-center gap-4">
-                                                {updating === u.id && <Loader2 className="h-4 w-4 text-primary animate-spin" />}
-                                                <Select
-                                                    disabled={updating === u.id}
-                                                    onValueChange={(val) => handleRoleUpdate(u.id, val)}
-                                                    defaultValue={u.roles.includes('ROLE_ADMIN') ? 'ROLE_ADMIN' : u.roles.includes('ROLE_MODERATOR') ? 'ROLE_MODERATOR' : 'ROLE_USER'}
-                                                >
-                                                    <SelectTrigger className="w-40 bg-secondary border-border rounded-xl h-10 text-xs font-black focus:ring-primary/20 text-foreground">
-                                                        <SelectValue placeholder="Select Role" />
-                                                    </SelectTrigger>
-                                                    <SelectContent className="bg-card border-border text-foreground rounded-xl">
-                                                        <SelectItem value="ROLE_USER">USER</SelectItem>
-                                                        <SelectItem value="ROLE_MODERATOR">MODERATOR</SelectItem>
-                                                        <SelectItem value="ROLE_ADMIN">ADMINISTRATOR</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <Card className="bg-card border-border rounded-[2.5rem] shadow-xl border-t-4 border-t-primary/20 overflow-hidden group hover:border-primary/40 transition-all">
+                    <CardHeader className="p-8 border-b border-border bg-secondary/10">
+                        <CardTitle className="text-lg font-black tracking-tight text-foreground uppercase italic flex items-center">
+                            <Globe className="mr-3 h-5 w-5 text-primary" />
+                            General Parameters
+                        </CardTitle>
+                        <CardDescription className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-50">
+                            Regional and display configurations.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-8">
+                        <div className="flex flex-col items-center justify-center py-10 text-center space-y-4">
+                            <Zap className="h-10 w-10 text-primary opacity-20 animate-pulse" />
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground italic">System modules initializing...</p>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card className="bg-card border-border rounded-[2.5rem] shadow-xl border-t-4 border-t-secondary overflow-hidden group hover:border-secondary/40 transition-all">
+                    <CardHeader className="p-8 border-b border-border bg-secondary/10">
+                        <CardTitle className="text-lg font-black tracking-tight text-foreground uppercase italic flex items-center">
+                            <Bell className="mr-3 h-5 w-5 text-secondary" />
+                            Notifications Flow
+                        </CardTitle>
+                        <CardDescription className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-50">
+                            Critical alert & dispatch settings.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-8">
+                        <div className="flex flex-col items-center justify-center py-10 text-center space-y-4">
+                            <Settings className="h-10 w-10 text-secondary opacity-20 animate-spin-slow" />
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground italic">Awaiting protocol deployment...</p>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
+            <div className="p-10 bg-primary/5 rounded-[3rem] border border-primary/10 flex items-center justify-between">
+                <div className="flex items-center space-x-6">
+                    <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                        <ShieldCheck className="h-8 w-8 text-primary" />
                     </div>
-                </CardContent>
-            </Card>
+                    <div>
+                        <h3 className="font-black text-xs uppercase tracking-widest text-foreground italic">Access Management Note</h3>
+                        <p className="text-[10px] text-muted-foreground font-medium leading-relaxed uppercase tracking-wider mt-1 max-w-md">
+                            User role elevation and permission scrubbing has been relocated to the <span className="text-primary font-black">User Identity</span> directory for unified management.
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import api from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { LayoutGrid, Users, PlusCircle, ShoppingCart, Tag } from 'lucide-react';
+import { LayoutGrid, Users, PlusCircle, Tag } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
 
@@ -110,8 +110,8 @@ export default function AdminVendorsPage() {
                                     <tr className="border-b border-border bg-background/50">
                                         <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Supplier Details</th>
                                         <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Company</th>
-                                        <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Status</th>
-                                        <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground text-right">Actions</th>
+                                        <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground text-right">Status</th>
+
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-border">
@@ -126,17 +126,10 @@ export default function AdminVendorsPage() {
                                             <td className="p-6">
                                                 <span className="text-xs font-bold text-foreground bg-secondary/70 px-3 py-1.5 rounded-xl border border-border">{v.companyName || 'N/A'}</span>
                                             </td>
-                                            <td className="p-6">
+                                            <td className="p-6 text-right">
                                                 <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-current ${v.status === 'active' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'}`}>
                                                     {v.status}
                                                 </span>
-                                            </td>
-                                            <td className="p-6 text-right">
-                                                <Link href={`/admin/vendors/${v.id}/order`}>
-                                                    <Button variant="outline" size="sm" className="rounded-xl font-black text-[10px] tracking-widest hover:bg-primary/10 border-primary/20 text-primary">
-                                                        <ShoppingCart className="mr-2 h-3.5 w-3.5" /> PLACE SUPPLY ORDER
-                                                    </Button>
-                                                </Link>
                                             </td>
                                         </tr>
                                     ))}
