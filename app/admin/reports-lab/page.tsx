@@ -12,7 +12,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { FileBarChart, Download, FileText, AlertCircle, ShoppingBag, Package, Activity } from 'lucide-react';
+import { FileBarChart, Download, FileText, AlertCircle, ShoppingBag, Package, Activity, ChevronDown } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 
 interface DailySale {
@@ -58,6 +59,46 @@ export default function ReportsLabPage() {
         toast.info(`Generating ${type} report...`);
     };
 
+    const downloadSummary = async (type: string, date?: string) => {
+        try {
+            let endpoint = `/admin/labs/invoice/summary?type=${type}`;
+            
+            if (date) {
+                endpoint += `&date=${date}`;
+            } else {
+                const now = new Date();
+                endpoint += `&year=${now.getFullYear()}&month=${now.getMonth() + 1}`;
+            }
+
+            toast.info(`Compiling ${type} intelligence report...`);
+            
+            const response = await api.get(endpoint, {
+                responseType: 'blob'
+            });
+
+            // Create a blob from the response data
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            
+            // Create a temporary link and click it to trigger download
+            const link = document.createElement('a');
+            link.href = url;
+            const filename = `Lab-Summary-${type}-${date || new Date().toISOString().split('T')[0]}.pdf`;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            
+            // Cleanup
+            link.parentNode?.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            
+            toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} report downloaded`);
+        } catch (err) {
+            console.error("Download failed", err);
+            toast.error("Failed to generate report. Please check your connection.");
+        }
+    };
+
     if (loading) return <div className="py-20 text-center font-black animate-pulse text-primary tracking-widest uppercase italic">Compiling Intelligence Matrix...</div>;
 
     return (
@@ -68,9 +109,18 @@ export default function ReportsLabPage() {
                     <p className="text-muted-foreground font-medium uppercase text-[10px] tracking-widest">Statistical Analysis & Inventory Audits.</p>
                 </div>
                 <div className="flex gap-4">
-                    <Button onClick={() => downloadReport('Quarterly')} className="bg-secondary text-foreground hover:bg-secondary/80 font-black px-6 rounded-xl h-12 shadow-sm flex items-center gap-3">
-                        <Download className="h-4 w-4" /> EXPORT ALL
-                    </Button>
+                    <Select onValueChange={(val) => downloadSummary(val)}>
+                        <SelectTrigger className="bg-secondary text-foreground hover:bg-secondary/80 font-black px-6 rounded-xl h-12 shadow-sm border-none w-[200px]">
+                            <div className="flex items-center gap-3">
+                                <Download className="h-4 w-4" />
+                                <span>EXPORT REPORT</span>
+                            </div>
+                        </SelectTrigger>
+                        <SelectContent className="dark:bg-slate-900 border-border">
+                            <SelectItem value="monthly" className="font-bold">Monthly Invoice</SelectItem>
+                            <SelectItem value="yearly" className="font-bold">Yearly Invoice</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
 
@@ -101,7 +151,20 @@ export default function ReportsLabPage() {
                                 {data?.dailySales?.map((sale, i) => (
                                     <TableRow key={i} className="border-border hover:bg-secondary/5">
                                         <TableCell className="p-6 font-bold text-muted-foreground">{sale.date}</TableCell>
-                                        <TableCell className="p-6 text-right font-black text-indigo-500 italic">${parseFloat(sale.total.toString()).toLocaleString()}</TableCell>
+                                        <TableCell className="p-6 text-right font-black text-indigo-500 italic">
+                                            <div className="flex items-center justify-end gap-4">
+                                                <span>${parseFloat(sale.total.toString()).toLocaleString()}</span>
+                                                <Button 
+                                                    variant="ghost" 
+                                                    size="icon" 
+                                                    onClick={() => downloadSummary('daily', sale.date)}
+                                                    className="h-8 w-8 text-muted-foreground hover:text-indigo-500 hover:bg-indigo-500/10 rounded-lg transition-colors"
+                                                    title="Download Daily Report"
+                                                >
+                                                    <Download className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                                 {(!data?.dailySales || data.dailySales.length === 0) && (

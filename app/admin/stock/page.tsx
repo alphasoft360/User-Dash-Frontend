@@ -18,7 +18,9 @@ import {
     ClipboardList,
     TrendingUp,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    Edit2,
+    FileDown
 } from 'lucide-react';
 
 interface Product {
@@ -154,9 +156,9 @@ export default function StockManagementPage() {
                                 <TableRow className="border-none">
                                     <TableHead className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Reagent / Item</TableHead>
                                     <TableHead className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Category</TableHead>
-                                    <TableHead className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">Batch</TableHead>
+                                    <TableHead className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center border-x border-border/10">Batch</TableHead>
                                     <TableHead className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">Current Stock</TableHead>
-                                    <TableHead className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right">Action</TableHead>
+                                    <TableHead className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right pr-10">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -175,8 +177,26 @@ export default function StockManagementPage() {
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    products.map((product) => (
-                                        <TableRow key={product.id} className="hover:bg-secondary/10 transition-colors border-b border-border last:border-0 group">
+                                    products.map((product) => {
+                                        const handleDownloadRecord = async () => {
+                                            try {
+                                                toast.info("Preparing record...");
+                                                const response = await api.get(`/admin/labs/invoice/reagent/${product.id}`, { responseType: 'blob' });
+                                                const url = window.URL.createObjectURL(new Blob([response.data]));
+                                                const link = document.createElement('a');
+                                                link.href = url;
+                                                link.setAttribute('download', `Inventory-Record-${product.id}.pdf`);
+                                                document.body.appendChild(link);
+                                                link.click();
+                                                link.parentNode?.removeChild(link);
+                                                window.URL.revokeObjectURL(url);
+                                            } catch (err) {
+                                                toast.error("Failed to download record");
+                                            }
+                                        };
+
+                                        return (
+                                            <TableRow key={product.id} className="hover:bg-secondary/10 transition-colors border-b border-border last:border-0 group">
                                             <TableCell className="p-6">
                                                 <div className="flex items-center gap-4">
                                                     <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center font-black text-primary text-xs uppercase tracking-tighter">
@@ -202,19 +222,41 @@ export default function StockManagementPage() {
                                                 </span>
                                                 <span className="text-[8px] block font-black uppercase tracking-tighter text-muted-foreground">Units</span>
                                             </TableCell>
-                                            <TableCell className="p-6 text-right">
-                                                <Link href={`/admin/stock/${product.id}/in`}>
+                                            <TableCell className="p-6 text-right pr-6">
+                                                <div className="flex items-center justify-end gap-2">
                                                     <Button
-                                                        variant="outline"
-                                                        className="rounded-xl border-primary/20 hover:border-primary text-primary hover:bg-primary hover:text-white font-black text-[10px] uppercase gap-2 h-9 px-4 transition-all"
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={handleDownloadRecord}
+                                                        title="Download Record"
+                                                        className="h-9 w-9 text-muted-foreground hover:bg-emerald-500/10 hover:text-emerald-500 rounded-lg border border-transparent hover:border-emerald-500/20"
                                                     >
-                                                        <Plus className="h-3 w-3" />
-                                                        Stock In
+                                                        <FileDown className="h-4 w-4" />
                                                     </Button>
-                                                </Link>
+                                                    <Link href={`/admin/reagents/${product.id}/edit`}>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            title="Edit Details"
+                                                            className="h-9 w-9 text-muted-foreground hover:bg-primary/10 hover:text-primary rounded-lg border border-transparent hover:border-primary/20"
+                                                        >
+                                                            <Edit2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </Link>
+                                                    <Link href={`/admin/stock/${product.id}/in`}>
+                                                        <Button
+                                                            variant="outline"
+                                                            className="rounded-xl border-primary/20 hover:border-primary text-primary hover:bg-primary hover:text-white font-black text-[10px] uppercase gap-2 h-9 px-4 transition-all italic"
+                                                        >
+                                                            <Plus className="h-3 w-3" />
+                                                            Stock In
+                                                        </Button>
+                                                    </Link>
+                                                </div>
                                             </TableCell>
                                         </TableRow>
-                                    ))
+                                    );
+                                })
                                 )}
                             </TableBody>
                         </Table>

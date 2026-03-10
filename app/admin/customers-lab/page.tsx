@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +9,24 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Search, Plus, User, Phone, MapPin, Building, X, Edit2, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Loader2, FileText, Download } from 'lucide-react';
 
 interface Customer {
     id: number;
@@ -22,10 +41,14 @@ interface Customer {
 export default function CustomersLabPage() {
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [loading, setLoading] = useState(true);
+    const [downloading, setDownloading] = useState(false);
     const [search, setSearch] = useState('');
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingCustomer, setEditingCustomer] = useState<Partial<Customer> | null>(null);
+    const [isStatementOpen, setIsStatementOpen] = useState(false);
+    const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+    const [period, setPeriod] = useState<'monthly' | 'yearly'>('monthly');
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
+    const [selectedMonth, setSelectedMonth] = useState((new Date().getMonth() + 1).toString());
 
     const fetchCustomers = async () => {
         try {
@@ -43,24 +66,44 @@ export default function CustomersLabPage() {
         fetchCustomers();
     }, []);
 
-    const handleSave = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleDelete = async (id: number) => {
+        if (!confirm("Are you sure you want to delete this customer record?")) return;
         try {
-            // Ideally we'd have a specific customer update endpoint.
-            // For now, let's assume we can update them via a general admin user endpoint if they are linked.
-            // But rules say "Use existing API helpers".
-            // Since there is no clear Customer creation API in the snippet I saw,
-            // and I added the fields to RegisteredCustomer entity, I'll assume I should create a new endpoint
-            // or use a generic one if it exists.
-            // For this demo, I'll just show the UI part or mock if needed.
-            // Actually, I should have added a POST /api/admin/labs/customers endpoint.
-
-            // MOCKING the save for now if endpoint doesn't exist yet, but I'll add it to LabAdminController if I can.
-            toast.success("Customer record updated [Simulation]");
-            setIsModalOpen(false);
+            await api.delete(`/admin/labs/customers/${id}`);
+            toast.success("Customer record deleted");
             fetchCustomers();
         } catch (err) {
-            toast.error("Failed to save customer");
+            toast.error("Failed to delete customer");
+        }
+    };
+
+    const handleDownloadStatement = async () => {
+        if (!selectedCustomer) return;
+        setDownloading(true);
+        try {
+            const response = await api.get(`/admin/labs/invoice/customer/${selectedCustomer.id}`, {
+                params: {
+                    period,
+                    year: selectedYear,
+                    month: selectedMonth
+                },
+                responseType: 'blob'
+            });
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Statement-${selectedCustomer.name}-${period}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setIsStatementOpen(false);
+            toast.success("Statement downloaded successfully");
+        } catch (err) {
+            console.error("Statement error", err);
+            toast.error("Failed to generate statement");
+        } finally {
+            setDownloading(false);
         }
     };
 
@@ -70,6 +113,14 @@ export default function CustomersLabPage() {
         c.labName?.toLowerCase().includes(search.toLowerCase())
     );
 
+    const years = Array.from({ length: 5 }, (_, i) => (new Date().getFullYear() - i).toString());
+    const months = [
+        { name: 'January', val: '1' }, { name: 'February', val: '2' }, { name: 'March', val: '3' },
+        { name: 'April', val: '4' }, { name: 'May', val: '5' }, { name: 'June', val: '6' },
+        { name: 'July', val: '7' }, { name: 'August', val: '8' }, { name: 'September', val: '9' },
+        { name: 'October', val: '10' }, { name: 'November', val: '11' }, { name: 'December', val: '12' },
+    ];
+
     return (
         <div className="space-y-10 animate-in fade-in duration-700">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -77,13 +128,14 @@ export default function CustomersLabPage() {
                     <h1 className="text-4xl font-black text-foreground tracking-tighter mb-2 uppercase italic">CUSTOMER <span className="text-primary not-italic">Registry</span></h1>
                     <p className="text-muted-foreground font-medium uppercase text-[10px] tracking-widest">Manage Lab & Pharmacy Customers.</p>
                 </div>
-                <Button
-                    onClick={() => { setEditingCustomer({}); setIsModalOpen(true); }}
-                    className="bg-primary hover:opacity-90 text-primary-foreground font-black px-8 rounded-2xl h-14 shadow-lg shadow-primary/20 flex items-center gap-3"
-                >
-                    <Plus className="h-5 w-5" />
-                    REGISTER NEW CUSTOMER
-                </Button>
+                <Link href="/admin/customers-lab/new">
+                    <Button
+                        className="bg-primary hover:opacity-90 text-primary-foreground font-black px-8 rounded-2xl h-14 shadow-lg shadow-primary/20 flex items-center gap-3 uppercase italic"
+                    >
+                        <Plus className="h-5 w-5" />
+                        REGISTER NEW CUSTOMER
+                    </Button>
+                </Link>
             </div>
 
             <div className="bg-card border border-border rounded-[2.5rem] p-8 shadow-sm">
@@ -101,121 +153,195 @@ export default function CustomersLabPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredCustomers.length > 0 ? (
-                    filteredCustomers.map((customer) => (
-                        <Card key={customer.id} className="bg-card border-border rounded-[2rem] p-8 shadow-sm hover:shadow-md transition-all group border-t-4 border-t-primary/20">
-                            <div className="flex justify-between items-start mb-6">
-                                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center font-black text-primary text-xl">
-                                    {customer.name[0].toUpperCase()}
-                                </div>
-                                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg" onClick={() => { setEditingCustomer(customer); setIsModalOpen(true); }}>
-                                        <Edit2 className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-red-500 hover:text-red-500 hover:bg-red-500/10">
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                </div>
+            <Card className="bg-card border-border rounded-[2.5rem] shadow-sm overflow-hidden">
+                <CardHeader className="p-8 border-b border-border bg-secondary/10">
+                    <CardTitle className="text-xl font-black flex items-center gap-3">
+                        <User className="h-6 w-6 text-primary" />
+                        REGISTERED CLIENTS
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                    <Table>
+                        <TableHeader>
+                            <TableRow className="border-none">
+                                <TableHead className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Customer / Identity</TableHead>
+                                <TableHead className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Laboratory / Clinic</TableHead>
+                                <TableHead className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Contact Info</TableHead>
+                                <TableHead className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Location</TableHead>
+                                <TableHead className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right border-l border-border/10">Total Spent</TableHead>
+                                <TableHead className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right pr-10">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {loading ? (
+                                <TableRow>
+                                    <TableCell colSpan={6} className="h-40 text-center text-muted-foreground animate-pulse font-bold">
+                                        Loading customer data...
+                                    </TableCell>
+                                </TableRow>
+                            ) : filteredCustomers.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={6} className="h-40 text-center text-muted-foreground italic">
+                                        No customers found in registry.
+                                    </TableCell>
+                                </TableRow>
+                            ) : (
+                                filteredCustomers.map((customer) => (
+                                    <TableRow key={customer.id} className="hover:bg-secondary/10 transition-colors border-b border-border last:border-0 group">
+                                        <TableCell className="p-6">
+                                            <div className="flex items-center gap-4">
+                                                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center font-black text-primary text-xs uppercase tracking-tighter">
+                                                    {customer.name[0]}
+                                                </div>
+                                                <div>
+                                                    <p className="font-bold text-foreground">{customer.name}</p>
+                                                    <p className="text-[10px] text-muted-foreground uppercase font-black">ID: {customer.id}</p>
+                                                </div>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="p-6 font-bold text-sm">
+                                            {customer.labName || 'N/A'}
+                                        </TableCell>
+                                        <TableCell className="p-6 text-sm text-muted-foreground font-medium">
+                                            <div className="flex items-center gap-2">
+                                                <Phone className="h-3.5 w-3.5 text-primary" />
+                                                {customer.phone}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="p-6 text-sm text-muted-foreground font-medium uppercase tracking-tight">
+                                            {customer.city || 'N/A'}
+                                        </TableCell>
+                                        <TableCell className="p-6 text-right border-l border-border/10">
+                                            <span className="font-black text-foreground">
+                                                ${customer.totalSpent.toLocaleString()}
+                                            </span>
+                                        </TableCell>
+                                        <TableCell className="p-6 text-right pr-10">
+                                            <div className="flex justify-end gap-2">
+                                                <Button
+                                                    variant="secondary"
+                                                    className="rounded-xl font-bold h-9 text-[10px] uppercase tracking-widest hover:bg-primary hover:text-primary-foreground transition-all shrink-0"
+                                                    onClick={() => {
+                                                        setSelectedCustomer(customer);
+                                                        setIsStatementOpen(true);
+                                                    }}
+                                                >
+                                                    <FileText className="h-3.5 w-3.5 mr-2" />
+                                                    View Sales
+                                                </Button>
+                                                <Link href={`/admin/customers-lab/${customer.id}/edit`}>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        title="Edit Customer"
+                                                        className="h-9 w-9 text-muted-foreground hover:bg-primary/10 hover:text-primary rounded-lg border border-transparent hover:border-primary/20"
+                                                    >
+                                                        <Edit2 className="h-4 w-4" />
+                                                    </Button>
+                                                </Link>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    title="Delete Customer"
+                                                    className="h-9 w-9 text-muted-foreground hover:bg-red-500/10 hover:text-red-500 rounded-lg border border-transparent hover:border-red-500/20"
+                                                    onClick={() => handleDelete(customer.id)}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            )}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+
+            {/* STATEMENT SELECTION MODAL */}
+            {isStatementOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-300">
+                    <div className="bg-card border border-border w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+                        <div className="p-8 border-b border-border bg-secondary/10 flex items-center justify-between">
+                            <div>
+                                <h2 className="text-xl font-black uppercase italic tracking-tighter">ACCOUNT <span className="text-primary not-italic">Statement</span></h2>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Select period for {selectedCustomer?.name}</p>
                             </div>
-
-                            <div className="space-y-4">
-                                <div>
-                                    <h3 className="text-xl font-black text-foreground">{customer.name}</h3>
-                                    <p className="text-xs font-bold text-primary uppercase tracking-widest">{customer.labName || 'Private Hospital / Lab'}</p>
-                                </div>
-
-                                <div className="space-y-2 pt-4 border-t border-border">
-                                    <div className="flex items-center gap-3 text-sm text-muted-foreground font-medium">
-                                        <Phone className="h-3.5 w-3.5 text-primary" /> {customer.phone}
-                                    </div>
-                                    <div className="flex items-center gap-3 text-sm text-muted-foreground font-medium">
-                                        <MapPin className="h-3.5 w-3.5 text-primary" /> {customer.city || 'N/A'}, {customer.address?.substring(0, 20)}...
-                                    </div>
-                                </div>
-
-                                <div className="pt-4 flex justify-between items-end">
-                                    <div>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Total Relationship</p>
-                                        <p className="text-lg font-black text-foreground">${customer.totalSpent.toLocaleString()}</p>
-                                    </div>
-                                    <Button variant="secondary" className="rounded-xl font-bold h-9">View Sales</Button>
-                                </div>
-                            </div>
-                        </Card>
-                    ))
-                ) : (
-                    <div className="col-span-full py-20 text-center opacity-30 italic font-medium">
-                        No customers found in registry.
-                    </div>
-                )}
-            </div>
-
-            {/* Modal */}
-            {isModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
-                    <Card className="w-full max-w-xl bg-card border-border shadow-2xl rounded-[2.5rem] overflow-hidden">
-                        <CardHeader className="p-8 border-b border-border flex flex-row items-center justify-between">
-                            <CardTitle className="text-2xl font-black uppercase italic tracking-tighter">
-                                {editingCustomer?.id ? 'Edit Customer' : 'Register Customer'}
-                            </CardTitle>
-                            <Button variant="ghost" size="icon" onClick={() => setIsModalOpen(false)} className="rounded-full">
-                                <X className="h-6 w-6" />
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setIsStatementOpen(false)}
+                                className="rounded-full hover:bg-secondary"
+                            >
+                                <X className="h-5 w-5" />
                             </Button>
-                        </CardHeader>
-                        <form onSubmit={handleSave}>
-                            <CardContent className="p-8 space-y-6">
-                                <div className="grid grid-cols-2 gap-6">
-                                    <div className="space-y-2 col-span-2">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Full Name / Primary Contact</Label>
-                                        <Input
-                                            required
-                                            value={editingCustomer?.name || ''}
-                                            onChange={(e) => setEditingCustomer({ ...editingCustomer, name: e.target.value })}
-                                            className="bg-secondary/30 rounded-xl h-11 font-bold"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Phone Number</Label>
-                                        <Input
-                                            required
-                                            value={editingCustomer?.phone || ''}
-                                            onChange={(e) => setEditingCustomer({ ...editingCustomer, phone: e.target.value })}
-                                            className="bg-secondary/30 rounded-xl h-11 font-bold"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Laboratory / Clinic Name</Label>
-                                        <Input
-                                            value={editingCustomer?.labName || ''}
-                                            onChange={(e) => setEditingCustomer({ ...editingCustomer, labName: e.target.value })}
-                                            className="bg-secondary/30 rounded-xl h-11 font-bold"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">City</Label>
-                                        <Input
-                                            value={editingCustomer?.city || ''}
-                                            onChange={(e) => setEditingCustomer({ ...editingCustomer, city: e.target.value })}
-                                            className="bg-secondary/30 rounded-xl h-11 font-bold"
-                                        />
-                                    </div>
-                                    <div className="space-y-2 col-span-2">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Full Address</Label>
-                                        <textarea
-                                            className="w-full bg-secondary/30 rounded-xl p-4 font-bold border border-border focus:outline-none min-h-[80px]"
-                                            value={editingCustomer?.address || ''}
-                                            onChange={(e) => setEditingCustomer({ ...editingCustomer, address: e.target.value })}
-                                        />
-                                    </div>
+                        </div>
+
+                        <div className="p-8 space-y-8">
+                            <div className="space-y-3">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Summary Type</Label>
+                                <div className="flex p-1 bg-secondary/30 rounded-2xl gap-1">
+                                    <button
+                                        onClick={() => setPeriod('monthly')}
+                                        className={`flex-1 py-3 rounded-xl font-black text-xs uppercase transition-all ${period === 'monthly' ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
+                                    >
+                                        Monthly
+                                    </button>
+                                    <button
+                                        onClick={() => setPeriod('yearly')}
+                                        className={`flex-1 py-3 rounded-xl font-black text-xs uppercase transition-all ${period === 'yearly' ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
+                                    >
+                                        Yearly
+                                    </button>
                                 </div>
-                            </CardContent>
-                            <div className="p-8 bg-secondary/5 border-t border-border flex justify-end gap-4">
-                                <Button variant="ghost" type="button" onClick={() => setIsModalOpen(false)} className="rounded-xl font-bold h-12 px-8">Cancel</Button>
-                                <Button type="submit" className="bg-primary text-white font-black rounded-xl h-12 px-10 shadow-lg shadow-primary/20">SAVE RECORD</Button>
                             </div>
-                        </form>
-                    </Card>
+
+                            <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-bottom-2 duration-500">
+                                <div className="space-y-3">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Year</Label>
+                                    <Select value={selectedYear} onValueChange={setSelectedYear}>
+                                        <SelectTrigger className="bg-secondary/30 border-border rounded-xl h-12 font-bold">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {years.map(y => (
+                                                <SelectItem key={y} value={y} className="font-bold">{y}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                {period === 'monthly' && (
+                                    <div className="space-y-3 animate-in fade-in slide-in-from-left-2 duration-500">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Month</Label>
+                                        <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                                            <SelectTrigger className="bg-secondary/30 border-border rounded-xl h-12 font-bold">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {months.map(m => (
+                                                    <SelectItem key={m.val} value={m.val} className="font-bold">{m.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                )}
+                            </div>
+
+                            <Button
+                                className="w-full bg-primary hover:opacity-90 text-primary-foreground font-black h-16 rounded-3xl shadow-xl shadow-primary/20 flex items-center justify-center gap-3 uppercase italic text-lg mt-4 group"
+                                onClick={handleDownloadStatement}
+                                disabled={downloading}
+                            >
+                                {downloading ? <Loader2 className="h-6 w-6 animate-spin" /> : <Download className="h-6 w-6 group-hover:translate-y-0.5 transition-transform" />}
+                                DOWNLOAD STATEMENT
+                            </Button>
+
+                            <p className="text-[9px] text-center text-muted-foreground font-medium px-4 uppercase tracking-tighter opacity-60">
+                                Statements are generated as secure PDF documents showing all purchase history and inventory usage for the selected period.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

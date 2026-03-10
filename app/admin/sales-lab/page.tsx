@@ -57,6 +57,15 @@ interface Category {
     name: string;
 }
 
+interface RegisteredCustomer {
+    id: number;
+    name: string;
+    phone: string;
+    labName?: string;
+    city?: string;
+    address?: string;
+}
+
 export default function SalesLabPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
@@ -81,17 +90,25 @@ export default function SalesLabPage() {
     const [discountPercentage, setDiscountPercentage] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
 
+    // Customer Search State
+    const [customerSearchResults, setCustomerSearchResults] = useState<RegisteredCustomer[]>([]);
+    const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null);
+    const [isSearchingCustomer, setIsSearchingCustomer] = useState(false);
+    const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+    const [searchSource, setSearchSource] = useState<'name' | 'phone'>('name');
+
     // Success State
     const [lastOrderId, setLastOrderId] = useState<number | null>(null);
+    const [isDownloadingInvoice, setIsDownloadingInvoice] = useState(false);
 
-    const fetchCategories = async () => {
+    const fetchCategories = useCallback(async () => {
         try {
             const response = await api.get('/categories');
             setCategories(response.data);
         } catch (err) {
             console.error("Failed to load categories", err);
         }
-    };
+    }, []);
 
     const fetchProducts = useCallback(async () => {
         try {
@@ -115,17 +132,96 @@ export default function SalesLabPage() {
     }, [appliedSearch, selectedCategory, currentPage, pageSize]);
 
     useEffect(() => {
-        fetchCategories();
-    }, []);
-
-    useEffect(() => {
         fetchProducts();
-    }, [fetchProducts]);
+        fetchCategories();
+    }, [fetchProducts, fetchCategories]);
 
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setAppliedSearch(search);
         setCurrentPage(1);
+    };
+
+    const handleDownloadInvoice = async (orderId: number) => {
+        setIsDownloadingInvoice(true);
+        try {
+            const response = await api.get(`/admin/labs/invoice/download`, {
+                params: { orderId },
+                responseType: 'blob'
+            });
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Invoice-${orderId}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+            toast.success("Invoice downloaded successfully");
+        } catch (err) {
+            console.error("Download error", err);
+            toast.error("Failed to download invoice");
+        } finally {
+            setIsDownloadingInvoice(false);
+        }
+    };
+
+    const handleCustomerSearch = async (query: string) => {
+        setCustomerName(query);
+        setSearchSource('name');
+        if (query.length < 2) {
+            setCustomerSearchResults([]);
+            setShowSearchDropdown(false);
+            return;
+        }
+
+        try {
+            setIsSearchingCustomer(true);
+            const response = await api.get('/admin/labs/customers', {
+                params: { search: query }
+            });
+            setCustomerSearchResults(response.data);
+            setShowSearchDropdown(true);
+        } catch (err) {
+            console.error("Failed to search customers", err);
+        } finally {
+            setIsSearchingCustomer(false);
+        }
+    };
+
+    const handlePhoneSearch = async (query: string) => {
+        setCustomerPhone(query);
+        setSearchSource('phone');
+        if (selectedCustomerId) setSelectedCustomerId(null);
+        
+        if (query.length < 3) {
+            setCustomerSearchResults([]);
+            setShowSearchDropdown(false);
+            return;
+        }
+
+        try {
+            setIsSearchingCustomer(true);
+            const response = await api.get('/admin/labs/customers', {
+                params: { search: query }
+            });
+            setCustomerSearchResults(response.data);
+            setShowSearchDropdown(true);
+        } catch (err) {
+            console.error("Failed to search customers", err);
+        } finally {
+            setIsSearchingCustomer(false);
+        }
+    };
+
+    const selectCustomer = (customer: RegisteredCustomer) => {
+        setCustomerName(customer.name);
+        setCustomerPhone(customer.phone);
+        setLabName(customer.labName || '');
+        setSelectedCustomerId(customer.id);
+        setShowSearchDropdown(false);
+        toast.success(`Linked to ${customer.name}`);
     };
 
     const addToCart = (product: Product) => {
@@ -179,6 +275,16 @@ export default function SalesLabPage() {
             return;
         }
 
+        if (!amountGiven || parseFloat(amountGiven) <= 0) {
+            toast.error("Please enter the amount received from the customer");
+            return;
+        }
+
+        if (changeDue < 0) {
+            toast.error(`Insufficient amount. Total is $${total.toFixed(2)}`);
+            return;
+        }
+
         try {
             setIsProcessing(true);
             const payload = {
@@ -192,8 +298,8 @@ export default function SalesLabPage() {
                 changeDue: changeDue > 0 ? changeDue : 0,
                 discountPercentage: parseFloat(discountPercentage) || 0,
                 discountAmount: discountValue,
-                // Custom lab fields can be sent and handled if the backend is updated accordingly
-                labName: labName || undefined
+                labName: labName || undefined,
+                registeredCustomerId: selectedCustomerId
             };
 
             const response = await api.post('/admin/orders/walk-in', payload);
@@ -213,6 +319,7 @@ export default function SalesLabPage() {
         setCustomerName('');
         setCustomerPhone('');
         setLabName('');
+        setSelectedCustomerId(null);
         setAmountGiven('');
         setDiscountPercentage('');
         setLastOrderId(null);
@@ -228,8 +335,17 @@ export default function SalesLabPage() {
                 <p className="text-muted-foreground font-black uppercase tracking-widest text-xs mb-12">Batch Order ID: #{lastOrderId}</p>
 
                 <div className="flex gap-4">
-                    <Button onClick={() => window.open(`/api/invoice/download?orderId=${lastOrderId}`, '_blank')} className="h-14 px-10 rounded-2xl bg-primary text-white font-black uppercase tracking-widest">
-                        <FileDown className="mr-3 h-5 w-5" /> Get Invoice
+                    <Button 
+                        disabled={isDownloadingInvoice}
+                        onClick={() => lastOrderId && handleDownloadInvoice(lastOrderId)} 
+                        className="h-14 px-10 rounded-2xl bg-primary text-white font-black uppercase tracking-widest min-w-[200px]"
+                    >
+                        {isDownloadingInvoice ? (
+                            <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                        ) : (
+                            <FileDown className="mr-3 h-5 w-5" />
+                        )}
+                        {isDownloadingInvoice ? 'Generating...' : 'Get Invoice'}
                     </Button>
                     <Button onClick={startNewSale} className="h-14 px-10 rounded-2xl bg-secondary text-foreground font-black uppercase tracking-widest">
                         Next Transaction
@@ -416,20 +532,110 @@ export default function SalesLabPage() {
                 <div className="p-6 border-t border-border bg-background flex-none z-10">
                     <div className="space-y-3 mb-6">
                         <div className="relative group">
-                            <UserCircle className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
+                            <UserCircle className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors z-20" />
                             <Input
                                 placeholder="Patient / Customer Name"
                                 value={customerName}
-                                onChange={e => setCustomerName(e.target.value)}
-                                className="pl-11 bg-secondary/30 border-border rounded-xl h-11 font-bold text-sm"
+                                onChange={e => handleCustomerSearch(e.target.value)}
+                                onFocus={() => {
+                                    setSearchSource('name');
+                                    customerName.length >= 2 && setShowSearchDropdown(true);
+                                }}
+                                className={`pl-11 bg-secondary/30 border-border rounded-xl h-11 font-bold text-sm transition-all ${selectedCustomerId ? 'border-primary shadow-[0_0_0_1px_rgba(var(--primary),0.2)]' : ''}`}
                             />
+                            {isSearchingCustomer && searchSource === 'name' && (
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20">
+                                    <Loader2 className="h-3 w-3 animate-spin text-primary" />
+                                </div>
+                            )}
+
+                            {/* SEARCH DROPDOWN FOR NAME */}
+                            {showSearchDropdown && searchSource === 'name' && customerSearchResults.length > 0 && (
+                                <div className="absolute left-0 right-0 top-full mt-2 bg-card border border-border rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <div className="p-2 border-b border-border bg-secondary/20 flex justify-between items-center">
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-2">Registered Clients</span>
+                                        <Button variant="ghost" size="sm" className="h-5 w-5 p-0 rounded-full" onClick={() => setShowSearchDropdown(false)}>
+                                            <Minus className="h-3 w-3" />
+                                        </Button>
+                                    </div>
+                                    <div className="max-h-[200px] overflow-y-auto custom-scrollbar">
+                                        {customerSearchResults.map(customer => (
+                                            <div
+                                                key={customer.id}
+                                                onClick={() => selectCustomer(customer)}
+                                                className="p-3 hover:bg-primary/10 cursor-pointer border-b border-border/50 last:border-0 transition-colors flex items-center justify-between group"
+                                            >
+                                                <div>
+                                                    <p className="font-black text-xs uppercase tracking-tighter group-hover:text-primary transition-colors">{customer.name}</p>
+                                                    <p className="text-[9px] font-bold text-muted-foreground uppercase">{customer.phone} {customer.labName ? `• ${customer.labName}` : ''}</p>
+                                                </div>
+                                                <div className="h-6 w-6 rounded-lg bg-secondary flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <Plus className="h-3.5 w-3.5 text-primary" />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
+
+                        <div className="relative group">
+                            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors z-20" />
+                            <Input
+                                placeholder="Phone Number"
+                                value={customerPhone}
+                                onChange={e => handlePhoneSearch(e.target.value)}
+                                onFocus={() => {
+                                    setSearchSource('phone');
+                                    customerPhone.length >= 3 && setShowSearchDropdown(true);
+                                }}
+                                className={`pl-11 bg-secondary/30 border-border rounded-xl h-11 font-bold text-sm transition-all ${selectedCustomerId ? 'border-primary shadow-[0_0_0_1px_rgba(var(--primary),0.2)]' : ''}`}
+                            />
+                            {isSearchingCustomer && searchSource === 'phone' && (
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20">
+                                    <Loader2 className="h-3 w-3 animate-spin text-primary" />
+                                </div>
+                            )}
+
+                            {/* SEARCH DROPDOWN FOR PHONE */}
+                            {showSearchDropdown && searchSource === 'phone' && customerSearchResults.length > 0 && (
+                                <div className="absolute left-0 right-0 top-full mt-2 bg-card border border-border rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <div className="p-2 border-b border-border bg-secondary/20 flex justify-between items-center">
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-2">Registered Clients</span>
+                                        <Button variant="ghost" size="sm" className="h-5 w-5 p-0 rounded-full" onClick={() => setShowSearchDropdown(false)}>
+                                            <Minus className="h-3 w-3" />
+                                        </Button>
+                                    </div>
+                                    <div className="max-h-[200px] overflow-y-auto custom-scrollbar">
+                                        {customerSearchResults.map(customer => (
+                                            <div
+                                                key={customer.id}
+                                                onClick={() => selectCustomer(customer)}
+                                                className="p-3 hover:bg-primary/10 cursor-pointer border-b border-border/50 last:border-0 transition-colors flex items-center justify-between group"
+                                            >
+                                                <div>
+                                                    <p className="font-black text-xs uppercase tracking-tighter group-hover:text-primary transition-colors">{customer.name}</p>
+                                                    <p className="text-[9px] font-bold text-muted-foreground uppercase">{customer.phone} {customer.labName ? `• ${customer.labName}` : ''}</p>
+                                                </div>
+                                                <div className="h-6 w-6 rounded-lg bg-secondary flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <Plus className="h-3.5 w-3.5 text-primary" />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
                         <div className="relative group">
                             <Building className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
                             <Input
                                 placeholder="Referral Hospital / Lab"
                                 value={labName}
-                                onChange={e => setLabName(e.target.value)}
+                                onChange={e => {
+                                    setLabName(e.target.value);
+                                    if (selectedCustomerId) setSelectedCustomerId(null);
+                                }}
                                 className="pl-11 bg-secondary/30 border-border rounded-xl h-11 font-bold text-sm"
                             />
                         </div>

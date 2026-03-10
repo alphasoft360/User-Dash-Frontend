@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Building, Plus, Loader2, TrendingUp } from 'lucide-react';
+import { Building, Plus, Loader2, TrendingUp, FileDown, CheckCircle2 } from 'lucide-react';
 
 interface Product {
     id: number;
@@ -30,6 +30,8 @@ export default function StockInForm({ initialProductId = '', products: initialPr
     const [purchasePrice, setPurchasePrice] = useState('');
     const [supplierName, setSupplierName] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [lastEntry, setLastEntry] = useState<{ productId: string, quantity: string, unitPrice: string, supplier: string } | null>(null);
 
     useEffect(() => {
         if (initialProducts.length === 0) {
@@ -63,15 +65,63 @@ export default function StockInForm({ initialProductId = '', products: initialPr
                 purchasePrice: purchasePrice ? parseFloat(purchasePrice) : undefined,
                 supplier: supplierName
             });
+            setLastEntry({
+                productId: selectedProductId,
+                quantity: quantity,
+                unitPrice: purchasePrice,
+                supplier: supplierName
+            });
+            setIsSuccess(true);
             toast.success("Stock updated successfully");
-            router.push('/admin/stock');
             router.refresh();
         } catch (err: unknown) {
             console.error(err);
-            const errorMessage = (err as any).response?.data?.message || "Failed to update stock";
+            const error = err as { response?: { data?: { message?: string } } };
+            const errorMessage = error.response?.data?.message || "Failed to update stock";
             toast.error(errorMessage);
         } finally {
             setSubmitting(false);
+        }
+    };
+
+    const handleDownloadInvoice = async () => {
+        if (!lastEntry) return;
+        try {
+            toast.info("Preparing your receipt...");
+            const params = new URLSearchParams({
+                productId: lastEntry.productId,
+                quantity: lastEntry.quantity,
+                unitPrice: lastEntry.unitPrice,
+                supplier: lastEntry.supplier
+            });
+            const response = await api.get(`/admin/labs/invoice/stock-in?${params.toString()}`, {
+                responseType: 'blob'
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Stock-Entry-${lastEntry.productId}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode?.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (err: unknown) {
+            console.error("Download failed", err);
+            const errorObj = err as { response?: { data?: any } };
+            if (errorObj.response?.data instanceof Blob) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    try {
+                        const errorData = JSON.parse(reader.result as string);
+                        toast.error(errorData.message || "Failed to download receipt");
+                    } catch (e) {
+                        toast.error("Failed to download receipt.");
+                    }
+                };
+                reader.readAsText(errorObj.response.data);
+            } else {
+                toast.error("Failed to download receipt.");
+            }
         }
     };
 
@@ -87,7 +137,7 @@ export default function StockInForm({ initialProductId = '', products: initialPr
                     <SelectTrigger className="bg-secondary/30 border-border h-14 rounded-2xl font-bold focus:ring-primary/20">
                         <SelectValue placeholder={loading ? "Loading products..." : "Select a reagent to restock"} />
                     </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-slate-900 border-border max-h-[300px] z-[110]">
+                    <SelectContent className="bg-white dark:bg-slate-900 border-border max-h-[300px] z-120">
                         {products.map(p => (
                             <SelectItem key={p.id} value={p.id.toString()} className="font-bold py-3 hover:bg-primary/5 cursor-pointer">
                                 {p.name} <span className="text-[10px] font-medium text-muted-foreground ml-2">(Current: {p.stock})</span>
@@ -139,26 +189,50 @@ export default function StockInForm({ initialProductId = '', products: initialPr
             </div>
 
             <div className="pt-4 flex gap-4">
-                <Button
-                    variant="ghost"
-                    type="button"
-                    onClick={() => router.push('/admin/stock')}
-                    className="rounded-2xl font-black h-14 px-10 border border-border"
-                >
-                    CANCEL
-                </Button>
-                <Button
-                    type="submit"
-                    disabled={submitting}
-                    className="flex-1 bg-primary text-primary-foreground font-black rounded-2xl h-14 px-12 shadow-xl shadow-primary/20"
-                >
-                    {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : (
-                        <div className="flex items-center gap-2">
-                            <TrendingUp className="h-5 w-5" />
-                            SAVE STOCK ENTRY
-                        </div>
-                    )}
-                </Button>
+                {!isSuccess ? (
+                    <>
+                        <Button
+                            variant="ghost"
+                            type="button"
+                            onClick={() => router.push('/admin/stock')}
+                            className="rounded-2xl font-black h-14 px-10 border border-border"
+                        >
+                            CANCEL
+                        </Button>
+                        <Button
+                            type="submit"
+                            disabled={submitting}
+                            className="flex-1 bg-primary text-primary-foreground font-black rounded-2xl h-14 px-12 shadow-xl shadow-primary/20"
+                        >
+                            {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : (
+                                <div className="flex items-center gap-2">
+                                    <TrendingUp className="h-5 w-5" />
+                                    SAVE STOCK ENTRY
+                                </div>
+                            )}
+                        </Button>
+                    </>
+                ) : (
+                    <>
+                        <Button
+                            type="button"
+                            onClick={handleDownloadInvoice}
+                            className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-2xl h-14 px-12 shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2"
+                        >
+                            <FileDown className="h-5 w-5" />
+                            DOWNLOAD INVOICE
+                        </Button>
+                        <Button
+                            variant="outline"
+                            type="button"
+                            onClick={() => router.push('/admin/stock')}
+                            className="rounded-2xl font-black h-14 px-10 border-emerald-500 text-emerald-600 flex items-center gap-2"
+                        >
+                            <CheckCircle2 className="h-5 w-5" />
+                            DONE
+                        </Button>
+                    </>
+                )}
             </div>
         </form>
     );

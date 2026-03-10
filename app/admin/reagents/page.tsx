@@ -17,7 +17,11 @@ import {
     X,
     FilterX,
     Calendar,
-    AlertTriangle
+    AlertTriangle,
+    ChevronLeft,
+    ChevronRight,
+    ChevronsLeft,
+    ChevronsRight
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -55,6 +59,12 @@ export default function LabReagentsPage() {
     const [searchName, setSearchName] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
+    // Pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+    const limit = 15;
+
     const fetchCategories = async () => {
         try {
             const response = await api.get('/categories');
@@ -65,25 +75,26 @@ export default function LabReagentsPage() {
     };
 
     const fetchProducts = useCallback(async () => {
+        setLoading(true);
         try {
             const params = {
                 search: searchName || undefined,
                 category: selectedCategory === 'all' ? undefined : selectedCategory,
-                // In a real app, we'd add companyName filter to the backend.
-                // For now, we'll filter on the frontend if needed, or just search.
+                page: currentPage,
+                limit: limit
             };
 
             const response = await api.get('/admin/products', { params });
-            // Filter only products that might be reagents (e.g., have companyName or are in a specific category if we knew one)
-            // But the user said "Use the existing Product entity", so we show all products.
             setProducts(response.data.data);
+            setTotalPages(response.data.pages);
+            setTotalItems(response.data.total);
         } catch (err: unknown) {
             console.error(err);
             toast.error("Failed to load reagents");
         } finally {
             setLoading(false);
         }
-    }, [searchName, selectedCategory]);
+    }, [searchName, selectedCategory, currentPage]);
 
     useEffect(() => {
         fetchCategories();
@@ -128,14 +139,23 @@ export default function LabReagentsPage() {
                             <Input
                                 placeholder="Name or batch..."
                                 value={searchName}
-                                onChange={(e) => setSearchName(e.target.value)}
+                                onChange={(e) => {
+                                    setSearchName(e.target.value);
+                                    setCurrentPage(1);
+                                }}
                                 className="pl-10 bg-secondary/30 border-border rounded-xl h-11 font-bold"
                             />
                         </div>
                     </div>
                     <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label>
-                        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                        <Select 
+                            value={selectedCategory} 
+                            onValueChange={(val) => {
+                                setSelectedCategory(val);
+                                setCurrentPage(1);
+                            }}
+                        >
                             <SelectTrigger className="bg-secondary/30 border-border h-11 rounded-xl">
                                 <SelectValue placeholder="All Categories" />
                             </SelectTrigger>
@@ -150,7 +170,11 @@ export default function LabReagentsPage() {
                     <div className="flex items-end">
                         <Button
                             variant="ghost"
-                            onClick={() => { setSearchName(''); setSelectedCategory('all'); }}
+                            onClick={() => { 
+                                setSearchName(''); 
+                                setSelectedCategory('all'); 
+                                setCurrentPage(1);
+                            }}
                             className="text-muted-foreground hover:text-foreground h-11 px-6 rounded-xl font-bold flex items-center gap-2"
                         >
                             <FilterX className="h-4 w-4" /> Reset
@@ -231,6 +255,60 @@ export default function LabReagentsPage() {
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+
+                    {/* Pagination */}
+                    <div className="p-8 border-t border-border bg-secondary/5 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">
+                            Showing <span className="text-foreground">{products.length}</span> of <span className="text-foreground">{totalItems}</span> reagents
+                        </p>
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => setCurrentPage(1)}
+                                disabled={currentPage === 1 || loading}
+                                className="h-10 w-10 rounded-xl border-border bg-card hover:bg-secondary/20 disabled:opacity-50"
+                            >
+                                <ChevronsLeft className="h-4 w-4" />
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                disabled={currentPage === 1 || loading}
+                                className="h-10 w-10 rounded-xl border-border bg-card hover:bg-secondary/20 disabled:opacity-50"
+                            >
+                                <ChevronLeft className="h-4 w-4" />
+                            </Button>
+                            
+                            <div className="flex items-center gap-1 mx-2">
+                                <span className="text-xs font-black text-muted-foreground uppercase">Page</span>
+                                <div className="h-10 px-4 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                                    <span className="text-sm font-black text-primary">{currentPage}</span>
+                                </div>
+                                <span className="text-xs font-black text-muted-foreground uppercase">of {totalPages}</span>
+                            </div>
+
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                disabled={currentPage === totalPages || loading}
+                                className="h-10 w-10 rounded-xl border-border bg-card hover:bg-secondary/20 disabled:opacity-50"
+                            >
+                                <ChevronRight className="h-4 w-4" />
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => setCurrentPage(totalPages)}
+                                disabled={currentPage === totalPages || loading}
+                                className="h-10 w-10 rounded-xl border-border bg-card hover:bg-secondary/20 disabled:opacity-50"
+                            >
+                                <ChevronsRight className="h-4 w-4" />
+                            </Button>
+                        </div>
                     </div>
                 </CardContent>
             </Card>
