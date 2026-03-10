@@ -75,9 +75,7 @@ export default function AdminProductsPage() {
     const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'hidden'>('all');
 
     // Category Creation
-    const [newCategoryName, setNewCategoryName] = useState('');
-    const [isCreatingCategory, setIsCreatingCategory] = useState(false);
-    const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+    // (Removed - now handled in dedicated categories page)
 
     const fetchCategories = async () => {
         try {
@@ -123,25 +121,10 @@ export default function AdminProductsPage() {
         fetchProducts();
     }, [fetchProducts]);
 
-    const handleAddCategory = async () => {
-        if (!newCategoryName.trim()) return;
-        try {
-            setIsCreatingCategory(true);
-            const response = await api.post('/admin/categories', { name: newCategoryName });
-            setCategories([...categories, response.data.category]);
-            toast.success(`Category "${newCategoryName}" registered`);
-            setNewCategoryName('');
-            setIsCategoryModalOpen(false);
-        } catch (err: unknown) {
-            console.error(err);
-            toast.error("Category registration failed");
-        } finally {
-            setIsCreatingCategory(false);
-        }
-    };
+    // handleAddCategory removed - moved to categories page
 
     const handleDelete = async (id: number) => {
-        if (!confirm("Confirm entity deletion protocol? This action is irreversible.")) return;
+        if (!confirm("Confirm entity deletion protocol? This action lis irreversible.")) return;
         try {
             await api.delete(`/admin/products/${id}`);
             fetchProducts(); // Refresh list to account for pagination
@@ -178,52 +161,6 @@ export default function AdminProductsPage() {
 
     return (
         <div className="space-y-12 animate-in fade-in duration-700">
-            {/* Custom Category Modal */}
-            {isCategoryModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="w-full max-w-md bg-card border border-border rounded-[2.5rem] shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden border-t-4 border-t-primary/20 animate-in zoom-in-95 duration-300">
-                        <div className="px-8 py-6 border-b border-border bg-secondary/10 flex items-center justify-between">
-                            <div>
-                                <h3 className="text-xl font-black italic uppercase tracking-tighter">Register New <span className="text-primary not-italic">Category</span></h3>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1 opacity-50">Global taxonomy classification.</p>
-                            </div>
-                            <button onClick={() => setIsCategoryModalOpen(false)} className="h-10 w-10 rounded-full hover:bg-secondary flex items-center justify-center transition-colors">
-                                <X className="h-5 w-5 text-muted-foreground" />
-                            </button>
-                        </div>
-                        <div className="p-8 space-y-6">
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 text-muted-foreground">Category Designation</Label>
-                                <Input
-                                    placeholder="e.g. Hyper-Automated Systems"
-                                    className="bg-secondary/50 border-border rounded-xl h-14 font-bold px-6 focus:ring-primary/20"
-                                    value={newCategoryName}
-                                    onChange={(e) => setNewCategoryName(e.target.value)}
-                                    autoFocus
-                                />
-                            </div>
-                        </div>
-                        <div className="p-8 pt-0 flex gap-3">
-                            <Button
-                                variant="ghost"
-                                className="flex-1 font-black uppercase tracking-widest rounded-xl h-12 border border-border"
-                                onClick={() => setIsCategoryModalOpen(false)}
-                            >
-                                ABORT
-                            </Button>
-                            <Button
-                                className="flex-2 bg-primary font-black uppercase tracking-widest rounded-xl hover:opacity-90 h-12 shadow-lg shadow-primary/20 px-8"
-                                onClick={handleAddCategory}
-                                disabled={isCreatingCategory || !newCategoryName.trim()}
-                            >
-                                {isCreatingCategory ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Zap className="h-4 w-4 mr-2" />}
-                                COMMITTING CATEGORY
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
@@ -238,42 +175,6 @@ export default function AdminProductsPage() {
                 </Link>
             </div>
 
-            {/* Category Management section */}
-            <div className="bg-card border border-border rounded-[2.5rem] overflow-hidden shadow-2xl border-t-4 border-t-primary/20">
-                <div className="px-10 py-6 border-b border-border bg-secondary/10 flex items-center justify-between">
-                    <div>
-                        <h2 className="text-lg font-black tracking-tight text-foreground uppercase italic flex items-center">
-                            <Tags className="mr-3 h-5 w-5 text-primary" />
-                            Category Management
-                        </h2>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1 opacity-50">Manage taxonomy and global classifications.</p>
-                    </div>
-
-                    <Button
-                        variant="outline"
-                        className="rounded-xl border-dashed border-primary/40 hover:border-primary hover:bg-primary/5 text-primary font-black text-[10px] uppercase tracking-widest h-10 px-6"
-                        onClick={() => setIsCategoryModalOpen(true)}
-                    >
-                        <FolderPlus className="mr-2 h-4 w-4" /> Add Taxonomy
-                    </Button>
-                </div>
-
-                <div className="p-10">
-                    <div className="flex flex-wrap gap-4">
-                        {categories.map(cat => (
-                            <div key={cat.id} className="group relative overflow-hidden bg-secondary/30 border border-border rounded-2xl p-4 min-w-[140px] flex flex-col items-center justify-center gap-3 hover:border-primary/50 transition-all cursor-default shadow-sm hover:shadow-primary/5">
-                                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 group-hover:scale-110 transition-transform">
-                                    <LayoutGrid className="h-5 w-5" />
-                                </div>
-                                <span className="text-[10px] font-black uppercase tracking-wider text-foreground text-center line-clamp-1">{cat.name}</span>
-                                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <div className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
 
             {/* Advanced Filters */}
             <div className="bg-card border border-border rounded-[2.5rem] overflow-hidden shadow-2xl border-t-4 border-t-secondary/20">

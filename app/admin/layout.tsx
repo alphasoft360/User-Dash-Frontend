@@ -12,10 +12,12 @@ import {
     LogOut,
     Menu,
     X,
-    ChevronRight,
-    Search,
     PlusCircle,
-    ShoppingBag
+    ShoppingBag,
+    MonitorPlay,
+    PanelLeftClose,
+    PanelLeft,
+    ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -29,6 +31,7 @@ export default function AdminLayout({
     const router = useRouter();
     const pathname = usePathname();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isCompact, setIsCompact] = useState(false);
 
     useEffect(() => {
         if (!loading) {
@@ -46,78 +49,97 @@ export default function AdminLayout({
 
     const navItems = [
         { label: 'Dashboard', icon: LayoutDashboard, href: '/admin/dashboard' },
+        { label: 'Point of Sale', icon: MonitorPlay, href: '/admin/pos' },
         { label: 'Products', icon: Package, href: '/admin/products' },
+        { label: 'Categories', icon: Package, href: '/admin/categories' },
         { label: 'Users', icon: Users, href: '/admin/users' },
+        { label: 'Customers', icon: Users, href: '/admin/customers' },
         { label: 'Vendors', icon: Users, href: '/admin/vendors' },
         { label: 'Orders', icon: ShoppingBag, href: '/admin/orders' },
         { label: 'Settings', icon: Settings, href: '/admin/settings' },
+        { label: '---', icon: Menu, href: '#', isHeader: true },
+        { label: 'Lab Dashboard', icon: LayoutDashboard, href: '/admin/dashboard-lab' },
+        { label: 'Reagents', icon: Package, href: '/admin/reagents' },
+        { label: 'Stock Mgr', icon: Package, href: '/admin/stock' },
+        { label: 'Lab Customers', icon: Users, href: '/admin/customers-lab' },
+        { label: 'Lab Sales', icon: MonitorPlay, href: '/admin/sales-lab' },
+        { label: 'Lab Reports', icon: ShoppingBag, href: '/admin/reports-lab' },
+        { label: 'Lab Invoices', icon: ShoppingBag, href: '/admin/invoices-lab' },
     ];
+
 
     return (
         <div className="min-h-screen bg-background text-foreground flex overflow-hidden">
             <aside
-                className={`fixed inset-y-0 left-0 z-50 w-72 bg-secondary/50 dark:bg-gray-900/80 border-r border-border backdrop-blur-xl transition-transform duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
+                className={`fixed inset-y-0 left-0 z-50 bg-secondary/50 dark:bg-gray-900/80 border-r border-border backdrop-blur-xl transition-all duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} ${isCompact ? 'w-20' : 'w-72'}`}
             >
-                <div className="h-full flex flex-col p-6">
-                    <div className="flex items-center justify-between mb-10 px-2">
+                <div className={`h-full flex flex-col ${isCompact ? 'p-4' : 'p-6'}`}>
+                    <div className={`flex items-center mb-10 ${isCompact ? 'justify-center' : 'justify-between px-2'}`}>
                         <Link href="/marketplace" className="flex items-center space-x-2">
-                            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
+                            <div className="w-8 h-8 shrink-0 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
                                 <span className="font-bold text-primary-foreground text-sm">E</span>
                             </div>
-                            <span className="text-lg font-black tracking-tighter text-foreground">ELECTRO <span className="text-primary">ADMIN</span></span>
+                            {!isCompact && <span className="text-lg font-black tracking-tighter text-foreground whitespace-nowrap overflow-hidden">ELECTRO <span className="text-primary">ADMIN</span></span>}
                         </Link>
                         <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-2 text-muted-foreground hover:text-foreground">
                             <X className="h-6 w-6" />
                         </button>
                     </div>
 
-                    <nav className="flex-1 space-y-2">
+                    <nav className="flex-1 space-y-2 overflow-x-hidden">
                         {navItems.map((item) => (
-                            <Link
-                                key={item.label}
-                                href={item.href}
-                                className={`flex items-center px-4 py-3 rounded-xl transition-all group ${pathname === item.href ? 'bg-primary/10 text-primary border border-primary/20' : 'text-muted-foreground hover:text-foreground hover:bg-secondary'}`}
-                            >
-                                <item.icon className={`mr-3 h-5 w-5 ${pathname === item.href ? 'text-primary' : 'group-hover:text-primary'}`} />
-                                <span className="font-bold text-sm">{item.label}</span>
-                                {pathname === item.href && <ChevronRight className="ml-auto h-4 w-4" />}
-                            </Link>
+                            item.isHeader ? (
+                                !isCompact && <div key={item.label} className="mt-6 mb-2 px-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50">Laboratory System</div>
+                            ) : (
+                                <Link
+                                    key={item.label}
+                                    href={item.href}
+                                    title={isCompact ? item.label : undefined}
+                                    className={`flex items-center ${isCompact ? 'justify-center px-0' : 'px-4'} py-3 rounded-xl transition-all group ${pathname === item.href ? 'bg-primary/10 text-primary border border-primary/20' : 'text-muted-foreground hover:text-foreground hover:bg-secondary'}`}
+                                >
+                                    <item.icon className={`${isCompact ? '' : 'mr-3'} h-5 w-5 shrink-0 ${pathname === item.href ? 'text-primary' : 'group-hover:text-primary'}`} />
+                                    {!isCompact && <span className="font-bold text-sm whitespace-nowrap text-clip overflow-hidden">{item.label}</span>}
+                                    {!isCompact && pathname === item.href && <ChevronRight className="ml-auto h-4 w-4 shrink-0" />}
+                                </Link>
+                            )
                         ))}
                     </nav>
 
-                    <div className="pt-6 border-t border-border space-y-4">
-                        <div className="flex items-center px-4 py-1">
-                            <div className="w-10 h-10 rounded-full bg-secondary border border-border flex items-center justify-center text-xs font-bold text-primary mr-3">
+                    <div className="pt-6 border-t border-border flex flex-col gap-4">
+                        <div className={`flex items-center ${isCompact ? 'justify-center' : 'px-4 py-1'}`}>
+                            <div className="w-10 h-10 shrink-0 rounded-full bg-secondary border border-border flex items-center justify-center text-xs font-bold text-primary">
                                 {user?.email?.[0].toUpperCase()}
                             </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-xs font-bold text-foreground truncate">{user?.email}</p>
-                                <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest leading-none">Admin</p>
-                            </div>
+                            {!isCompact && (
+                                <div className="flex-1 min-w-0 ml-3">
+                                    <p className="text-xs font-bold text-foreground truncate">{user?.email}</p>
+                                    <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest leading-none">Admin</p>
+                                </div>
+                            )}
                         </div>
                         <Button
                             variant="ghost"
-                            className="w-full justify-start text-red-500 hover:bg-red-500/10 hover:text-red-600 rounded-xl"
+                            title={isCompact ? "Sign Out" : undefined}
+                            className={`w-full ${isCompact ? 'justify-center px-0' : 'justify-start px-4'} text-red-500 hover:bg-red-500/10 hover:text-red-600 rounded-xl`}
                             onClick={logout}
                         >
-                            <LogOut className="mr-3 h-5 w-5" /> Sign Out
+                            <LogOut className={`${isCompact ? '' : 'mr-3'} h-5 w-5 shrink-0`} />
+                            {!isCompact && <span>Sign Out</span>}
                         </Button>
                     </div>
                 </div>
             </aside>
-            <div className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarOpen ? 'lg:pl-72' : ''}`}>
+            <div className={`flex-1 flex flex-col transition-all duration-300 ${isCompact ? 'lg:pl-20' : 'lg:pl-72'}`}>
                 <header className="h-20 border-b border-border bg-background/60 backdrop-blur-xl flex items-center justify-between px-8 sticky top-0 z-40">
-                    <button onClick={() => setIsSidebarOpen(true)} className={`lg:hidden p-2 text-muted-foreground hover:text-foreground ${isSidebarOpen ? 'hidden' : ''}`}>
-                        <Menu className="h-6 w-6" />
-                    </button>
-                    {/* <div className="relative w-96 hidden md:block">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <input
-                            placeholder="Global Search..."
-                            className="w-full bg-secondary/50 border border-border rounded-xl pl-12 pr-4 h-11 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-muted-foreground text-foreground"
-                        />
-                    </div> */}
-                    <p className="text-2xl font-bold text-primary">Dashboard</p>
+                    <div className="flex items-center space-x-2">
+                        <button onClick={() => setIsSidebarOpen(true)} className={`lg:hidden p-2 text-muted-foreground hover:text-foreground ${isSidebarOpen ? 'hidden' : ''}`}>
+                            <Menu className="h-6 w-6" />
+                        </button>
+                        <button onClick={() => setIsCompact(!isCompact)} className="hidden lg:block p-2 text-muted-foreground hover:text-foreground transition-all">
+                            {isCompact ? <PanelLeft className="h-6 w-6" /> : <PanelLeftClose className="h-6 w-6" />}
+                        </button>
+                        <p className="text-2xl font-bold text-primary ml-2">Dashboard</p>
+                    </div>
                     <div className="flex items-center space-x-4">
                         <ThemeToggle />
                         <Link href="/marketplace/post-ad">
