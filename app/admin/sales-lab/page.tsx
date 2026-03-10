@@ -64,6 +64,7 @@ interface RegisteredCustomer {
     labName?: string;
     city?: string;
     address?: string;
+    remainingBalance: number;
 }
 
 export default function SalesLabPage() {
@@ -181,7 +182,7 @@ export default function SalesLabPage() {
             const response = await api.get('/admin/labs/customers', {
                 params: { search: query }
             });
-            setCustomerSearchResults(response.data);
+            setCustomerSearchResults(response.data.data || response.data);
             setShowSearchDropdown(true);
         } catch (err) {
             console.error("Failed to search customers", err);
@@ -206,7 +207,7 @@ export default function SalesLabPage() {
             const response = await api.get('/admin/labs/customers', {
                 params: { search: query }
             });
-            setCustomerSearchResults(response.data);
+            setCustomerSearchResults(response.data.data || response.data);
             setShowSearchDropdown(true);
         } catch (err) {
             console.error("Failed to search customers", err);
@@ -280,8 +281,8 @@ export default function SalesLabPage() {
             return;
         }
 
-        if (changeDue < 0) {
-            toast.error(`Insufficient amount. Total is $${total.toFixed(2)}`);
+        if (changeDue < 0 && !selectedCustomerId) {
+            toast.error(`Non-registered customers must pay the full amount. Total is $${total.toFixed(2)}`);
             return;
         }
 
@@ -295,7 +296,7 @@ export default function SalesLabPage() {
                     quantity: item.cartQuantity
                 })),
                 amountTendered: amountGiven ? parseFloat(amountGiven) : null,
-                changeDue: changeDue > 0 ? changeDue : 0,
+                changeDue: changeDue,
                 discountPercentage: parseFloat(discountPercentage) || 0,
                 discountAmount: discountValue,
                 labName: labName || undefined,
@@ -669,9 +670,11 @@ export default function SalesLabPage() {
                             <span className="text-3xl font-black italic text-foreground tracking-tighter leading-none">${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         </div>
                         <div className="flex items-end justify-between pt-2 border-t border-border/50">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/80">Change</span>
-                            <span className={`text-xl font-black italic tracking-tighter leading-none ${changeDue > 0 ? 'text-primary' : 'text-muted-foreground/50'}`}>
-                                ${changeDue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/80">
+                                {changeDue < 0 ? 'Pending Balance' : 'Change'}
+                            </span>
+                            <span className={`text-xl font-black italic tracking-tighter leading-none ${changeDue > 0 ? 'text-primary' : changeDue < 0 ? 'text-red-500' : 'text-muted-foreground/50'}`}>
+                                ${Math.abs(changeDue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </span>
                         </div>
                     </div>

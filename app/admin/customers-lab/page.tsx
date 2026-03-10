@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import api from '@/lib/api';
+import debounce from 'lodash/debounce';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,6 +37,7 @@ interface Customer {
     city?: string;
     address?: string;
     totalSpent: number;
+    remainingBalance: number;
 }
 
 export default function CustomersLabPage() {
@@ -43,6 +45,9 @@ export default function CustomersLabPage() {
     const [loading, setLoading] = useState(true);
     const [downloading, setDownloading] = useState(false);
     const [search, setSearch] = useState('');
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
 
     const [isStatementOpen, setIsStatementOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
@@ -50,10 +55,24 @@ export default function CustomersLabPage() {
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
     const [selectedMonth, setSelectedMonth] = useState((new Date().getMonth() + 1).toString());
 
-    const fetchCustomers = async () => {
+    const fetchCustomers = async (currentPage = page, searchQuery = search) => {
+        setLoading(true);
         try {
-            const response = await api.get('/admin/labs/customers');
-            setCustomers(response.data);
+            const response = await api.get('/admin/labs/customers', {
+                params: {
+                    page: currentPage,
+                    limit: 10,
+                    search: searchQuery
+                }
+            });
+            // Handle both paginated response and old array response (just in case)
+            if (response.data.data && Array.isArray(response.data.data)) {
+                setCustomers(response.data.data);
+                setTotalPages(response.data.pages || 1);
+                setTotalItems(response.data.total || 0);
+            } else if (Array.isArray(response.data)) {
+                setCustomers(response.data);
+            }
         } catch (err) {
             console.error("Failed to load customers", err);
             toast.error("Failed to load customer registry");
@@ -62,9 +81,30 @@ export default function CustomersLabPage() {
         }
     };
 
+    // Debounced search to prevent excessive API calls
+    const debouncedSearch = useCallback(
+        debounce((query: string) => {
+            setPage(1); // Reset to first page on new search
+            fetchCustomers(1, query);
+        }, 500),
+        []
+    );
+
     useEffect(() => {
-        fetchCustomers();
-    }, []);
+        return () => {
+            debouncedSearch.cancel();
+        };
+    }, [debouncedSearch]);
+
+    useEffect(() => {
+        fetchCustomers(page, search);
+    }, [page]); // Re-fetch only when page changes here, search is handled by debounce
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setSearch(val);
+        debouncedSearch(val);
+    };
 
     const handleDelete = async (id: number) => {
         if (!confirm("Are you sure you want to delete this customer record?")) return;
@@ -107,11 +147,8 @@ export default function CustomersLabPage() {
         }
     };
 
-    const filteredCustomers = customers.filter(c =>
-        c.name.toLowerCase().includes(search.toLowerCase()) ||
-        c.phone.includes(search) ||
-        c.labName?.toLowerCase().includes(search.toLowerCase())
-    );
+    // Note: Filtering is now handled on the backend!
+    const filteredCustomers = customers;
 
     const years = Array.from({ length: 5 }, (_, i) => (new Date().getFullYear() - i).toString());
     const months = [
@@ -146,7 +183,7 @@ export default function CustomersLabPage() {
                         <Input
                             placeholder="Search by name, phone or lab..."
                             value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            onChange={handleSearchChange}
                             className="pl-10 bg-secondary/30 border-border rounded-xl h-12 font-bold"
                         />
                     </div>
@@ -169,6 +206,7 @@ export default function CustomersLabPage() {
                                 <TableHead className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Contact Info</TableHead>
                                 <TableHead className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Location</TableHead>
                                 <TableHead className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right border-l border-border/10">Total Spent</TableHead>
+                                <TableHead className="p-6 text-[10px] font-black uppercase tracking-widest text-red-500 text-right border-l border-border/10">Pending Amount</TableHead>
                                 <TableHead className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right pr-10">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -181,7 +219,7 @@ export default function CustomersLabPage() {
                                 </TableRow>
                             ) : filteredCustomers.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="h-40 text-center text-muted-foreground italic">
+                                    <TableCell colSpan={7} className="h-40 text-center text-muted-foreground italic">
                                         No customers found in registry.
                                     </TableCell>
                                 </TableRow>
@@ -214,6 +252,11 @@ export default function CustomersLabPage() {
                                         <TableCell className="p-6 text-right border-l border-border/10">
                                             <span className="font-black text-foreground">
                                                 ${customer.totalSpent.toLocaleString()}
+                                            </span>
+                                        </TableCell>
+                                        <TableCell className="p-6 text-right border-l border-border/10">
+                                            <span className={`font-black ${customer.remainingBalance > 0 ? 'text-red-500' : 'text-emerald-500'}`}>
+                                                ${(customer.remainingBalance || 0).toLocaleString()}
                                             </span>
                                         </TableCell>
                                         <TableCell className="p-6 text-right pr-10">
@@ -255,6 +298,38 @@ export default function CustomersLabPage() {
                             )}
                         </TableBody>
                     </Table>
+
+                    {/* Pagination Controls */}
+                    {totalPages > 1 && (
+                        <div className="p-6 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                Showing <span className="text-foreground">{(page - 1) * 10 + 1}</span> to <span className="text-foreground">{Math.min(page * 10, totalItems)}</span> of <span className="text-foreground">{totalItems}</span> entries
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                                    disabled={page === 1 || loading}
+                                    className="rounded-xl font-bold h-9 text-[10px] uppercase tracking-widest"
+                                >
+                                    Previous
+                                </Button>
+                                <div className="px-4 py-2 rounded-xl bg-secondary/30 text-xs font-black">
+                                    Page {page} of {totalPages}
+                                </div>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                    disabled={page === totalPages || loading}
+                                    className="rounded-xl font-bold h-9 text-[10px] uppercase tracking-widest"
+                                >
+                                    Next
+                                </Button>
+                            </div>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
 
