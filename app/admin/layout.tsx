@@ -38,7 +38,7 @@ export default function AdminLayout({
             if (!isAuthenticated) {
                 router.push('/login');
             } else if (!user?.roles?.includes('ROLE_ADMIN') && !user?.roles?.includes('ROLE_SUPER_ADMIN')) {
-                router.push('/marketplace');
+                router.push('/');
             }
         }
     }, [loading, isAuthenticated, user, router]);
@@ -48,18 +48,21 @@ export default function AdminLayout({
     }
 
     const navItems = [
-        { label: 'Dashboard', icon: LayoutDashboard, href: '/admin/dashboard' },
-        { label: 'Point of Sale', icon: MonitorPlay, href: '/admin/pos' },
-        { label: 'Products', icon: Package, href: '/admin/products' },
-        { label: 'Categories', icon: Package, href: '/admin/categories' },
-        { label: 'Users', icon: Users, href: '/admin/users' },
-        { label: 'Customers', icon: Users, href: '/admin/customers' },
-        { label: 'Vendors', icon: Users, href: '/admin/vendors' },
-        { label: 'Orders', icon: ShoppingBag, href: '/admin/orders' },
-        { label: 'Settings', icon: Settings, href: '/admin/settings' },
-        { label: '---', icon: Menu, href: '#', isHeader: true },
+
+        //Extra pages removed we can use those pages by just uncommenting these labels
+
+        // { label: 'Dashboard', icon: LayoutDashboard, href: '/admin/dashboard' },
+        // { label: 'Point of Sale', icon: MonitorPlay, href: '/admin/pos' },
+        // { label: 'Products', icon: Package, href: '/admin/products' },
+        // { label: 'Categories', icon: Package, href: '/admin/categories' },
+        // { label: 'Customers', icon: Users, href: '/admin/customers' },
+        // { label: 'Vendors', icon: Users, href: '/admin/vendors' },
+        // { label: 'Orders', icon: ShoppingBag, href: '/admin/orders' },
+        // { label: 'Settings', icon: Settings, href: '/admin/settings' },
+        // { label: '---', icon: Menu, href: '#', isHeader: true },
         { label: 'Lab Dashboard', icon: LayoutDashboard, href: '/admin/dashboard-lab' },
         { label: 'Reagents', icon: Package, href: '/admin/reagents' },
+        { label: 'Users', icon: Users, href: '/admin/users' },
         { label: 'Stock Mgr', icon: Package, href: '/admin/stock' },
         { label: 'Lab Customers', icon: Users, href: '/admin/customers-lab' },
         { label: 'Lab Sales', icon: MonitorPlay, href: '/admin/sales-lab' },
@@ -74,11 +77,11 @@ export default function AdminLayout({
                 className={`fixed inset-y-0 left-0 z-50 bg-secondary/50 dark:bg-gray-900/80 border-r border-border backdrop-blur-xl transition-all duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} ${isCompact ? 'w-20' : 'w-72'}`}
             >
                 <div className={`h-full flex flex-col ${isCompact ? 'p-4' : 'p-6'}`}>
-                    <div className={`flex items-center mb-10 ${isCompact ? 'justify-center' : 'justify-between px-2'}`}>
-                        <Link href="/marketplace" className="flex items-center space-x-2">
-                            <img src="/images/logo.png" alt="Logo" className="h-8 w-8 shrink-0 rounded-lg object-contain shadow-lg shadow-primary/20" />
+                    <div className={`flex items-center ${isCompact ? 'justify-center' : 'justify-between px-2'}`}>
+                        <div className="flex items-center space-x-1 cursor-default">
+                            <img src="/images/logo.png" alt="Logo" className="h-15 w-10" />
                             {!isCompact && <span className="text-lg font-black tracking-tighter text-foreground whitespace-nowrap overflow-hidden">ADMIN</span>}
-                        </Link>
+                        </div>
                         <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-2 text-muted-foreground hover:text-foreground">
                             <X className="h-6 w-6" />
                         </button>
@@ -140,11 +143,6 @@ export default function AdminLayout({
                     </div>
                     <div className="flex items-center space-x-4">
                         <ThemeToggle />
-                        <Link href="/marketplace/post-ad">
-                            <Button className="bg-primary hover:opacity-90 text-primary-foreground font-bold h-11 px-6 rounded-xl shadow-lg shadow-primary/20">
-                                <PlusCircle className="mr-2 h-4 w-4" /> New Product
-                            </Button>
-                        </Link>
                     </div>
                 </header>
 

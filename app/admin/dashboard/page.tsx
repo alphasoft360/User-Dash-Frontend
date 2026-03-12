@@ -24,7 +24,7 @@ export default function AdminDashboard() {
             if (!isAuthenticated) {
                 router.push('/login');
             } else if (!user?.roles?.includes('ROLE_ADMIN') && !user?.roles?.includes('ROLE_SUPER_ADMIN')) {
-                router.push('/marketplace');
+                router.push('/');
             }
         }
     }, [loading, isAuthenticated, user, router]);

@@ -167,12 +167,12 @@ export default function AdminProductsPage() {
                     <h1 className="text-4xl font-black text-foreground tracking-tighter mb-2 italic uppercase">PRODUCT <span className="text-primary not-italic">Identity</span></h1>
                     <p className="text-muted-foreground font-medium uppercase text-[10px] tracking-widest leading-loose">Global Catalog Control & Marketplace Moderation.</p>
                 </div>
-                <Link href="/marketplace/post-ad" className="group">
+                <div>
                     <Button className="bg-primary hover:opacity-90 text-primary-foreground font-black px-10 rounded-2xl h-14 shadow-2xl shadow-primary/20 transition-all active:scale-95 flex items-center gap-3">
                         <Plus className="h-5 w-5 group-hover:rotate-90 transition-transform" />
                         DEPLOY NEW PRODUCT
                     </Button>
-                </Link>
+                </div>
             </div>
 
 
@@ -373,11 +373,11 @@ export default function AdminProductsPage() {
                                         </td>
                                         <td className="p-8 text-right border-l border-border/50 bg-secondary/5">
                                             <div className="flex justify-end gap-3">
-                                                <Link href={`/marketplace/${product.slug}`}>
-                                                    <Button variant="ghost" size="icon" className="h-11 w-11 text-muted-foreground hover:bg-primary/10 hover:text-primary rounded-xl transition-all hover:scale-110 active:scale-90 border border-transparent hover:border-primary/20">
+                                                <div className="group">
+                                                    <Button variant="ghost" size="icon" className="h-11 w-11 text-muted-foreground hover:bg-primary/10 hover:text-primary rounded-xl transition-all border border-transparent hover:border-primary/20 cursor-not-allowed">
                                                         <Eye className="h-5 w-5" />
                                                     </Button>
-                                                </Link>
+                                                </div>
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
