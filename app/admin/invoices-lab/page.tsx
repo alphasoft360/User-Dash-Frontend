@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import api from '@/lib/api';
+import debounce from 'lodash/debounce';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,7 +14,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Receipt, Search, FileDown, Eye, Calendar, User, Building, Trash2 } from 'lucide-react';
+import { Receipt, Search, FileDown, Eye, Calendar, User, Building, Trash2, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Invoice {
@@ -28,11 +29,23 @@ export default function InvoicesLabPage() {
     const [invoices, setInvoices] = useState<Invoice[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
 
-    const fetchInvoices = async () => {
+    const fetchInvoices = async (currentPage = page, searchQuery = search) => {
+        setLoading(true);
         try {
-            const response = await api.get('/admin/labs/invoices');
+            const response = await api.get('/admin/labs/invoices', {
+                params: {
+                    page: currentPage,
+                    limit: 10,
+                    search: searchQuery
+                }
+            });
             setInvoices(response.data.data || []);
+            setTotalPages(response.data.pages || 1);
+            setTotalItems(response.data.total || 0);
         } catch (err) {
             console.error("Failed to load invoices", err);
             toast.error("Failed to sync invoice database");
@@ -41,14 +54,35 @@ export default function InvoicesLabPage() {
         }
     };
 
+    // Debounced search
+    const debouncedSearch = useCallback(
+        debounce((query: string) => {
+            setPage(1);
+            fetchInvoices(1, query);
+        }, 500),
+        []
+    );
+
     useEffect(() => {
-        fetchInvoices();
-    }, []);
+        return () => {
+            debouncedSearch.cancel();
+        };
+    }, [debouncedSearch]);
+
+    useEffect(() => {
+        fetchInvoices(page, search);
+    }, [page]);
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setSearch(val);
+        debouncedSearch(val);
+    };
 
     const handleDownload = async (id: number) => {
         try {
             toast.info(`Downloading digital invoice #${id}...`);
-            const response = await api.get(`/invoice/download`, {
+            const response = await api.get(`/admin/labs/invoice/download`, {
                 params: { orderId: id },
                 responseType: 'blob'
             });
@@ -65,10 +99,6 @@ export default function InvoicesLabPage() {
         }
     };
 
-    const filteredInvoices = (invoices || []).filter(inv =>
-        inv?.customerName?.toLowerCase().includes(search.toLowerCase()) ||
-        inv?.id?.toString().includes(search)
-    );
 
     return (
         <div className="space-y-10 animate-in fade-in duration-700">
@@ -82,7 +112,7 @@ export default function InvoicesLabPage() {
                     <Input
                         placeholder="Filter by ID or Name..."
                         value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        onChange={handleSearchChange}
                         className="bg-transparent border-none font-bold placeholder:font-medium focus-visible:ring-0 w-64 uppercase text-[10px] tracking-widest"
                     />
                 </div>
@@ -111,7 +141,7 @@ export default function InvoicesLabPage() {
                                 <TableRow>
                                     <TableCell colSpan={5} className="p-24 text-center font-black uppercase italic text-pink-500/50 animate-pulse">Accessing Vault...</TableCell>
                                 </TableRow>
-                            ) : filteredInvoices.map((inv) => (
+                            ) : invoices.map((inv) => (
                                 <TableRow key={inv.id} className="border-border hover:bg-pink-500/5 transition-colors">
                                     <TableCell className="p-8 font-black text-foreground">#{inv.id}</TableCell>
                                     <TableCell className="p-8">
@@ -141,13 +171,45 @@ export default function InvoicesLabPage() {
                                     </TableCell>
                                 </TableRow>
                             ))}
-                            {filteredInvoices.length === 0 && !loading && (
+                            {invoices.length === 0 && !loading && (
                                 <TableRow>
                                     <TableCell colSpan={5} className="p-24 text-center italic opacity-30 font-bold uppercase text-[10px] tracking-[0.3em]">Vault is empty</TableCell>
                                 </TableRow>
                             )}
                         </TableBody>
                     </Table>
+
+                    {/* Pagination Controls */}
+                    {totalPages > 1 && (
+                        <div className="p-8 border-t border-border bg-secondary/10 flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                                Showing <span className="text-foreground">{(page - 1) * 10 + 1}</span> to <span className="text-foreground">{Math.min(page * 10, totalItems)}</span> of <span className="text-foreground">{totalItems}</span> sync'd nodes
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                                    disabled={page === 1 || loading}
+                                    className="h-11 w-11 rounded-xl border-border bg-card hover:bg-pink-500/10 hover:text-pink-500 transition-all disabled:opacity-30"
+                                >
+                                    <ChevronLeft className="h-4 w-4" />
+                                </Button>
+                                <div className="px-5 py-2.5 rounded-xl bg-background border border-border text-[10px] font-black uppercase tracking-widest shadow-inner">
+                                    Page {page} of {totalPages}
+                                </div>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                    disabled={page === totalPages || loading}
+                                    className="h-11 w-11 rounded-xl border-border bg-card hover:bg-pink-500/10 hover:text-pink-500 transition-all disabled:opacity-30"
+                                >
+                                    <ChevronRight className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>
