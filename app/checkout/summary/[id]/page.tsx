@@ -74,11 +74,8 @@ export default function OrderSummaryPage() {
     return (
         <div className="min-h-screen bg-background text-foreground py-12 px-4 animate-in fade-in duration-700">
             <div className="max-w-4xl mx-auto space-y-12">
-                <div className="flex items-center justify-center space-x-2">
-                    <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-                        <span className="font-bold text-primary-foreground text-lg">E</span>
-                    </div>
-                    <span className="font-black text-2xl tracking-tighter">ELECTRO</span>
+                <div className="flex items-center justify-center">
+                    <img src="/images/logo.png" alt="Logo" className="h-10 w-10 rounded-xl object-contain shadow-lg shadow-primary/20" />
                 </div>
 
                 <div className="text-center space-y-4">

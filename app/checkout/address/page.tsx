@@ -86,11 +86,8 @@ export default function AddressPage() {
                     <Link href="/cart" className="flex items-center text-muted-foreground hover:text-primary transition-colors font-bold group">
                         <ArrowLeft className="mr-2 h-5 w-5 group-hover:-translate-x-1 transition-transform" /> Back to Cart
                     </Link>
-                    <div className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                            <span className="font-bold text-primary-foreground text-sm">E</span>
-                        </div>
-                        <span className="font-black tracking-tight">ELECTRO</span>
+                    <div className="flex items-center">
+                        <img src="/images/logo.png" alt="Logo" className="h-8 w-8 rounded-lg object-contain shadow-lg shadow-primary/20" />
                     </div>
                 </div>
 

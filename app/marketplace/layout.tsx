@@ -30,11 +30,8 @@ export default function MarketplaceLayout({
             <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-2xl border-b border-border">
                 <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-6">
                     {/* Logo */}
-                    <Link href="/marketplace" className="flex items-center space-x-2 shrink-0">
-                        <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-                            <span className="font-bold text-xl text-primary-foreground">E</span>
-                        </div>
-                        <span className="text-xl font-black text-foreground hidden sm:block">ELECTRO</span>
+                    <Link href="/marketplace" className="flex items-center shrink-0">
+                        <img src="/images/logo.png" alt="Logo" className="h-10 w-10 rounded-xl object-contain shadow-lg shadow-primary/20" />
                     </Link>
 
                     {/* Search Bar */}
@@ -151,11 +148,8 @@ export default function MarketplaceLayout({
             <footer className="bg-secondary/50 border-t border-border py-12">
                 <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div className="col-span-1 md:col-span-2">
-                        <Link href="/marketplace" className="flex items-center space-x-2 mb-6">
-                            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
-                                <span className="font-bold text-primary-foreground">E</span>
-                            </div>
-                            <span className="text-xl font-bold text-foreground">ELECTRO</span>
+                        <Link href="/marketplace" className="flex items-center mb-6">
+                            <img src="/images/logo.png" alt="Logo" className="h-8 w-8 rounded-lg object-contain shadow-lg shadow-primary/20" />
                         </Link>
                         <p className="text-muted-foreground max-w-sm mb-6 font-medium">The ultimate destination for premium electronics. Verified sellers, secure payments, and worldwide shipping.</p>
                     </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -8,12 +8,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Building, Plus, Loader2, TrendingUp, FileDown, CheckCircle2 } from 'lucide-react';
+import { Building, Plus, Loader2, TrendingUp, FileDown, CheckCircle2, Search, X } from 'lucide-react';
 
 interface Product {
     id: number;
     name: string;
     stock: number;
+}
+
+interface Vendor {
+    id: number;
+    name: string;
+    companyName: string;
+    category?: {
+        id: number;
+        name: string;
+    } | null;
 }
 
 interface StockInFormProps {
@@ -32,6 +42,56 @@ export default function StockInForm({ initialProductId = '', products: initialPr
     const [submitting, setSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [lastEntry, setLastEntry] = useState<{ productId: string, quantity: string, unitPrice: string, supplier: string } | null>(null);
+
+    // Vendor Search States
+    const [vendors, setVendors] = useState<Vendor[]>([]);
+    const [vendorSearch, setVendorSearch] = useState('');
+    const [isSearchingVendors, setIsSearchingVendors] = useState(false);
+    const [showVendorSuggestions, setShowVendorSuggestions] = useState(false);
+    const vendorRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (vendorRef.current && !vendorRef.current.contains(event.target as Node)) {
+                setShowVendorSuggestions(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const fetchVendors = async (search: string = '') => {
+        const trimmedSearch = search.trim();
+        setIsSearchingVendors(true);
+        try {
+            const endpoint = trimmedSearch
+                ? `/admin/vendors?search=${encodeURIComponent(trimmedSearch)}`
+                : '/admin/vendors';
+            const response = await api.get(endpoint);
+            setVendors(response.data.slice(0, 10));
+        } catch (err) {
+            console.error("Failed to load vendors", err);
+        } finally {
+            setIsSearchingVendors(false);
+        }
+    };
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (vendorSearch && vendorSearch.length > 0) {
+                fetchVendors(vendorSearch);
+            }
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [vendorSearch]);
+
+    const handleVendorSelect = (vendor: Vendor) => {
+        setSupplierName(vendor.companyName || vendor.name);
+        setVendorSearch(vendor.companyName || vendor.name);
+        setShowVendorSuggestions(false);
+    };
 
     useEffect(() => {
         if (initialProducts.length === 0) {
@@ -177,14 +237,40 @@ export default function StockInForm({ initialProductId = '', products: initialPr
 
             <div className="space-y-3">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Supplier / Vendor Name</Label>
-                <div className="relative">
-                    <Building className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <div ref={vendorRef} className="relative">
+                    <Building className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
                     <Input
-                        value={supplierName}
-                        onChange={(e) => setSupplierName(e.target.value)}
-                        className="pl-12 bg-secondary/30 border-border h-14 rounded-2xl font-bold focus:ring-primary/20"
-                        placeholder="Enter supplier name..."
+                        value={vendorSearch}
+                        onChange={(e) => {
+                            const val = e.target.value;
+                            setVendorSearch(val);
+                            setSupplierName(val);
+                            setShowVendorSuggestions(val.trim().length > 0);
+                        }}
+                        className="pl-12 bg-secondary/30 border-border h-14 rounded-2xl font-bold focus:ring-primary/20 pr-10"
+                        placeholder="Type to search vendors..."
                     />
+                    {isSearchingVendors && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            <Loader2 className="animate-spin h-4 w-4 text-primary" />
+                        </div>
+                    )}
+                    
+                    {showVendorSuggestions && vendors.length > 0 && (
+                        <div className="absolute z-50 left-0 right-0 top-full mt-2 bg-slate-50 dark:bg-slate-950 border border-border rounded-2xl shadow-2xl overflow-hidden max-h-60 overflow-y-auto custom-scrollbar ring-1 ring-black/5 animate-in fade-in slide-in-from-top-2">
+                            {vendors.map((vendor) => (
+                                <button
+                                    key={vendor.id}
+                                    type="button"
+                                    onClick={() => handleVendorSelect(vendor)}
+                                    className="w-full text-left p-4 hover:bg-primary/5 transition-colors border-b border-border last:border-0 group"
+                                >
+                                    <div className="font-black text-sm uppercase italic group-hover:text-primary transition-colors">{vendor.companyName || vendor.name}</div>
+                                    <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">{vendor.name} • {vendor.category?.name || 'Uncategorized'}</div>
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
 

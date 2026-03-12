@@ -76,10 +76,8 @@ export default function AdminLayout({
                 <div className={`h-full flex flex-col ${isCompact ? 'p-4' : 'p-6'}`}>
                     <div className={`flex items-center mb-10 ${isCompact ? 'justify-center' : 'justify-between px-2'}`}>
                         <Link href="/marketplace" className="flex items-center space-x-2">
-                            <div className="w-8 h-8 shrink-0 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
-                                <span className="font-bold text-primary-foreground text-sm">E</span>
-                            </div>
-                            {!isCompact && <span className="text-lg font-black tracking-tighter text-foreground whitespace-nowrap overflow-hidden">ELECTRO <span className="text-primary">ADMIN</span></span>}
+                            <img src="/images/logo.png" alt="Logo" className="h-8 w-8 shrink-0 rounded-lg object-contain shadow-lg shadow-primary/20" />
+                            {!isCompact && <span className="text-lg font-black tracking-tighter text-foreground whitespace-nowrap overflow-hidden">ADMIN</span>}
                         </Link>
                         <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-2 text-muted-foreground hover:text-foreground">
                             <X className="h-6 w-6" />

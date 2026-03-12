@@ -86,14 +86,25 @@ export default function StockManagementPage() {
                     <h1 className="text-4xl font-black text-foreground tracking-tighter mb-2 uppercase italic">STOCK <span className="text-primary not-italic">Manager</span></h1>
                     <p className="text-muted-foreground font-medium uppercase text-[10px] tracking-widest">Update Reagent Inventory & Manage Stock Volume.</p>
                 </div>
-                <Link href="/admin/stock/new">
-                    <Button
-                        className="bg-primary hover:opacity-90 text-primary-foreground font-black px-8 rounded-2xl h-14 shadow-lg shadow-primary/20 flex items-center gap-3"
-                    >
-                        <Plus className="h-5 w-5" />
-                        NEW STOCK ENTRY
-                    </Button>
-                </Link>
+                <div className="flex gap-4">
+                    <Link href="/admin/stock/vendors/new">
+                        <Button
+                            variant="outline"
+                            className="bg-secondary/10 hover:bg-secondary/20 border-border text-foreground font-black px-6 rounded-2xl h-14 flex items-center gap-3"
+                        >
+                            <Plus className="h-5 w-5" />
+                            ADD VENDOR
+                        </Button>
+                    </Link>
+                    <Link href="/admin/stock/new">
+                        <Button
+                            className="bg-primary hover:opacity-90 text-primary-foreground font-black px-8 rounded-2xl h-14 shadow-lg shadow-primary/20 flex items-center gap-3"
+                        >
+                            <Plus className="h-5 w-5" />
+                            NEW STOCK ENTRY
+                        </Button>
+                    </Link>
+                </div>
             </div>
 
             {/* Stats Cards */}
@@ -197,66 +208,66 @@ export default function StockManagementPage() {
 
                                         return (
                                             <TableRow key={product.id} className="hover:bg-secondary/10 transition-colors border-b border-border last:border-0 group">
-                                            <TableCell className="p-6">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center font-black text-primary text-xs uppercase tracking-tighter">
-                                                        {product.name?.[0]}
+                                                <TableCell className="p-6">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center font-black text-primary text-xs uppercase tracking-tighter">
+                                                            {product.name?.[0]}
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-black text-foreground uppercase tracking-tight text-sm">{product.name}</p>
+                                                            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{product.companyName || 'Unknown Supplier'}</p>
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        <p className="font-black text-foreground uppercase tracking-tight text-sm">{product.name}</p>
-                                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{product.companyName || 'Unknown Supplier'}</p>
-                                                    </div>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="p-6">
-                                                <span className="text-[10px] font-black uppercase px-3 py-1 bg-secondary/50 rounded-full text-foreground border border-border">
-                                                    {product.category?.name || 'Uncategorized'}
-                                                </span>
-                                            </TableCell>
-                                            <TableCell className="p-6 text-center font-mono text-xs font-bold text-muted-foreground group-hover:text-foreground transition-colors">
-                                                {product.batchNumber || '—'}
-                                            </TableCell>
-                                            <TableCell className="p-6 text-center">
-                                                <span className={`text-base font-black ${product.stock <= 5 ? 'text-red-500' : 'text-foreground'}`}>
-                                                    {product.stock}
-                                                </span>
-                                                <span className="text-[8px] block font-black uppercase tracking-tighter text-muted-foreground">Units</span>
-                                            </TableCell>
-                                            <TableCell className="p-6 text-right pr-6">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={handleDownloadRecord}
-                                                        title="Download Record"
-                                                        className="h-9 w-9 text-muted-foreground hover:bg-emerald-500/10 hover:text-emerald-500 rounded-lg border border-transparent hover:border-emerald-500/20"
-                                                    >
-                                                        <FileDown className="h-4 w-4" />
-                                                    </Button>
-                                                    <Link href={`/admin/reagents/${product.id}/edit`}>
+                                                </TableCell>
+                                                <TableCell className="p-6">
+                                                    <span className="text-[10px] font-black uppercase px-3 py-1 bg-secondary/50 rounded-full text-foreground border border-border">
+                                                        {product.category?.name || 'Uncategorized'}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell className="p-6 text-center font-mono text-xs font-bold text-muted-foreground group-hover:text-foreground transition-colors">
+                                                    {product.batchNumber || '—'}
+                                                </TableCell>
+                                                <TableCell className="p-6 text-center">
+                                                    <span className={`text-base font-black ${product.stock <= 5 ? 'text-red-500' : 'text-foreground'}`}>
+                                                        {product.stock}
+                                                    </span>
+                                                    <span className="text-[8px] block font-black uppercase tracking-tighter text-muted-foreground">Units</span>
+                                                </TableCell>
+                                                <TableCell className="p-6 text-right pr-6">
+                                                    <div className="flex items-center justify-end gap-2">
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            title="Edit Details"
-                                                            className="h-9 w-9 text-muted-foreground hover:bg-primary/10 hover:text-primary rounded-lg border border-transparent hover:border-primary/20"
+                                                            onClick={handleDownloadRecord}
+                                                            title="Download Record"
+                                                            className="h-9 w-9 text-muted-foreground hover:bg-emerald-500/10 hover:text-emerald-500 rounded-lg border border-transparent hover:border-emerald-500/20"
                                                         >
-                                                            <Edit2 className="h-4 w-4" />
+                                                            <FileDown className="h-4 w-4" />
                                                         </Button>
-                                                    </Link>
-                                                    <Link href={`/admin/stock/${product.id}/in`}>
-                                                        <Button
-                                                            variant="outline"
-                                                            className="rounded-xl border-primary/20 hover:border-primary text-primary hover:bg-primary hover:text-white font-black text-[10px] uppercase gap-2 h-9 px-4 transition-all italic"
-                                                        >
-                                                            <Plus className="h-3 w-3" />
-                                                            Stock In
-                                                        </Button>
-                                                    </Link>
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })
+                                                        <Link href={`/admin/reagents/${product.id}/edit`}>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                title="Edit Details"
+                                                                className="h-9 w-9 text-muted-foreground hover:bg-primary/10 hover:text-primary rounded-lg border border-transparent hover:border-primary/20"
+                                                            >
+                                                                <Edit2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </Link>
+                                                        <Link href={`/admin/stock/${product.id}/in`}>
+                                                            <Button
+                                                                variant="outline"
+                                                                className="rounded-xl border-primary/20 hover:border-primary text-primary hover:bg-primary hover:text-white font-black text-[10px] uppercase gap-2 h-9 px-4 transition-all italic"
+                                                            >
+                                                                <Plus className="h-3 w-3" />
+                                                                Stock In
+                                                            </Button>
+                                                        </Link>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })
                                 )}
                             </TableBody>
                         </Table>
