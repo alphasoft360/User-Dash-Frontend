@@ -169,8 +169,8 @@ export default function Home() {
               </div>
             ))}
             {/* Refined gradient overlays for better atmosphere */}
-            <div className="absolute inset-0 bg-linear-to-b from-background via-transparent to-background/60 z-[1]"></div>
-            <div className="absolute inset-0 bg-blue-900/10 z-[1]"></div>
+            <div className="absolute inset-0 bg-linear-to-b from-background via-transparent to-background/5 z-[1]"></div>
+            <div className="absolute inset-0 bg-blue-100/10 z-[1]"></div>
           </div>
 
           {/* Carousel Controls - Moved out of the background layer and z-indexed higher */}
@@ -194,7 +194,7 @@ export default function Home() {
               <div className="space-y-4">
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary-800 rounded-full text-[10px] font-semibold uppercase tracking-wider border border-primary/20 backdrop-blur-sm">
                   <Award className="w-3 h-3" />
-                  Premium Laboratory Solutions
+                  Unique Helthcare Solutions
                 </div>
                 <h1 className="text-2xl md:text-3xl font-semibold tracking-tight leading-snug">
                   Reliable <span className="text-primary">Laboratory</span> Analyzers & Diagnostic Reagents.

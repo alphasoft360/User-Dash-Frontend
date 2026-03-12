@@ -7,7 +7,7 @@ import Link from 'next/link';
 import {
     LayoutDashboard,
     Package,
-    Users,
+    User,
     Settings,
     LogOut,
     Menu,
@@ -17,7 +17,13 @@ import {
     MonitorPlay,
     PanelLeftClose,
     PanelLeft,
-    ChevronRight
+    ChevronRight,
+    FlaskConical,
+    Boxes,
+    UsersRound,
+    TrendingUp,
+    ClipboardList,
+    Receipt
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -47,10 +53,8 @@ export default function AdminLayout({
         return <div className="flex min-h-screen items-center justify-center bg-white dark:bg-gray-950 text-cyan-500 font-black">AUTHENTICATING...</div>;
     }
 
-    const navItems = [
-
+    const navItems: { label: string; icon: any; href: string; isHeader?: boolean }[] = [
         //Extra pages removed we can use those pages by just uncommenting these labels
-
         // { label: 'Dashboard', icon: LayoutDashboard, href: '/admin/dashboard' },
         // { label: 'Point of Sale', icon: MonitorPlay, href: '/admin/pos' },
         // { label: 'Products', icon: Package, href: '/admin/products' },
@@ -61,13 +65,13 @@ export default function AdminLayout({
         // { label: 'Settings', icon: Settings, href: '/admin/settings' },
         // { label: '---', icon: Menu, href: '#', isHeader: true },
         { label: 'Lab Dashboard', icon: LayoutDashboard, href: '/admin/dashboard-lab' },
-        { label: 'Reagents', icon: Package, href: '/admin/reagents' },
-        { label: 'Users', icon: Users, href: '/admin/users' },
-        { label: 'Stock Mgr', icon: Package, href: '/admin/stock' },
-        { label: 'Lab Customers', icon: Users, href: '/admin/customers-lab' },
-        { label: 'Lab Sales', icon: MonitorPlay, href: '/admin/sales-lab' },
-        { label: 'Lab Reports', icon: ShoppingBag, href: '/admin/reports-lab' },
-        { label: 'Lab Invoices', icon: ShoppingBag, href: '/admin/invoices-lab' },
+        { label: 'Reagents', icon: FlaskConical, href: '/admin/reagents' },
+        { label: 'Users', icon: User, href: '/admin/users' },
+        { label: 'Stock Mgr', icon: Boxes, href: '/admin/stock' },
+        { label: 'Lab Customers', icon: UsersRound, href: '/admin/customers-lab' },
+        { label: 'Lab Sales', icon: TrendingUp, href: '/admin/sales-lab' },
+        { label: 'Lab Reports', icon: ClipboardList, href: '/admin/reports-lab' },
+        { label: 'Lab Invoices', icon: Receipt, href: '/admin/invoices-lab' },
     ];
 
 
