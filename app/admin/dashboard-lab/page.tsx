@@ -61,20 +61,28 @@ export default function LabDashboard() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {statCards.map((stat, i) => (
-                    <Card key={i} className="bg-card border-border p-8 rounded-3xl relative overflow-hidden group hover:border-primary/30 transition-all shadow-sm hover:shadow-md">
-                        <div className="relative z-10">
-                            <p className="text-muted-foreground text-xs font-black uppercase tracking-widest mb-4">{stat.label}</p>
-                            <h3 className={`text-2xl md:text-3xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2 truncate`}>
-                                {stat.value}
-                            </h3>
-                            <div className="text-2xl mt-4 opacity-20 group-hover:opacity-100 transition-opacity absolute top-0 right-0">
-                                {stat.icon}
+                {statCards.map((stat, i) => {
+                    const valueStr = stat.value.toString();
+                    const isLong = valueStr.length > 12;
+                    const fontSizeClass = isLong ? 'text-xl md:text-2xl' : 'text-2xl md:text-3xl';
+                    
+                    return (
+                        <Card key={i} className="bg-card border-border p-8 rounded-3xl relative overflow-hidden group hover:border-primary/30 transition-all shadow-sm hover:shadow-md h-full">
+                            <div className="relative z-10 h-full flex flex-col justify-between">
+                                <div>
+                                    <p className="text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-4">{stat.label}</p>
+                                    <h3 className={`${fontSizeClass} font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2 break-all leading-tight`}>
+                                        {stat.value}
+                                    </h3>
+                                </div>
+                                <div className="text-2xl opacity-20 group-hover:opacity-100 transition-opacity absolute top-0 right-0">
+                                    {stat.icon}
+                                </div>
                             </div>
-                        </div>
-                        <div className={`absolute -right-4 -bottom-4 w-24 h-24 bg-gradient-to-br ${stat.color} opacity-5 blur-3xl`} />
-                    </Card>
-                ))}
+                            <div className={`absolute -right-4 -bottom-4 w-24 h-24 bg-gradient-to-br ${stat.color} opacity-5 blur-3xl`} />
+                        </Card>
+                    );
+                })}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
