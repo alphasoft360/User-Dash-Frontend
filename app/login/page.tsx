@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/api';
 import { AxiosError } from 'axios';
@@ -14,7 +14,7 @@ import { Mail, Lock, ArrowRight } from 'lucide-react';
 
 import { useSearchParams } from 'next/navigation';
 // ...
-export default function Login() {
+function LoginContent() {
     const searchParams = useSearchParams();
     const redirectTo = searchParams.get('redirectTo') || undefined;
     const [email, setEmail] = useState('');
@@ -134,5 +134,13 @@ export default function Login() {
                 </form>
             </Card>
         </div>
+    );
+}
+
+export default function Login() {
+    return (
+        <Suspense fallback={null}>
+            <LoginContent />
+        </Suspense>
     );
 }
