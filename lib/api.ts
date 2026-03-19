@@ -3,11 +3,7 @@ import axios from 'axios';
 const BACKEND_URL = 'http://127.0.0.1:8000';
 
 const api = axios.create({
-<<<<<<< Updated upstream
     baseURL: '/api/proxy',
-=======
-    baseURL: `${BACKEND_URL}/api`,
->>>>>>> Stashed changes
     headers: {
         'Content-Type': 'application/json',
     },
