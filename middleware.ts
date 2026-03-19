@@ -25,14 +25,14 @@ export function middleware(request: NextRequest) {
     // but for now we can check if it's one of ours or default to Unique Healthcare)
     const knownSlugs = ['unique-healthcare-solutions', 'acme', 'tesla', 'demo'];
 
-    if (knownSlugs.includes(firstSegment)) {
+    if (
+        pathname === '/' ||
+        knownSlugs.includes(firstSegment)
+    ) {
         return NextResponse.next();
     }
 
-    // If no slug, redirect to default company
-    const url = request.nextUrl.clone();
-    url.pathname = `/unique-healthcare-solutions${pathname === '/' ? '' : pathname}`;
-    return NextResponse.redirect(url);
+    return NextResponse.next();
 }
 
 export const config = {
