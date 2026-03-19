@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 import { useCallback } from 'react';
+import { usePathname } from 'next/navigation';
 
 interface User {
     email: string;
@@ -34,19 +35,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
+    const pathname = usePathname();
+
+    const getCompanySlug = useCallback(() => {
+        const segments = pathname.split('/').filter(Boolean);
+        const knownSlugs = ['unique-healthcare-solutions', 'acme', 'tesla', 'demo'];
+        return knownSlugs.find(slug => segments.includes(slug)) || 'unique-healthcare-solutions';
+    }, [pathname]);
 
     const logout = useCallback(() => {
         localStorage.removeItem('token');
         setToken(null);
         setUser(null);
-        router.push('/login');
-    }, [router]);
+        router.push(`/${getCompanySlug()}/login`);
+    }, [router, getCompanySlug]);
 
     useEffect(() => {
         const checkToken = () => {
             const storedToken = localStorage.getItem('token');
             if (storedToken) {
                 try {
+                    // Quick check if it looks like a JWT (3 parts separated by dots)
+                    if (storedToken.split('.').length !== 3) {
+                        localStorage.removeItem('token');
+                        setToken(null);
+                        setUser(null);
+                        setLoading(false);
+                        return;
+                    }
                     const decoded = jwtDecode<JWTPayload>(storedToken);
                     // Check if token is expired
                     if (decoded.exp * 1000 < Date.now()) {
@@ -59,8 +75,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                         });
                     }
                 } catch (error) {
-                    console.error('Failed to decode token:', error);
-                    logout();
+                    localStorage.removeItem('token');
+                    setToken(null);
+                    setUser(null);
                 }
             }
             setLoading(false);
@@ -82,15 +99,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (redirectTo) {
             router.push(redirectTo);
         } else {
-            // Default: if admin role exists, go to admin, else home
             const roles = decoded.roles || [];
-            if (roles.includes('ROLE_ADMIN')) {
-                router.push('/admin/dashboard');
+            const companySlug = getCompanySlug();
+            if (roles.includes('ROLE_SUPER_ADMIN')) {
+                router.push('/super-admin');
+            } else if (roles.includes('ROLE_ADMIN')) {
+                router.push(`/${companySlug}/admin/dashboard`);
             } else {
-                router.push('/');
+                router.push(`/${companySlug}`);
             }
         }
-    }, [router]);
+    }, [router, getCompanySlug]);
 
     return (
         <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated: !!token, loading }}>
