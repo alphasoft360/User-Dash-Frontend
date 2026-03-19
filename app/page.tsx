@@ -42,7 +42,7 @@ export default function PromotionPage() {
         </div>
       </nav>
 
-      <main className="flex-grow">
+      <main className="grow">
         {/* Hero Section */}
         <section className="relative pt-20 pb-32 overflow-hidden">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] opacity-10 dark:opacity-20 pointer-events-none">
@@ -55,7 +55,7 @@ export default function PromotionPage() {
               <Zap size={14} className="fill-current" />
               <span>THE FUTURE OF ENTERPRISE MANAGEMENT</span>
             </div>
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-indigo-800 to-gray-900 dark:from-white dark:via-indigo-300 dark:to-white">
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-linear-to-r from-gray-900 via-indigo-800 to-gray-900 dark:from-white dark:via-indigo-300 dark:to-white">
               Elevate Your Business with <br />
               <span className="text-indigo-600 dark:text-indigo-400">AlphaSoft360</span>
             </h1>
@@ -153,14 +153,14 @@ export default function PromotionPage() {
                     "Dedicated support team and comprehensive documentation"
                   ].map((item, i) => (
                     <div key={i} className="flex items-start gap-3">
-                      <CheckCircle2 className="text-emerald-500 mt-1 flex-shrink-0" size={20} />
+                      <CheckCircle2 className="text-emerald-500 mt-1 shrink-0" size={20} />
                       <p className="text-lg text-gray-700 dark:text-gray-300 font-medium">{item}</p>
                     </div>
                   ))}
                 </div>
               </div>
               <div className="lg:w-1/2 relative">
-                <div className="absolute -inset-4 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-3xl blur-2xl opacity-10 dark:opacity-20 animate-pulse" />
+                <div className="absolute -inset-4 bg-linear-to-tr from-indigo-500 to-purple-500 rounded-3xl blur-2xl opacity-10 dark:opacity-20 animate-pulse" />
                 <div className="relative aspect-video rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 overflow-hidden shadow-2xl flex items-center justify-center">
                   <div className="flex flex-col items-center gap-4">
                     <Users size={64} className="text-indigo-600" />

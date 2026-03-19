@@ -40,14 +40,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const getCompanySlug = useCallback(() => {
         const segments = pathname.split('/').filter(Boolean);
         const knownSlugs = ['unique-healthcare-solutions', 'acme', 'tesla', 'demo'];
-        return knownSlugs.find(slug => segments.includes(slug)) || 'unique-healthcare-solutions';
+        return knownSlugs.find(slug => segments.includes(slug));
     }, [pathname]);
 
     const logout = useCallback(() => {
         localStorage.removeItem('token');
         setToken(null);
         setUser(null);
-        router.push(`/${getCompanySlug()}/login`);
+        const slug = getCompanySlug();
+        router.push(slug ? `/${slug}/login` : '/login');
     }, [router, getCompanySlug]);
 
     useEffect(() => {
@@ -101,12 +102,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else {
             const roles = decoded.roles || [];
             const companySlug = getCompanySlug();
-            if (roles.includes('ROLE_SUPER_ADMIN')) {
-                router.push('/super-admin');
-            } else if (roles.includes('ROLE_ADMIN')) {
-                router.push(`/${companySlug}/admin/dashboard`);
+            
+            if (companySlug) {
+                // If logging in from a company-specific page
+                if (roles.includes('ROLE_ADMIN') || roles.includes('ROLE_SUPER_ADMIN')) {
+                    router.push(`/${companySlug}/admin/dashboard`);
+                } else {
+                    router.push(`/${companySlug}`);
+                }
             } else {
-                router.push(`/${companySlug}`);
+                // If logging in from the root /login page
+                if (roles.includes('ROLE_SUPER_ADMIN')) {
+                    router.push('/super-admin');
+                } else if (roles.includes('ROLE_ADMIN')) {
+                    // If an admin logins at root, we don't have a company context in URL
+                    // Fallback to a default or show error, but here we'll try to redirect 
+                    // to a default if they are ROLE_ADMIN
+                    router.push('/unique-healthcare-solutions/admin/dashboard');
+                } else {
+                    router.push('/');
+                }
             }
         }
     }, [router, getCompanySlug]);
