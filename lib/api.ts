@@ -19,7 +19,7 @@ export const getImageUrl = (url: string | null | undefined) => {
     const cleanUrl = url.startsWith('/') ? url.slice(1) : url;
     
     if (typeof window !== 'undefined') {
-        return `/api/proxy/${cleanUrl}`;
+        return `/api/proxy/assets/${cleanUrl}`;
     }
     return `${BACKEND_URL}/${cleanUrl}`;
 };
@@ -55,11 +55,11 @@ api.interceptors.request.use(
 
             const baseProxy = '/api/proxy';
             if (firstSegment && !reserved.includes(firstSegment) && !isGlobalUrl) {
-                // If we are in a tenant-specific route, adjust baseURL to /{slug}/api/
-                config.baseURL = `${baseProxy}/${firstSegment}/api/`;
+                // If we are in a tenant-specific route, adjust baseURL to /api/proxy/tenant/{slug}/api/
+                config.baseURL = `${baseProxy}/tenant/${firstSegment}/api/`;
             } else {
-                // Default baseURL
-                config.baseURL = `${baseProxy}/api/`;
+                // Default baseURL to /api/proxy/global/ which maps to {BACKEND}/api/
+                config.baseURL = `${baseProxy}/global/`;
             }
         }
 
