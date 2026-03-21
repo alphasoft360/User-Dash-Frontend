@@ -17,6 +17,10 @@ export const getImageUrl = (url: string | null | undefined) => {
     if (url.startsWith('http://') || url.startsWith('https://')) return url;
     // Remove leading slash if present
     const cleanUrl = url.startsWith('/') ? url.slice(1) : url;
+    
+    if (typeof window !== 'undefined') {
+        return `/api/proxy/${cleanUrl}`;
+    }
     return `${BACKEND_URL}/${cleanUrl}`;
 };
 
@@ -49,12 +53,13 @@ api.interceptors.request.use(
 
             const isGlobalUrl = config.url?.startsWith('super-admin') || config.url?.startsWith('/super-admin');
 
+            const baseProxy = '/api/proxy';
             if (firstSegment && !reserved.includes(firstSegment) && !isGlobalUrl) {
                 // If we are in a tenant-specific route, adjust baseURL to /{slug}/api/
-                config.baseURL = `${BACKEND_URL}/${firstSegment}/api/`;
+                config.baseURL = `${baseProxy}/${firstSegment}/api/`;
             } else {
                 // Default baseURL
-                config.baseURL = `${BACKEND_URL}/api/`;
+                config.baseURL = `${baseProxy}/api/`;
             }
         }
 

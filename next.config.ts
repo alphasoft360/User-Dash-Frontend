@@ -18,11 +18,11 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     // Falls back to the hardcoded IP if the environment variable isn't set.
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://140.245.9.90/api';
+    const backendHost = process.env.NEXT_PUBLIC_BACKEND_HOST || 'http://140.245.9.90';
     return [
       {
         source: '/api/proxy/:path*',
-        destination: `${backendUrl}/:path*`,
+        destination: `${backendHost}/:path*`,
       },
     ];
   },
