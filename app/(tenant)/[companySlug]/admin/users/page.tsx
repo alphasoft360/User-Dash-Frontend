@@ -206,7 +206,7 @@ export default function AdminUsersPage() {
                                                 </div>
                                             </td>
                                         </tr>
-                                    ) : users.map((u) => (
+                                    ) : users.filter(u => !u.roles.includes('ROLE_SUPER_ADMIN')).map((u) => (
                                         <tr key={u.id} className="hover:bg-primary/[0.02] transition-colors group">
                                             <td className="p-4 px-6">
                                                 <div className="flex items-center">
