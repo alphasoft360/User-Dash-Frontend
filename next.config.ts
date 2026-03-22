@@ -4,6 +4,11 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
+        protocol: 'https',
+        hostname: 'unique-healthcare.duckdns.org',
+        pathname: '/**',
+      },
+      {
         protocol: 'http',
         hostname: '127.0.0.1',
         port: '8000',
@@ -17,8 +22,8 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
-    // Falls back to the hardcoded IP if the environment variable isn't set.
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://140.245.9.90/api';
+    // Falls back to the new domain if the environment variable isn't set.
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://unique-healthcare.duckdns.org/api';
     return [
       {
         source: '/api/proxy/:path*',

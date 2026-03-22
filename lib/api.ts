@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BACKEND_URL = 'http://140.245.9.90';
+const BACKEND_URL = 'https://unique-healthcare.duckdns.org';
 
 const api = axios.create({
     baseURL: '/api/proxy',
