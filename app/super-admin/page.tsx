@@ -3,11 +3,17 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ShieldCheck, Users, Activity, Settings, Database, Lock } from 'lucide-react';
+import { ShieldCheck, Users, Activity, Settings, Database, Lock, ShieldPlus, User, Mail, Key, Loader2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 export default function SuperAdminDashboard() {
     const [companiesCount, setCompaniesCount] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [formData, setFormData] = useState({ name: '', email: '', password: '' });
 
     useEffect(() => {
         api.get('/super-admin/companies')
@@ -22,6 +28,26 @@ export default function SuperAdminDashboard() {
         { label: 'Data Isolation', value: 'Encrypted', icon: <Database className="h-5 w-5" />, color: 'text-purple-500', bg: 'bg-purple-500/5' },
         { label: 'Security Layer', value: 'Active', icon: <Lock className="h-5 w-5" />, color: 'text-primary', bg: 'bg-primary/5' },
     ];
+
+    const handleCreateAdmin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!formData.name || !formData.email || !formData.password) {
+            toast.error("All authorization fields are required");
+            return;
+        }
+
+        setSaving(true);
+        try {
+            await api.post('/super-admin/admins', formData);
+            toast.success("New Super Admin entry provisioned successfully");
+            setFormData({ name: '', email: '', password: '' });
+        } catch (err: unknown) {
+            console.error(err);
+            toast.error("Operator provisioning failed");
+        } finally {
+            setSaving(false);
+        }
+    };
 
     return (
         <div className="space-y-12 animate-in fade-in slide-in-from-bottom-2 duration-1000">
@@ -89,6 +115,97 @@ export default function SuperAdminDashboard() {
                     </div>
                 </CardContent>
             </Card>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <Card className="lg:col-span-2 bg-card/40 backdrop-blur-xl border-border/50 rounded-3xl shadow-xl overflow-hidden border-t-4 border-t-primary/20">
+                    <CardHeader className="p-8 border-b border-border/50 bg-secondary/10">
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner">
+                                <ShieldPlus className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <CardTitle className="text-xl font-bold uppercase tracking-tight">Operator Provisioning</CardTitle>
+                                <CardDescription className="text-xs font-semibold uppercase tracking-widest opacity-60">Add new root administrative entity</CardDescription>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="p-8">
+                        <form onSubmit={handleCreateAdmin} className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Entity Name</Label>
+                                    <div className="relative group">
+                                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
+                                        <Input 
+                                            placeholder="Full name..." 
+                                            value={formData.name}
+                                            onChange={e => setFormData({...formData, name: e.target.value})}
+                                            className="pl-10 bg-secondary/20 border-border group-focus-within:border-primary/50 rounded-xl h-12 font-bold text-xs uppercase transition-all"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">System Email</Label>
+                                    <div className="relative group">
+                                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
+                                        <Input 
+                                            type="email"
+                                            placeholder="admin@system.io" 
+                                            value={formData.email}
+                                            onChange={e => setFormData({...formData, email: e.target.value})}
+                                            className="pl-10 bg-secondary/20 border-border group-focus-within:border-primary/50 rounded-xl h-12 font-bold text-xs lowercase transition-all"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Access Protocol (Password)</Label>
+                                <div className="relative group">
+                                    <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
+                                    <Input 
+                                        type="password"
+                                        placeholder="••••••••••••" 
+                                        value={formData.password}
+                                        onChange={e => setFormData({...formData, password: e.target.value})}
+                                        className="pl-10 bg-secondary/20 border-border group-focus-within:border-primary/50 rounded-xl h-12 font-bold text-xs transition-all"
+                                    />
+                                </div>
+                            </div>
+                            <div className="pt-2">
+                                <Button 
+                                    type="submit" 
+                                    disabled={saving}
+                                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-12 rounded-xl font-black uppercase tracking-[0.25em] text-[10px] shadow-lg shadow-primary/20 transition-all active:scale-95 disabled:opacity-50"
+                                >
+                                    {saving ? (
+                                        <div className="flex items-center gap-2">
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                            <span>Provisioning...</span>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-2">
+                                            <ShieldPlus className="h-4 w-4" />
+                                            <span>Authorize New Operator</span>
+                                        </div>
+                                    )}
+                                </Button>
+                            </div>
+                        </form>
+                    </CardContent>
+                </Card>
+
+                <Card className="bg-primary/5 border-primary/10 border-dashed rounded-3xl p-8 flex flex-col items-center justify-center text-center gap-4 group hover:bg-primary/[0.08] transition-all">
+                    <div className="h-16 w-16 bg-primary/20 rounded-full flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                        <Lock className="h-8 w-8" />
+                    </div>
+                    <div className="space-y-2">
+                        <h3 className="font-bold uppercase tracking-tight text-sm">Security Note</h3>
+                        <p className="text-[10px] font-medium text-muted-foreground leading-relaxed">
+                            Authorized operators gain full root privileges. Ensure the new entity is fully vetted before provisioning system-wide access.
+                        </p>
+                    </div>
+                </Card>
+            </div>
         </div>
     );
 }
