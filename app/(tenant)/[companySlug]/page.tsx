@@ -105,7 +105,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
       <nav className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border/50">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src={logoPath} alt="Logo" className="h-20 w-15 rounded-lg" />
+            <img src={logoPath} alt="Logo" className="h-10 w-10 rounded-lg" />
             <p className="text-base font-semibold text-primary tracking-tight">
               {companyInfo?.name || 'Unique HealthCare Solution'}
             </p>
