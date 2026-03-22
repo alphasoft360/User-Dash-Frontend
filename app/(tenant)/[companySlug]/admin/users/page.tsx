@@ -19,7 +19,8 @@ import {
     List,
     MoreVertical,
     CheckCircle2,
-    AlertCircle
+    AlertCircle,
+    Trash2
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -44,6 +45,7 @@ export default function AdminUsersPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalUsers, setTotalUsers] = useState(0);
+    const [deletingIds, setDeletingIds] = useState<number[]>([]);
 
     const fetchUsers = async (page: number, search: string, role: string) => {
         setLoading(true);
@@ -108,6 +110,25 @@ export default function AdminUsersPage() {
             toast.error("Protocol elevation failed");
         } finally {
             setUpdating(null);
+        }
+    };
+
+    const handleDeleteUser = async (userId: number) => {
+        if (!window.confirm("ARE YOU SURE YOU WANT TO PERMANENTLY DELETE THIS USER? THIS ACTION CANNOT BE UNDONE.")) {
+            return;
+        }
+
+        try {
+            setDeletingIds(prev => [...prev, userId]);
+            await api.delete(`/admin/users/${userId}`);
+            setUsers(prev => prev.filter(u => u.id !== userId));
+            setTotalUsers(prev => prev - 1);
+            toast.success("User database entry purged successfully");
+        } catch (err: unknown) {
+            console.error(err);
+            toast.error("Deletion protocol failed");
+        } finally {
+            setDeletingIds(prev => prev.filter(id => id !== userId));
         }
     };
 
@@ -207,7 +228,7 @@ export default function AdminUsersPage() {
                                             </td>
                                         </tr>
                                     ) : users.filter(u => !u.roles.includes('ROLE_SUPER_ADMIN')).map((u) => (
-                                        <tr key={u.id} className="hover:bg-primary/[0.02] transition-colors group">
+                                        <tr key={u.id} className="hover:bg-primary/2 transition-colors group">
                                             <td className="p-4 px-6">
                                                 <div className="flex items-center">
                                                     <div className="h-9 w-9 rounded-lg bg-secondary/50 border border-border/50 flex items-center justify-center font-bold text-primary mr-3 shrink-0 shadow-sm transition-transform group-hover:scale-105">
@@ -251,6 +272,19 @@ export default function AdminUsersPage() {
                                                             <SelectItem value="ROLE_ADMIN" className="text-[9px] uppercase py-2 text-primary">ADMINISTRATOR</SelectItem>
                                                         </SelectContent>
                                                     </Select>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        disabled={deletingIds.includes(u.id)}
+                                                        onClick={() => handleDeleteUser(u.id)}
+                                                        className="h-8 w-8 rounded-lg border-border bg-card p-0 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/50 transition-all disabled:opacity-30"
+                                                    >
+                                                        {deletingIds.includes(u.id) ? (
+                                                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                                        ) : (
+                                                            <Trash2 className="h-3.5 w-3.5" />
+                                                        )}
+                                                    </Button>
                                                 </div>
                                             </td>
                                         </tr>
