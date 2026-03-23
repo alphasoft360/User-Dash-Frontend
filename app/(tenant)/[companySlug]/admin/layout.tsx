@@ -40,7 +40,7 @@ export default function AdminLayout({
     const pathname = usePathname();
     const params = useParams();
     const companySlug = params.companySlug as string;
-    
+
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isCompact, setIsCompact] = useState(false);
     const [logoPath, setLogoPath] = useState('/images/logo.png');
@@ -51,11 +51,11 @@ export default function AdminLayout({
             try {
                 const companyResponse = await api.get(`/public/company/${companySlug}`);
                 const settings = companyResponse.data.settings || {};
-                
+
                 if (settings.logo) {
                     setLogoPath(`/tenants/${companySlug}/images/${settings.logo}`);
                 }
-                
+
                 // Use per-company banner setting if available, otherwise fallback to global (handled later)
                 setShowBanner(settings.show_alphasoft_banner === '1');
             } catch (error) {
@@ -99,7 +99,7 @@ export default function AdminLayout({
                 <div className={`h-full flex flex-col ${isCompact ? 'p-4' : 'p-6'}`}>
                     <div className={`flex items-center ${isCompact ? 'justify-center' : 'justify-between px-2'}`}>
                         <div className="flex items-center space-x-1 cursor-default">
-                            <img src={logoPath} alt="Logo" className="h-15 w-10" />
+                            <img src={logoPath} alt="Logo" className="h-10 rounded-lg w-10" />
                             {!isCompact && <span className="text-lg font-black tracking-tighter text-foreground whitespace-nowrap overflow-hidden">ADMIN</span>}
                         </div>
                         <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-2 text-muted-foreground hover:text-foreground">
