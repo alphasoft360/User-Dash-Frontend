@@ -47,6 +47,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
     const [loading, setLoading] = useState(true);
     const [downloading, setDownloading] = useState(false);
     const [search, setSearch] = useState('');
+    const [pendingFilter, setPendingFilter] = useState<string>('all');
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
@@ -59,14 +60,15 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [previewing, setPreviewing] = useState(false);
 
-    const fetchCustomers = async (currentPage = page, searchQuery = search) => {
+    const fetchCustomers = async (currentPage = page, searchQuery = search, pending = pendingFilter) => {
         setLoading(true);
         try {
             const response = await api.get('/admin/labs/customers', {
                 params: {
                     page: currentPage,
                     limit: 10,
-                    search: searchQuery
+                    search: searchQuery,
+                    pending: pending === 'all' ? undefined : (pending === 'pending' ? 'true' : 'false')
                 }
             });
             // Handle both paginated response and old array response (just in case)
@@ -89,9 +91,9 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
     const debouncedSearch = useCallback(
         debounce((query: string) => {
             setPage(1); // Reset to first page on new search
-            fetchCustomers(1, query);
+            fetchCustomers(1, query, pendingFilter);
         }, 500),
-        []
+        [pendingFilter]
     );
 
     useEffect(() => {
@@ -101,7 +103,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
     }, [debouncedSearch]);
 
     useEffect(() => {
-        fetchCustomers(page, search);
+        fetchCustomers(page, search, pendingFilter);
     }, [page]); // Re-fetch only when page changes here, search is handled by debounce
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,7 +117,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
         try {
             await api.delete(`/admin/labs/customers/${id}`);
             toast.success("Customer record deleted");
-            fetchCustomers();
+            fetchCustomers(page, search, pendingFilter);
         } catch (err) {
             toast.error("Failed to delete customer");
         }
@@ -203,16 +205,39 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
             </div>
 
             <div className="bg-card border border-border rounded-[2.5rem] p-8 shadow-sm">
-                <div className="max-w-md space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Search Database</Label>
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Search by name, phone or lab..."
-                            value={search}
-                            onChange={handleSearchChange}
-                            className="pl-10 bg-secondary/30 border-border rounded-xl h-12 font-bold"
-                        />
+                <div className="flex flex-col md:flex-row items-center gap-6">
+                    <div className="flex-1 w-full space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Search Database</Label>
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                placeholder="Search by name, phone or lab..."
+                                value={search}
+                                onChange={handleSearchChange}
+                                className="pl-10 bg-secondary/30 border-border rounded-xl h-12 font-bold"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="w-full md:w-64 space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Filter by Status</Label>
+                        <Select 
+                            value={pendingFilter} 
+                            onValueChange={(val) => {
+                                setPendingFilter(val);
+                                setPage(1);
+                                fetchCustomers(1, search, val);
+                            }}
+                        >
+                            <SelectTrigger className="bg-secondary/30 border-border rounded-xl h-12 font-bold">
+                                <SelectValue placeholder="All Customers" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-popover border-border rounded-xl font-bold font-sans">
+                                <SelectItem value="all">All Clients</SelectItem>
+                                <SelectItem value="pending">Pending Balance</SelectItem>
+                                <SelectItem value="paid">No Pending Balance</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
                 </div>
             </div>
