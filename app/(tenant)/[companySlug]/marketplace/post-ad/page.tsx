@@ -148,7 +148,7 @@ export default function PostAdPage() {
 
                             {/* Price */}
                             <div className="space-y-3">
-                                <Label htmlFor="price" className="text-muted-foreground font-bold uppercase text-xs tracking-widest pl-1">Price (USD)</Label>
+                                <Label htmlFor="price" className="text-muted-foreground font-bold uppercase text-xs tracking-widest pl-1">Price (PKR)</Label>
                                 <div className="relative">
                                     <DollarSign className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                                     <Input

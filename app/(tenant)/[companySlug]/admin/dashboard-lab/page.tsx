@@ -50,8 +50,8 @@ export default function LabDashboard() {
 
     const statCards = [
         { label: 'Total Reagents', value: stats?.totalProducts || '0', color: 'from-blue-500 to-cyan-500', icon: <Package className="h-6 w-6" /> },
-        { label: 'Stock Value', value: `$${stats?.stockValue?.toLocaleString() || '0'}`, color: 'from-emerald-500 to-teal-600', icon: <Activity className="h-6 w-6" /> },
-        { label: 'Today Sales', value: `$${stats?.todaySales?.toLocaleString() || '0'}`, color: 'from-indigo-500 to-purple-600', icon: <ShoppingBag className="h-6 w-6" /> },
+        { label: 'Stock Value', value: `PKR ${stats?.stockValue?.toLocaleString() || '0'}`, color: 'from-emerald-500 to-teal-600', icon: <Activity className="h-6 w-6" /> },
+        { label: 'Today Sales', value: `PKR ${stats?.todaySales?.toLocaleString() || '0'}`, color: 'from-indigo-500 to-purple-600', icon: <ShoppingBag className="h-6 w-6" /> },
         { label: 'Low Stock', value: stats?.lowStockCount || '0', color: stats?.lowStockCount && stats.lowStockCount > 0 ? 'from-red-500 to-orange-600' : 'from-slate-500 to-slate-600', icon: <Activity className="h-6 w-6" /> }
     ];
 

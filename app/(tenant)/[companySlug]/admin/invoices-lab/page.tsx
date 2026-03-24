@@ -182,7 +182,7 @@ export default function InvoicesLabPage() {
                                     </TableCell>
                                     <TableCell className="p-8 text-center">
                                         <span className={`font-black text-lg italic ${inv.pendingAmount > 0 ? 'text-pink-500' : 'text-muted-foreground/30'}`}>
-                                            ${inv.pendingAmount.toLocaleString()}
+                                            PKR {inv.pendingAmount.toLocaleString()}
                                         </span>
                                     </TableCell>
                                     <TableCell className="p-8 text-right">

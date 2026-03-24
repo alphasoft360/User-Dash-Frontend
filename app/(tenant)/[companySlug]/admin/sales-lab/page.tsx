@@ -35,7 +35,9 @@ import {
     Percent,
     Building,
     Activity,
-    Package
+    Package,
+    Eye,
+    X
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -101,6 +103,8 @@ export default function SalesLabPage() {
     // Success State
     const [lastOrderId, setLastOrderId] = useState<number | null>(null);
     const [isDownloadingInvoice, setIsDownloadingInvoice] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [isPreviewing, setIsPreviewing] = useState(false);
 
     const fetchCategories = useCallback(async () => {
         try {
@@ -165,6 +169,23 @@ export default function SalesLabPage() {
             toast.error("Failed to download invoice");
         } finally {
             setIsDownloadingInvoice(false);
+        }
+    };
+
+    const handlePreviewInvoice = async (orderId: number) => {
+        setIsPreviewing(true);
+        try {
+            toast.info(`Generating preview for invoice #${orderId}...`);
+            const response = await api.get(`/admin/labs/invoice/download`, {
+                params: { orderId },
+                responseType: 'blob'
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+            setPreviewUrl(url);
+        } catch (err) {
+            toast.error("Preview failed");
+        } finally {
+            setIsPreviewing(false);
         }
     };
 
@@ -282,7 +303,7 @@ export default function SalesLabPage() {
         }
 
         if (changeDue < 0 && !selectedCustomerId) {
-            toast.error(`Non-registered customers must pay the full amount. Total is $${total.toFixed(2)}`);
+            toast.error(`Non-registered customers must pay the full amount. Total is PKR ${total.toFixed(2)}`);
             return;
         }
 
@@ -328,6 +349,7 @@ export default function SalesLabPage() {
 
     if (lastOrderId) {
         return (
+            <>
             <div className="flex flex-col items-center justify-center min-vh-70 h-[70vh] animate-in zoom-in-95 duration-500">
                 <div className="bg-primary/10 h-32 w-32 rounded-full flex items-center justify-center mb-8 border border-primary/20">
                     <CheckCircle className="h-16 w-16 text-primary" />
@@ -336,6 +358,18 @@ export default function SalesLabPage() {
                 <p className="text-muted-foreground font-black uppercase tracking-widest text-xs mb-12">Batch Order ID: #{lastOrderId}</p>
 
                 <div className="flex gap-4">
+                    <Button 
+                        disabled={isPreviewing}
+                        onClick={() => lastOrderId && handlePreviewInvoice(lastOrderId)} 
+                        className="h-14 px-10 rounded-2xl bg-secondary text-foreground font-black uppercase tracking-widest min-w-[200px] hover:bg-secondary/80"
+                    >
+                        {isPreviewing ? (
+                            <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                        ) : (
+                            <Eye className="mr-3 h-5 w-5" />
+                        )}
+                        {isPreviewing ? 'Loading...' : 'Preview Invoice'}
+                    </Button>
                     <Button 
                         disabled={isDownloadingInvoice}
                         onClick={() => lastOrderId && handleDownloadInvoice(lastOrderId)} 
@@ -353,6 +387,50 @@ export default function SalesLabPage() {
                     </Button>
                 </div>
             </div>
+
+            {/* FULL SCREEN PDF PREVIEW MODAL */}
+            {previewUrl && (
+                <div className="fixed inset-0 z-100 flex flex-col bg-background/95 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="p-4 border-b border-border flex justify-between items-center bg-card shadow-sm">
+                        <div>
+                            <h2 className="text-xl font-black uppercase italic tracking-tighter text-primary">INVOICE <span className="text-foreground not-italic">Preview</span></h2>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Order #{lastOrderId}</p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <Button 
+                                onClick={() => {
+                                    const link = document.createElement('a');
+                                    link.href = previewUrl;
+                                    link.setAttribute('download', `Invoice-${lastOrderId}.pdf`);
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    link.remove();
+                                }}
+                                className="bg-primary hover:bg-primary/90 text-white font-black px-6 rounded-xl flex items-center gap-2 uppercase italic shadow-lg shadow-primary/20 h-10"
+                            >
+                                <FileDown className="h-4 w-4" />
+                                DOWNLOAD PDF
+                            </Button>
+                            <div className="w-px h-8 bg-border"></div>
+                            <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={() => {
+                                    URL.revokeObjectURL(previewUrl);
+                                    setPreviewUrl(null);
+                                }}
+                                className="rounded-full bg-secondary/50 hover:bg-secondary h-10 w-10 shrink-0"
+                            >
+                                <X className="h-5 w-5" />
+                            </Button>
+                        </div>
+                    </div>
+                    <div className="flex-1 w-full p-4 md:p-8 bg-secondary/5 overflow-hidden">
+                        <iframe src={previewUrl} className="w-full h-full rounded-2xl shadow-2xl border border-border bg-white" />
+                    </div>
+                </div>
+            )}
+            </>
         );
     }
 
@@ -435,7 +513,7 @@ export default function SalesLabPage() {
                                             </TableCell>
                                             <TableCell className="p-4 align-middle italic text-xs text-muted-foreground">{product.companyName || 'Generic'}</TableCell>
                                             <TableCell className="p-4 text-right align-middle font-black text-primary italic text-sm">
-                                                ${parseFloat(product.price).toLocaleString()}
+                                                PKR {parseFloat(product.price).toLocaleString()}
                                             </TableCell>
                                             <TableCell className="p-4 text-right align-middle">
                                                 <span className={`text-[9px] font-black tracking-widest uppercase px-2 py-1 rounded-md inline-block ${product.stock > 0 ? 'bg-secondary text-foreground/70' : 'bg-red-500/10 text-red-500'}`}>
@@ -508,7 +586,7 @@ export default function SalesLabPage() {
                                             <h4 className="font-black uppercase text-[12px] tracking-tighter leading-none">{item.name}</h4>
                                             {item.companyName && <span className="text-[9px] font-bold text-muted-foreground italic uppercase">{item.companyName}</span>}
                                         </div>
-                                        <span className="font-black italic text-primary text-sm">${(parseFloat(item.price) * item.cartQuantity).toLocaleString()}</span>
+                                        <span className="font-black italic text-primary text-sm">PKR {(parseFloat(item.price) * item.cartQuantity).toLocaleString()}</span>
                                     </div>
                                     <div className="flex items-center justify-between pt-2 border-t border-border/50">
                                         <div className="flex items-center gap-1 bg-secondary rounded-lg p-0.5 border border-border">
@@ -667,14 +745,14 @@ export default function SalesLabPage() {
                     <div className="flex flex-col gap-2 mb-6 px-2">
                         <div className="flex items-end justify-between">
                             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50">Grand Total</span>
-                            <span className="text-3xl font-black italic text-foreground tracking-tighter leading-none">${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                            <span className="text-3xl font-black italic text-foreground tracking-tighter leading-none">PKR {total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         </div>
                         <div className="flex items-end justify-between pt-2 border-t border-border/50">
                             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/80">
                                 {changeDue < 0 ? 'Pending Balance' : 'Change'}
                             </span>
                             <span className={`text-xl font-black italic tracking-tighter leading-none ${changeDue > 0 ? 'text-primary' : changeDue < 0 ? 'text-red-500' : 'text-muted-foreground/50'}`}>
-                                ${Math.abs(changeDue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                PKR {Math.abs(changeDue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </span>
                         </div>
                     </div>

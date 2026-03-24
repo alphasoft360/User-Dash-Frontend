@@ -155,7 +155,7 @@ export default function ReportsLabPage() {
                                 <TableRow className="border-border hover:bg-transparent">
                                     <TableHead className="p-6 font-black uppercase text-[10px] tracking-widest">Date Node</TableHead>
                                     <TableHead className="p-6 font-black uppercase text-[10px] tracking-widest text-right">Pending</TableHead>
-                                    <TableHead className="p-6 font-black uppercase text-[10px] tracking-widest text-right">Volume (USD)</TableHead>
+                                    <TableHead className="p-6 font-black uppercase text-[10px] tracking-widest text-right">Volume (PKR)</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -163,11 +163,11 @@ export default function ReportsLabPage() {
                                     <TableRow key={i} className="border-border hover:bg-secondary/5 group">
                                         <TableCell className="p-6 font-bold text-muted-foreground">{sale.date}</TableCell>
                                         <TableCell className="p-6 text-right font-black text-pink-500/40 group-hover:text-pink-500 transition-colors italic">
-                                            ${parseFloat((sale.pending || 0).toString()).toLocaleString()}
+                                            PKR {parseFloat((sale.pending || 0).toString()).toLocaleString()}
                                         </TableCell>
                                         <TableCell className="p-6 text-right font-black text-indigo-500 italic">
                                             <div className="flex items-center justify-end gap-2">
-                                                <span>${parseFloat(sale.total.toString()).toLocaleString()}</span>
+                                                <span>PKR {parseFloat(sale.total.toString()).toLocaleString()}</span>
                                                 <div className="flex bg-secondary/30 rounded-lg p-0.5 opacity-0 group-hover:opacity-100 transition-opacity ml-4">
                                                     <Button
                                                         variant="ghost"

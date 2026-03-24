@@ -373,7 +373,7 @@ export default function POSPage() {
                                                 <span className="font-black text-sm uppercase tracking-tighter text-foreground/90">{product.name}</span>
                                             </TableCell>
                                             <TableCell className="p-2 sm:p-4 text-right align-middle font-black text-primary italic text-sm">
-                                                ${parseFloat(product.price).toLocaleString()}
+                                                PKR {parseFloat(product.price).toLocaleString()}
                                             </TableCell>
                                             <TableCell className="p-2 sm:p-4 text-right align-middle">
                                                 <span className={`text-[10px] font-black tracking-widest uppercase px-2 py-1 rounded-md inline-block ${product.stock > 0 ? 'bg-secondary text-foreground/70' : 'bg-destructive/10 text-destructive'}`}>
@@ -450,7 +450,7 @@ export default function POSPage() {
                                 <div key={item.id} className="flex flex-col gap-5 p-6 bg-background border border-border rounded-2xl shadow-sm animate-in slide-in-from-right-2 duration-300">
                                     <div className="flex justify-between items-start">
                                         <h4 className="font-black uppercase text-sm tracking-tighter leading-none w-3/4 pr-2">{item.name}</h4>
-                                        <span className="font-black italic text-primary">${(parseFloat(item.price) * item.cartQuantity).toLocaleString()}</span>
+                                        <span className="font-black italic text-primary">PKR {(parseFloat(item.price) * item.cartQuantity).toLocaleString()}</span>
                                     </div>
                                     <div className="flex items-center justify-between mt-auto pt-4 border-t border-border/50">
                                         <div className="flex items-center gap-1 bg-secondary rounded-xl p-1 border border-border">
@@ -522,12 +522,12 @@ export default function POSPage() {
                     <div className="flex flex-col gap-3 mb-6 px-2">
                         <div className="flex items-end justify-between">
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-50">Total Amount</span>
-                            <span className="text-4xl font-black italic text-foreground tracking-tighter leading-none">${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                            <span className="text-4xl font-black italic text-foreground tracking-tighter leading-none">PKR {total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         </div>
                         <div className="flex items-end justify-between pt-3 border-t border-border/50">
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80">Change Due</span>
                             <span className={`text-2xl font-black italic tracking-tighter leading-none ${changeDue > 0 ? 'text-primary' : 'text-muted-foreground/50'}`}>
-                                ${changeDue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                PKR {changeDue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </span>
                         </div>
                     </div>

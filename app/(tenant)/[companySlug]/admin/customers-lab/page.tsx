@@ -304,17 +304,17 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                                         </TableCell>
                                         <TableCell className="p-6 text-right border-l border-border/10">
                                             <span className="font-black text-foreground">
-                                                ${customer.totalSpent.toLocaleString()}
+                                                PKR {customer.totalSpent.toLocaleString()}
                                             </span>
                                         </TableCell>
                                         <TableCell className="p-6 text-right border-l border-border/10">
                                             <span className="font-black text-emerald-500">
-                                                ${(customer.totalDiscount || 0).toLocaleString()}
+                                                PKR {(customer.totalDiscount || 0).toLocaleString()}
                                             </span>
                                         </TableCell>
                                         <TableCell className="p-6 text-right border-l border-border/10">
                                             <span className={`font-black ${customer.remainingBalance > 0 ? 'text-red-500' : 'text-emerald-500'}`}>
-                                                ${(customer.remainingBalance || 0).toLocaleString()}
+                                                PKR {(customer.remainingBalance || 0).toLocaleString()}
                                             </span>
                                         </TableCell>
                                         <TableCell className="p-6 text-right pr-10">
