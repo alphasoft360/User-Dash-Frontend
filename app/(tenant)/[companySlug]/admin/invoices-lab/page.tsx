@@ -14,7 +14,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Receipt, Search, FileDown, Eye, Calendar, User, Building, Trash2, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { Receipt, Search, FileDown, Eye, Calendar, User, Building, Trash2, ChevronLeft, ChevronRight, Loader2, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Invoice {
@@ -22,6 +22,7 @@ interface Invoice {
     customerName: string;
     phone: string;
     totalAmount: string;
+    pendingAmount: number;
     createdAt: string;
 }
 
@@ -32,6 +33,8 @@ export default function InvoicesLabPage() {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [previewing, setPreviewing] = useState(false);
 
     const fetchInvoices = async (currentPage = page, searchQuery = search) => {
         setLoading(true);
@@ -86,7 +89,7 @@ export default function InvoicesLabPage() {
                 params: { orderId: id },
                 responseType: 'blob'
             });
-            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
             const link = document.createElement('a');
             link.href = url;
             link.setAttribute('download', `invoice-${id}.pdf`);
@@ -96,6 +99,23 @@ export default function InvoicesLabPage() {
             window.URL.revokeObjectURL(url);
         } catch (err) {
             toast.error("Download failed");
+        }
+    };
+
+    const handlePreview = async (id: number) => {
+        setPreviewing(true);
+        try {
+            toast.info(`Generating preview for invoice #${id}...`);
+            const response = await api.get(`/admin/labs/invoice/download`, {
+                params: { orderId: id },
+                responseType: 'blob'
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+            setPreviewUrl(url);
+        } catch (err) {
+            toast.error("Preview failed");
+        } finally {
+            setPreviewing(false);
         }
     };
 
@@ -133,13 +153,14 @@ export default function InvoicesLabPage() {
                                 <TableHead className="p-8 font-black uppercase text-[10px] tracking-widest">Customer Node</TableHead>
                                 <TableHead className="p-8 font-black uppercase text-[10px] tracking-widest">Timestamp</TableHead>
                                 <TableHead className="p-8 font-black uppercase text-[10px] tracking-widest text-center">Amount Due</TableHead>
+                                <TableHead className="p-8 font-black uppercase text-[10px] tracking-widest text-center">Pending</TableHead>
                                 <TableHead className="p-8 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {loading ? (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="p-24 text-center font-black uppercase italic text-pink-500/50 animate-pulse">Accessing Vault...</TableCell>
+                                    <TableCell colSpan={6} className="p-24 text-center font-black uppercase italic text-pink-500/50 animate-pulse">Accessing Vault...</TableCell>
                                 </TableRow>
                             ) : invoices.map((inv) => (
                                 <TableRow key={inv.id} className="border-border hover:bg-pink-500/5 transition-colors">
@@ -157,15 +178,26 @@ export default function InvoicesLabPage() {
                                         </div>
                                     </TableCell>
                                     <TableCell className="p-8 text-center">
-                                        <span className="font-black text-lg italic text-pink-500">${parseFloat(inv.totalAmount).toLocaleString()}</span>
+                                        <span className="font-black text-lg italic text-foreground">${parseFloat(inv.totalAmount).toLocaleString()}</span>
+                                    </TableCell>
+                                    <TableCell className="p-8 text-center">
+                                        <span className={`font-black text-lg italic ${inv.pendingAmount > 0 ? 'text-pink-500' : 'text-muted-foreground/30'}`}>
+                                            ${inv.pendingAmount.toLocaleString()}
+                                        </span>
                                     </TableCell>
                                     <TableCell className="p-8 text-right">
                                         <div className="flex justify-end gap-3">
+                                            <Button 
+                                                variant="ghost" 
+                                                size="icon" 
+                                                className="h-10 w-10 text-muted-foreground hover:bg-pink-500/10 hover:text-pink-500 rounded-xl" 
+                                                onClick={() => handlePreview(inv.id)}
+                                                disabled={previewing}
+                                            >
+                                                {previewing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Eye className="h-5 w-5" />}
+                                            </Button>
                                             <Button variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:bg-pink-500/10 hover:text-pink-500 rounded-xl" onClick={() => handleDownload(inv.id)}>
                                                 <FileDown className="h-5 w-5" />
-                                            </Button>
-                                            <Button variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:bg-pink-500/10 hover:text-pink-500 rounded-xl">
-                                                <Eye className="h-5 w-5" />
                                             </Button>
                                         </div>
                                     </TableCell>
@@ -173,7 +205,7 @@ export default function InvoicesLabPage() {
                             ))}
                             {invoices.length === 0 && !loading && (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="p-24 text-center italic opacity-30 font-bold uppercase text-[10px] tracking-[0.3em]">Vault is empty</TableCell>
+                                    <TableCell colSpan={6} className="p-24 text-center italic opacity-30 font-bold uppercase text-[10px] tracking-[0.3em]">Vault is empty</TableCell>
                                 </TableRow>
                             )}
                         </TableBody>
@@ -212,6 +244,49 @@ export default function InvoicesLabPage() {
                     )}
                 </CardContent>
             </Card>
+
+            {/* FULL SCREEN PDF PREVIEW MODAL */}
+            {previewUrl && (
+                <div className="fixed inset-0 z-[100] flex flex-col bg-background/95 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="p-4 border-b border-border flex justify-between items-center bg-card shadow-sm">
+                        <div>
+                            <h2 className="text-xl font-black uppercase italic tracking-tighter text-pink-500/80">INVOICE <span className="text-foreground not-italic">Preview</span></h2>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Reviewing digital receipt</p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <Button 
+                                onClick={() => {
+                                    const link = document.createElement('a');
+                                    link.href = previewUrl;
+                                    link.setAttribute('download', `Invoice-Preview.pdf`);
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    link.remove();
+                                }}
+                                className="bg-pink-500 hover:bg-pink-600 text-white font-black px-6 rounded-xl flex items-center gap-2 uppercase italic shadow-lg shadow-pink-500/20 h-10"
+                            >
+                                <FileDown className="h-4 w-4" />
+                                DOWNLOAD PDF
+                            </Button>
+                            <div className="w-px h-8 bg-border"></div>
+                            <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={() => {
+                                    URL.revokeObjectURL(previewUrl);
+                                    setPreviewUrl(null);
+                                }}
+                                className="rounded-full bg-secondary/50 hover:bg-secondary h-10 w-10 shrink-0"
+                            >
+                                <X className="h-5 w-5" />
+                            </Button>
+                        </div>
+                    </div>
+                    <div className="flex-1 w-full p-4 md:p-8 bg-secondary/5 overflow-hidden">
+                        <iframe src={previewUrl} className="w-full h-full rounded-2xl shadow-2xl border border-border bg-white" />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

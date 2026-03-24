@@ -56,6 +56,8 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
     const [period, setPeriod] = useState<'monthly' | 'yearly'>('monthly');
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
     const [selectedMonth, setSelectedMonth] = useState((new Date().getMonth() + 1).toString());
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [previewing, setPreviewing] = useState(false);
 
     const fetchCustomers = async (currentPage = page, searchQuery = search) => {
         setLoading(true);
@@ -146,6 +148,29 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
             toast.error("Failed to generate statement");
         } finally {
             setDownloading(false);
+        }
+    };
+
+    const handlePreviewStatement = async () => {
+        if (!selectedCustomer) return;
+        setPreviewing(true);
+        try {
+            const response = await api.get(`/admin/labs/invoice/customer/${selectedCustomer.id}`, {
+                params: {
+                    period,
+                    year: selectedYear,
+                    month: selectedMonth
+                },
+                responseType: 'blob'
+            });
+
+            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+            setPreviewUrl(url);
+        } catch (err) {
+            console.error("Preview error", err);
+            toast.error("Failed to generate preview");
+        } finally {
+            setPreviewing(false);
         }
     };
 
@@ -411,19 +436,72 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                                 )}
                             </div>
 
-                            <Button
-                                className="w-full bg-primary hover:opacity-90 text-primary-foreground font-black h-16 rounded-3xl shadow-xl shadow-primary/20 flex items-center justify-center gap-3 uppercase italic text-lg mt-4 group"
-                                onClick={handleDownloadStatement}
-                                disabled={downloading}
-                            >
-                                {downloading ? <Loader2 className="h-6 w-6 animate-spin" /> : <Download className="h-6 w-6 group-hover:translate-y-0.5 transition-transform" />}
-                                DOWNLOAD STATEMENT
-                            </Button>
+                            <div className="flex gap-3 mt-4">
+                                <Button
+                                    className="flex-1 bg-secondary text-foreground hover:bg-secondary/80 font-black h-16 rounded-3xl flex items-center justify-center gap-3 uppercase italic text-sm group"
+                                    onClick={handlePreviewStatement}
+                                    disabled={previewing || downloading}
+                                >
+                                    {previewing ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5 group-hover:scale-110 transition-transform" /> }
+                                    PREVIEW
+                                </Button>
+                                <Button
+                                    className="flex-[2] bg-primary hover:opacity-90 text-primary-foreground font-black h-16 rounded-3xl shadow-xl shadow-primary/20 flex items-center justify-center gap-3 uppercase italic text-sm group"
+                                    onClick={handleDownloadStatement}
+                                    disabled={downloading || previewing}
+                                >
+                                    {downloading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Download className="h-5 w-5 group-hover:translate-y-0.5 transition-transform" />}
+                                    DOWNLOAD NOW
+                                </Button>
+                            </div>
 
                             <p className="text-[9px] text-center text-muted-foreground font-medium px-4 uppercase tracking-tighter opacity-60">
                                 Statements are generated as secure PDF documents showing all purchase history and inventory usage for the selected period.
                             </p>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* FULL SCREEN PDF PREVIEW MODAL */}
+            {previewUrl && (
+                <div className="fixed inset-0 z-[100] flex flex-col bg-background/95 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="p-4 border-b border-border flex justify-between items-center bg-card shadow-sm">
+                        <div>
+                            <h2 className="text-xl font-black uppercase italic tracking-tighter">STATEMENT <span className="text-primary not-italic">Preview</span></h2>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Reviewing document before download</p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <Button 
+                                onClick={() => {
+                                    const link = document.createElement('a');
+                                    link.href = previewUrl;
+                                    link.setAttribute('download', `Statement-${selectedCustomer?.name}-${period}.pdf`);
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    link.remove();
+                                }}
+                                className="bg-primary hover:opacity-90 text-primary-foreground font-black px-6 rounded-xl flex items-center gap-2 uppercase italic shadow-lg shadow-primary/20 h-10"
+                            >
+                                <Download className="h-4 w-4" />
+                                DOWNLOAD PDF
+                            </Button>
+                            <div className="w-px h-8 bg-border"></div>
+                            <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={() => {
+                                    URL.revokeObjectURL(previewUrl);
+                                    setPreviewUrl(null);
+                                }}
+                                className="rounded-full bg-secondary/50 hover:bg-secondary h-10 w-10 shrink-0"
+                            >
+                                <X className="h-5 w-5" />
+                            </Button>
+                        </div>
+                    </div>
+                    <div className="flex-1 w-full p-4 md:p-8 bg-secondary/5 overflow-hidden">
+                        <iframe src={previewUrl} className="w-full h-full rounded-2xl shadow-2xl border border-border bg-white" />
                     </div>
                 </div>
             )}

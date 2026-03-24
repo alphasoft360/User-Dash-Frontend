@@ -12,13 +12,14 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { FileBarChart, Download, FileText, AlertCircle, ShoppingBag, Package, Activity, ChevronDown } from 'lucide-react';
+import { FileBarChart, Download, FileText, AlertCircle, ShoppingBag, Package, Activity, ChevronDown, Eye, X, Loader2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 
 interface DailySale {
     date: string;
     total: number;
+    pending: number;
 }
 
 interface LowStock {
@@ -37,6 +38,8 @@ interface ReportData {
 export default function ReportsLabPage() {
     const [data, setData] = useState<ReportData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [previewing, setPreviewing] = useState(false);
 
     const fetchReports = async () => {
         try {
@@ -62,40 +65,47 @@ export default function ReportsLabPage() {
     const downloadSummary = async (type: string, date?: string) => {
         try {
             let endpoint = `/admin/labs/invoice/summary?type=${type}`;
-
-            if (date) {
-                endpoint += `&date=${date}`;
-            } else {
+            if (date) endpoint += `&date=${date}`;
+            else {
                 const now = new Date();
                 endpoint += `&year=${now.getFullYear()}&month=${now.getMonth() + 1}`;
             }
 
             toast.info(`Compiling ${type} intelligence report...`);
-
-            const response = await api.get(endpoint, {
-                responseType: 'blob'
-            });
-
-            // Create a blob from the response data
+            const response = await api.get(endpoint, { responseType: 'blob' });
             const blob = new Blob([response.data], { type: 'application/pdf' });
             const url = window.URL.createObjectURL(blob);
-
-            // Create a temporary link and click it to trigger download
             const link = document.createElement('a');
             link.href = url;
-            const filename = `Lab-Summary-${type}-${date || new Date().toISOString().split('T')[0]}.pdf`;
-            link.setAttribute('download', filename);
+            link.setAttribute('download', `Lab-Summary-${type}-${date || new Date().toISOString().split('T')[0]}.pdf`);
             document.body.appendChild(link);
             link.click();
-
-            // Cleanup
-            link.parentNode?.removeChild(link);
+            link.remove();
             window.URL.revokeObjectURL(url);
-
             toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} report downloaded`);
         } catch (err) {
-            console.error("Download failed", err);
-            toast.error("Failed to generate report. Please check your connection.");
+            toast.error("Download failed");
+        }
+    };
+
+    const previewSummary = async (type: string, date?: string) => {
+        setPreviewing(true);
+        try {
+            let endpoint = `/admin/labs/invoice/summary?type=${type}`;
+            if (date) endpoint += `&date=${date}`;
+            else {
+                const now = new Date();
+                endpoint += `&year=${now.getFullYear()}&month=${now.getMonth() + 1}`;
+            }
+
+            toast.info(`Generating ${type} preview...`);
+            const response = await api.get(endpoint, { responseType: 'blob' });
+            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+            setPreviewUrl(url);
+        } catch (err) {
+            toast.error("Preview failed");
+        } finally {
+            setPreviewing(false);
         }
     };
 
@@ -144,32 +154,48 @@ export default function ReportsLabPage() {
                             <TableHeader>
                                 <TableRow className="border-border hover:bg-transparent">
                                     <TableHead className="p-6 font-black uppercase text-[10px] tracking-widest">Date Node</TableHead>
+                                    <TableHead className="p-6 font-black uppercase text-[10px] tracking-widest text-right">Pending</TableHead>
                                     <TableHead className="p-6 font-black uppercase text-[10px] tracking-widest text-right">Volume (USD)</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {data?.dailySales?.map((sale, i) => (
-                                    <TableRow key={i} className="border-border hover:bg-secondary/5">
+                                    <TableRow key={i} className="border-border hover:bg-secondary/5 group">
                                         <TableCell className="p-6 font-bold text-muted-foreground">{sale.date}</TableCell>
+                                        <TableCell className="p-6 text-right font-black text-pink-500/40 group-hover:text-pink-500 transition-colors italic">
+                                            ${parseFloat((sale.pending || 0).toString()).toLocaleString()}
+                                        </TableCell>
                                         <TableCell className="p-6 text-right font-black text-indigo-500 italic">
-                                            <div className="flex items-center justify-end gap-4">
+                                            <div className="flex items-center justify-end gap-2">
                                                 <span>${parseFloat(sale.total.toString()).toLocaleString()}</span>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => downloadSummary('daily', sale.date)}
-                                                    className="h-8 w-8 text-muted-foreground hover:text-indigo-500 hover:bg-indigo-500/10 rounded-lg transition-colors"
-                                                    title="Download Daily Report"
-                                                >
-                                                    <Download className="h-4 w-4" />
-                                                </Button>
+                                                <div className="flex bg-secondary/30 rounded-lg p-0.5 opacity-0 group-hover:opacity-100 transition-opacity ml-4">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => previewSummary('daily', sale.date)}
+                                                        className="h-8 w-8 text-muted-foreground hover:text-indigo-500 hover:bg-background rounded-md transition-all"
+                                                        title="Preview Daily"
+                                                        disabled={previewing}
+                                                    >
+                                                        {previewing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Eye className="h-4 w-4" />}
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => downloadSummary('daily', sale.date)}
+                                                        className="h-8 w-8 text-muted-foreground hover:text-indigo-500 hover:bg-background rounded-md transition-all"
+                                                        title="Download Daily"
+                                                    >
+                                                        <Download className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
                                             </div>
                                         </TableCell>
                                     </TableRow>
                                 ))}
                                 {(!data?.dailySales || data.dailySales.length === 0) && (
                                     <TableRow>
-                                        <TableCell colSpan={2} className="p-20 text-center italic opacity-30 font-medium font-black uppercase text-[10px] tracking-widest">No transaction history detected</TableCell>
+                                        <TableCell colSpan={3} className="p-20 text-center italic opacity-30 font-medium font-black uppercase text-[10px] tracking-widest">No transaction history detected</TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>
@@ -225,6 +251,49 @@ export default function ReportsLabPage() {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* FULL SCREEN PDF PREVIEW MODAL */}
+            {previewUrl && (
+                <div className="fixed inset-0 z-[100] flex flex-col bg-background/95 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="p-4 border-b border-border flex justify-between items-center bg-card shadow-sm">
+                        <div>
+                            <h2 className="text-xl font-black uppercase italic tracking-tighter text-indigo-500/80">INTELLIGENCE <span className="text-foreground not-italic">Preview</span></h2>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Reviewing statistical summary</p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <Button 
+                                onClick={() => {
+                                    const link = document.createElement('a');
+                                    link.href = previewUrl;
+                                    link.setAttribute('download', `Summary-Preview.pdf`);
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    link.remove();
+                                }}
+                                className="bg-indigo-500 hover:bg-indigo-600 text-white font-black px-6 rounded-xl flex items-center gap-2 uppercase italic shadow-lg shadow-indigo-500/20 h-10"
+                            >
+                                <Download className="h-4 w-4" />
+                                DOWNLOAD PDF
+                            </Button>
+                            <div className="w-px h-8 bg-border"></div>
+                            <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={() => {
+                                    URL.revokeObjectURL(previewUrl);
+                                    setPreviewUrl(null);
+                                }}
+                                className="rounded-full bg-secondary/50 hover:bg-secondary h-10 w-10 shrink-0"
+                            >
+                                <X className="h-5 w-5" />
+                            </Button>
+                        </div>
+                    </div>
+                    <div className="flex-1 w-full p-4 md:p-8 bg-secondary/5 overflow-hidden">
+                        <iframe src={previewUrl} className="w-full h-full rounded-2xl shadow-2xl border border-border bg-white" />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
