@@ -357,7 +357,7 @@ export default function SalesLabPage() {
     }
 
     return (
-        <div className="h-[calc(100vh-2rem)] flex flex-col md:flex-row gap-6 animate-in fade-in duration-500 overflow-hidden px-4 pb-4 -mt-8">
+        <div className="h-[calc(100vh+10rem)] flex flex-col md:flex-row gap-6 animate-in fade-in duration-500 overflow-hidden px-4 pb-4 -mt-8">
 
             {/* Left Panel: Inventory/Search */}
             <div className="flex-1 flex flex-col bg-card border border-border rounded-[2.5rem] shadow-xl overflow-hidden">
@@ -493,7 +493,7 @@ export default function SalesLabPage() {
                     <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest opacity-50">Local Billing Queue</p>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-4 bg-secondary/5 custom-scrollbar z-10">
+                <div className="flex-[2] min-h-0 overflow-y-auto p-4 bg-secondary/5 custom-scrollbar z-10">
                     {cart.length === 0 ? (
                         <div className="h-full flex flex-col items-center justify-center text-center opacity-30 gap-6">
                             <Package className="h-20 w-20 mb-2 text-muted-foreground" />
@@ -530,7 +530,7 @@ export default function SalesLabPage() {
                     )}
                 </div>
 
-                <div className="p-6 border-t border-border bg-background flex-none z-10">
+                <div className="flex-[3] min-h-0 p-6 border-t border-border bg-background z-10">
                     <div className="space-y-3 mb-6">
                         <div className="relative group">
                             <UserCircle className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors z-20" />
