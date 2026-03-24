@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import api from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,6 +41,8 @@ interface ReagentFormProps {
 
 export default function ReagentForm({ initialData, isEditing = false }: ReagentFormProps) {
     const router = useRouter();
+    const params = useParams();
+    const companySlug = params.companySlug as string;
     const [loading, setLoading] = useState(false);
     const [savedId, setSavedId] = useState<number | null>(initialData?.id || null);
     const [categories, setCategories] = useState<Category[]>([]);
@@ -389,7 +391,7 @@ export default function ReagentForm({ initialData, isEditing = false }: ReagentF
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        onClick={() => router.push(`/${window.location.pathname.split('/')[1]}/admin/reagents`)}
+                                        onClick={() => router.push(`/${companySlug}/admin/reagents`)}
                                         className="md:w-48 border-emerald-500 text-emerald-600 font-bold rounded-2xl h-16 text-lg flex items-center justify-center gap-2"
                                     >
                                         <CheckCircle2 className="h-5 w-5" />

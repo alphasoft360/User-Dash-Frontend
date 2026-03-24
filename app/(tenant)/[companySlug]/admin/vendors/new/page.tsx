@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import api from '@/lib/api';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,6 +20,8 @@ interface Category {
 
 export default function AddVendorPage() {
     const router = useRouter();
+    const params = useParams();
+    const companySlug = params.companySlug as string;
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(false);
     const [categoriesLoading, setCategoriesLoading] = useState(true);
@@ -87,7 +89,7 @@ export default function AddVendorPage() {
                 categoryId: parseInt(formData.categoryId)
             });
             toast.success("Vendor Added!", { description: `${formData.name} has been successfully registered.` });
-            router.push('/admin/vendors');
+            router.push(`/${companySlug}/admin/vendors`);
         } catch (error: any) {
             const message = error.response?.data?.message || "Failed to add vendor.";
             toast.error("Operation Failed", { description: message });
@@ -103,7 +105,7 @@ export default function AddVendorPage() {
         <div className="py-12 px-4 max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="mb-10 flex items-center justify-between">
                 <div>
-                    <Link href="/admin/vendors" className="flex items-center text-muted-foreground hover:text-primary transition-colors mb-4 group">
+                    <Link href={`/${companySlug}/admin/vendors`} className="flex items-center text-muted-foreground hover:text-primary transition-colors mb-4 group">
                         <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
                         <span className="text-xs font-black uppercase tracking-widest">Back to Vendors</span>
                     </Link>

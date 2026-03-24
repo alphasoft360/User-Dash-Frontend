@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import api from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,6 +26,8 @@ interface CustomerFormProps {
 
 export default function CustomerForm({ initialData, isEditing = false }: CustomerFormProps) {
     const router = useRouter();
+    const params = useParams();
+    const companySlug = params.companySlug as string;
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState<Partial<Customer>>({
         name: initialData?.name || '',
@@ -47,7 +49,7 @@ export default function CustomerForm({ initialData, isEditing = false }: Custome
                 await api.post('/admin/labs/customers', formData);
                 toast.success("New customer registered successfully");
             }
-            router.push('/admin/customers-lab');
+            router.push(`/${companySlug}/admin/customers-lab`);
             router.refresh();
         } catch (err: any) {
             console.error(err);

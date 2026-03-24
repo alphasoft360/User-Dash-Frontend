@@ -24,7 +24,7 @@ import {
     Search
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 
 interface Vendor {
     id: number;
@@ -51,6 +51,8 @@ interface OrderItem {
 
 export default function NewOrderPage() {
     const router = useRouter();
+    const params = useParams();
+    const companySlug = params.companySlug as string;
     const [vendors, setVendors] = useState<Vendor[]>([]);
     const [vendorSearch, setVendorSearch] = useState('');
     const [isSearching, setIsSearching] = useState(false);
@@ -224,7 +226,7 @@ export default function NewOrderPage() {
                 items: draftItems
             });
             toast.success("Batch order submitted successfully");
-            router.push('/admin/orders');
+            router.push(`/${companySlug}/admin/orders`);
         } catch (err: any) {
             toast.error(err.response?.data?.message || "Failed to submit order");
         } finally {
@@ -243,7 +245,7 @@ export default function NewOrderPage() {
                 </div>
                 <Button
                     variant="ghost"
-                    onClick={() => router.push('/admin/orders')}
+                    onClick={() => router.push(`/${companySlug}/admin/orders`)}
                     className="text-muted-foreground hover:text-primary font-black text-[10px] tracking-widest uppercase items-center"
                 >
                     <ArrowLeft className="mr-2 h-4 w-4" /> Back to Orders

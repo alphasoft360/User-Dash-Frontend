@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import api from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,6 +33,8 @@ interface StockInFormProps {
 
 export default function StockInForm({ initialProductId = '', products: initialProducts = [] }: StockInFormProps) {
     const router = useRouter();
+    const params = useParams();
+    const companySlug = params.companySlug as string;
     const [products, setProducts] = useState<Product[]>(initialProducts);
     const [loading, setLoading] = useState(initialProducts.length === 0);
     const [selectedProductId, setSelectedProductId] = useState(initialProductId);
@@ -280,7 +282,7 @@ export default function StockInForm({ initialProductId = '', products: initialPr
                         <Button
                             variant="ghost"
                             type="button"
-                            onClick={() => router.push('/admin/stock')}
+                            onClick={() => router.push(`/${companySlug}/admin/stock`)}
                             className="rounded-2xl font-black h-14 px-10 border border-border"
                         >
                             CANCEL
@@ -311,7 +313,7 @@ export default function StockInForm({ initialProductId = '', products: initialPr
                         <Button
                             variant="outline"
                             type="button"
-                            onClick={() => router.push('/admin/stock')}
+                            onClick={() => router.push(`/${companySlug}/admin/stock`)}
                             className="rounded-2xl font-black h-14 px-10 border-emerald-500 text-emerald-600 flex items-center gap-2"
                         >
                             <CheckCircle2 className="h-5 w-5" />
