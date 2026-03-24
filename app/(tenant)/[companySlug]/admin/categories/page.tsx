@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, use } from 'react';
 import api from '@/lib/api';
+import { useParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -39,6 +40,8 @@ interface Product {
 }
 
 export default function CategoriesPage() {
+    const params = useParams();
+    const companySlug = params.companySlug as string;
     const [categories, setCategories] = useState<Category[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
@@ -181,7 +184,7 @@ export default function CategoriesPage() {
                             </div>
 
                             <CardContent className="p-8 relative z-10">
-                                <Link href={`/admin/categories/${category.id}`}>
+                                <Link href={`/${companySlug}/admin/categories/${category.id}`}>
                                     <Button
                                         variant="outline"
                                         className="w-full rounded-3xl h-12 font-black uppercase text-[9px] tracking-widest border-border hover:border-primary hover:bg-primary/5 text-muted-foreground hover:text-primary transition-all flex items-center justify-center gap-3 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary shadow-lg group-hover:shadow-primary/20"

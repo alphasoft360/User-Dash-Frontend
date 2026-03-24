@@ -5,10 +5,12 @@ import StockInForm from '../../StockInForm';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ArrowLeft, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 
 export default function ProductStockInPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
+    const { companySlug } = useParams();
 
     return (
         <div className="max-w-4xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -21,7 +23,7 @@ export default function ProductStockInPage({ params }: { params: Promise<{ id: s
                         Quickly update stock for a specific item.
                     </p>
                 </div>
-                <Link href="/admin/stock">
+                <Link href={`/${companySlug}/admin/stock`}>
                     <Button variant="ghost" className="flex items-center gap-2 font-bold uppercase text-xs tracking-widest text-muted-foreground hover:text-primary transition-colors">
                         <ArrowLeft className="h-4 w-4" />
                         Back to Manager

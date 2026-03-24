@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import api from '@/lib/api';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,6 +15,7 @@ import Link from 'next/link';
 
 export default function AddVendorStockPage() {
     const router = useRouter();
+    const { companySlug } = useParams();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
@@ -58,7 +59,7 @@ export default function AddVendorStockPage() {
         try {
             await api.post('/admin/vendors', formData);
             toast.success("Vendor Added!", { description: `${formData.name} has been successfully registered.` });
-            router.push('/admin/stock');
+            router.push(`/${companySlug}/admin/stock`);
         } catch (error: any) {
             const message = error.response?.data?.message || "Failed to add vendor.";
             toast.error("Operation Failed", { description: message });
@@ -74,7 +75,7 @@ export default function AddVendorStockPage() {
         <div className="py-12 px-4 max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="mb-10 flex items-center justify-between">
                 <div>
-                    <Link href="/admin/stock" className="flex items-center text-muted-foreground hover:text-primary transition-colors mb-4 group">
+                    <Link href={`/${companySlug}/admin/stock`} className="flex items-center text-muted-foreground hover:text-primary transition-colors mb-4 group">
                         <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
                         <span className="text-xs font-black uppercase tracking-widest">Back to Stock Manager</span>
                     </Link>

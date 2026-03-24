@@ -48,6 +48,7 @@ export default function CategoryDetailsPage() {
     const params = useParams();
     const router = useRouter();
     const id = params.id;
+    const companySlug = params.companySlug as string;
 
     const [category, setCategory] = useState<Category | null>(null);
     const [loading, setLoading] = useState(true);
@@ -83,7 +84,7 @@ export default function CategoryDetailsPage() {
 
             if (!currentCat) {
                 toast.error("Category node not found");
-                router.push('/admin/categories');
+                router.push(`/${companySlug}/admin/categories`);
                 return;
             }
 
@@ -222,7 +223,7 @@ export default function CategoryDetailsPage() {
             setIsProcessing(true);
             await api.delete(`/admin/categories/${id}`);
             toast.success("Category node destroyed");
-            router.push('/admin/categories');
+            router.push(`/${companySlug}/admin/categories`);
         } catch (err) {
             toast.error("Destruction failed");
         } finally {
@@ -249,7 +250,7 @@ export default function CategoryDetailsPage() {
             {/* Header / Navigation */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
                 <div className="flex items-center gap-6">
-                    <Link href="/admin/categories">
+                    <Link href={`/${companySlug}/admin/categories`}>
                         <Button variant="outline" className="h-16 w-16 rounded-2xl border-border hover:border-primary hover:bg-primary/5 group relative shadow-lg overflow-hidden">
                             <ArrowLeft className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-all group-hover:-translate-x-1" />
                         </Button>
@@ -361,7 +362,7 @@ export default function CategoryDetailsPage() {
                                                     >
                                                         <Unlink className="h-4 w-4" />
                                                     </Button>
-                                                    <Link href={`/admin/products`}>
+                                                    <Link href={`/${companySlug}/admin/products`}>
                                                         <Button
                                                             variant="ghost"
                                                             size="sm"

@@ -3,7 +3,7 @@
 import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, Package, ShoppingBag, Activity } from 'lucide-react';
@@ -27,6 +27,8 @@ export default function LabDashboard() {
     const { loading, isAuthenticated } = useAuth();
     const [stats, setStats] = useState<LabDashboardData | null>(null);
     const router = useRouter();
+    const params = useParams();
+    const companySlug = params.companySlug as string;
 
     useEffect(() => {
         if (!loading && !isAuthenticated) {
@@ -89,7 +91,7 @@ export default function LabDashboard() {
                 <Card className="lg:col-span-2 bg-card border-border rounded-3xl p-10 shadow-sm">
                     <div className="flex items-center justify-between mb-8">
                         <h3 className="text-2xl font-black text-foreground">Recent Transactions</h3>
-                        <Button variant="ghost" className="text-primary hover:bg-primary/10 rounded-xl" onClick={() => router.push('/admin/sales-lab')}>
+                        <Button variant="ghost" className="text-primary hover:bg-primary/10 rounded-xl" onClick={() => router.push(`/${companySlug}/admin/sales-lab`)}>
                             New Sale <ChevronRight className="ml-1 h-4 w-4" />
                         </Button>
                     </div>
@@ -124,7 +126,7 @@ export default function LabDashboard() {
                             <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-2xl">
                                 <p className="text-red-500 font-black text-sm uppercase tracking-tighter mb-1">Low Stock Warning</p>
                                 <p className="text-xs text-red-500/80 font-bold mb-4">{stats.lowStockCount} items are below minimum stock levels.</p>
-                                <Button className="w-full bg-red-500 hover:bg-red-600 text-white font-bold h-10 rounded-xl" onClick={() => router.push('/admin/stock/low')}>
+                                <Button className="w-full bg-red-500 hover:bg-red-600 text-white font-bold h-10 rounded-xl" onClick={() => router.push(`/${companySlug}/admin/stock/low`)}>
                                     Refill Stock
                                 </Button>
                             </div>
@@ -138,10 +140,10 @@ export default function LabDashboard() {
                         <div className="pt-6 border-t border-border">
                             <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">Quick Links</h4>
                             <div className="grid grid-cols-1 gap-2">
-                                <Button variant="secondary" className="justify-start rounded-xl font-bold h-12" onClick={() => router.push('/admin/reagents')}>
+                                <Button variant="secondary" className="justify-start rounded-xl font-bold h-12" onClick={() => router.push(`/${companySlug}/admin/reagents`)}>
                                     Manage Reagents
                                 </Button>
-                                <Button variant="secondary" className="justify-start rounded-xl font-bold h-12" onClick={() => router.push('/admin/reports-lab')}>
+                                <Button variant="secondary" className="justify-start rounded-xl font-bold h-12" onClick={() => router.push(`/${companySlug}/admin/reports-lab`)}>
                                     Inventory Reports
                                 </Button>
                             </div>

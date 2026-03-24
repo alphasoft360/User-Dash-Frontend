@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import api from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,8 @@ interface LowStockProduct {
 }
 
 export default function LowStockPage() {
+    const params = useParams();
+    const companySlug = params.companySlug as string;
     const [lowStockItems, setLowStockItems] = useState<LowStockProduct[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -53,7 +56,7 @@ export default function LowStockPage() {
                         Reagents currently below minimum inventory levels.
                     </p>
                 </div>
-                <Link href="/admin/dashboard-lab">
+                <Link href={`/${companySlug}/admin/dashboard-lab`}>
                     <Button variant="ghost" className="flex items-center gap-2 font-bold uppercase text-xs tracking-widest text-muted-foreground hover:text-primary transition-colors">
                         <ArrowLeft className="h-4 w-4" />
                         Back to Dashboard
@@ -119,7 +122,7 @@ export default function LowStockPage() {
                                                 {item.minimumStock}
                                             </TableCell>
                                             <TableCell className="p-6 text-right">
-                                                <Link href={`/admin/stock/${item.id}/in`}>
+                                                <Link href={`/${companySlug}/admin/stock/${item.id}/in`}>
                                                     <Button
                                                         className="bg-primary hover:bg-primary/90 text-primary-foreground font-black text-[10px] uppercase rounded-xl h-10 px-6 shadow-lg shadow-primary/20 flex items-center gap-2 ml-auto"
                                                     >
