@@ -101,10 +101,7 @@ export default function ReagentForm({ initialData, isEditing = false }: ReagentF
             return;
         }
 
-        if (!formData.description || formData.description.trim() === '') {
-            toast.error("Description is required");
-            return;
-        }
+
 
         setLoading(true);
         try {
@@ -347,7 +344,7 @@ export default function ReagentForm({ initialData, isEditing = false }: ReagentF
                         </div>
                         <div className="space-y-3">
                             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
-                                Description / Notes <span className="text-red-500">*</span>
+                                Description / Notes
                             </Label>
                             <textarea
                                 name="description"
