@@ -23,7 +23,10 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     // Falls back to the new domain if the environment variable isn't set.
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://unique-healthcare.duckdns.org/api';
+    const backendUrl = process.env.NODE_ENV === 'production'
+      ? (process.env.NEXT_PUBLIC_API_URL || 'https://unique-healthcare.duckdns.org/api')
+      : 'http://127.0.0.1:8000/api';
+      
     return [
       {
         source: '/api/proxy/:path*',

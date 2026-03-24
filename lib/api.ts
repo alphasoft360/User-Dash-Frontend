@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const BACKEND_URL = 'https://unique-healthcare.duckdns.org';
+const BACKEND_URL = process.env.NODE_ENV === 'production' 
+    ? 'https://unique-healthcare.duckdns.org'
+    : 'http://127.0.0.1:8000';
 
 const api = axios.create({
     baseURL: '/api/proxy',
