@@ -17,6 +17,7 @@ interface Customer {
     labName?: string;
     city?: string;
     address?: string;
+    remainingBalance?: number;
 }
 
 interface CustomerFormProps {
@@ -35,6 +36,7 @@ export default function CustomerForm({ initialData, isEditing = false }: Custome
         labName: initialData?.labName || '',
         city: initialData?.city || '',
         address: initialData?.address || '',
+        remainingBalance: initialData?.remainingBalance || 0,
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -140,6 +142,20 @@ export default function CustomerForm({ initialData, isEditing = false }: Custome
                                         value={formData.city}
                                         onChange={(e) => setFormData({...formData, city: e.target.value})}
                                         placeholder="New York, NY"
+                                        className="pl-12 bg-secondary/30 border-border h-14 rounded-2xl font-bold focus:ring-primary/20"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Pending Amount (PKR)</Label>
+                                <div className="relative">
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-muted-foreground">PKR</span>
+                                    <Input 
+                                        type="number"
+                                        value={formData.remainingBalance === undefined ? '' : formData.remainingBalance}
+                                        onChange={(e) => setFormData({...formData, remainingBalance: parseFloat(e.target.value) || 0})}
+                                        placeholder="0.00"
                                         className="pl-12 bg-secondary/30 border-border h-14 rounded-2xl font-bold focus:ring-primary/20"
                                     />
                                 </div>
