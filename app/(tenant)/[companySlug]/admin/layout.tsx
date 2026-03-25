@@ -65,21 +65,25 @@ export default function AdminLayout({
         fetchCompanyData();
     }, [companySlug]);
 
+    const isModerator = user?.roles?.includes('ROLE_MODERATOR') && !user?.roles?.includes('ROLE_ADMIN') && !user?.roles?.includes('ROLE_SUPER_ADMIN');
+
     useEffect(() => {
         if (!loading) {
             if (!isAuthenticated) {
                 router.push(`/${companySlug}/login`);
-            } else if (!user?.roles?.includes('ROLE_ADMIN') && !user?.roles?.includes('ROLE_SUPER_ADMIN')) {
+            } else if (!user?.roles?.includes('ROLE_ADMIN') && !user?.roles?.includes('ROLE_SUPER_ADMIN') && !user?.roles?.includes('ROLE_MODERATOR')) {
                 router.push(`/${companySlug}`);
+            } else if (isModerator && !pathname.endsWith('/admin/sales-lab') && !pathname.endsWith('/admin/dashboard-lab')) {
+                router.push(`/${companySlug}/admin/dashboard-lab`);
             }
         }
-    }, [loading, isAuthenticated, user, router, companySlug]);
+    }, [loading, isAuthenticated, user, router, companySlug, isModerator, pathname]);
 
     if (loading || !isAuthenticated) {
         return <div className="flex min-h-screen items-center justify-center bg-white dark:bg-gray-950 text-cyan-500 font-black">AUTHENTICATING...</div>;
     }
 
-    const navItems: { label: string; icon: any; href: string; isHeader?: boolean }[] = [
+    const allNavItems: { label: string; icon: any; href: string; isHeader?: boolean }[] = [
         { label: 'Lab Dashboard', icon: LayoutDashboard, href: `/${companySlug}/admin/dashboard-lab` },
         { label: 'Reagents', icon: FlaskConical, href: `/${companySlug}/admin/reagents` },
         { label: 'Users', icon: User, href: `/${companySlug}/admin/users` },
@@ -89,6 +93,8 @@ export default function AdminLayout({
         { label: 'Lab Reports', icon: ClipboardList, href: `/${companySlug}/admin/reports-lab` },
         { label: 'Lab Invoices', icon: Receipt, href: `/${companySlug}/admin/invoices-lab` },
     ];
+
+    const moderatorAllowedPaths = ['/admin/dashboard-lab', '/admin/sales-lab'];
 
 
     return (
@@ -108,22 +114,34 @@ export default function AdminLayout({
                     </div>
 
                     <nav className="flex-1 space-y-2 overflow-x-hidden">
-                        {navItems.map((item) => (
-                            item.isHeader ? (
+                        {allNavItems.map((item) => {
+                            const isAllowed = !isModerator || moderatorAllowedPaths.some(p => item.href.endsWith(p));
+                            const isActive = pathname === item.href;
+
+                            return item.isHeader ? (
                                 !isCompact && <div key={item.label} className="mt-6 mb-2 px-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50">Laboratory System</div>
-                            ) : (
+                            ) : isAllowed ? (
                                 <Link
                                     key={item.label}
                                     href={item.href}
                                     title={isCompact ? item.label : undefined}
-                                    className={`flex items-center ${isCompact ? 'justify-center px-0' : 'px-4'} py-3 rounded-xl transition-all group ${pathname === item.href ? 'bg-primary/10 text-primary border border-primary/20' : 'text-muted-foreground hover:text-foreground hover:bg-secondary'}`}
+                                    className={`flex items-center ${isCompact ? 'justify-center px-0' : 'px-4'} py-3 rounded-xl transition-all group ${isActive ? 'bg-primary/10 text-primary border border-primary/20' : 'text-muted-foreground hover:text-foreground hover:bg-secondary'}`}
                                 >
-                                    <item.icon className={`${isCompact ? '' : 'mr-3'} h-5 w-5 shrink-0 ${pathname === item.href ? 'text-primary' : 'group-hover:text-primary'}`} />
+                                    <item.icon className={`${isCompact ? '' : 'mr-3'} h-5 w-5 shrink-0 ${isActive ? 'text-primary' : 'group-hover:text-primary'}`} />
                                     {!isCompact && <span className="font-bold text-sm whitespace-nowrap text-clip overflow-hidden">{item.label}</span>}
-                                    {!isCompact && pathname === item.href && <ChevronRight className="ml-auto h-4 w-4 shrink-0" />}
+                                    {!isCompact && isActive && <ChevronRight className="ml-auto h-4 w-4 shrink-0" />}
                                 </Link>
-                            )
-                        ))}
+                            ) : (
+                                <div
+                                    key={item.label}
+                                    title={isCompact ? `${item.label} (Restricted)` : 'Restricted'}
+                                    className={`flex items-center ${isCompact ? 'justify-center px-0' : 'px-4'} py-3 rounded-xl opacity-30 cursor-not-allowed select-none`}
+                                >
+                                    <item.icon className={`${isCompact ? '' : 'mr-3'} h-5 w-5 shrink-0 text-muted-foreground`} />
+                                    {!isCompact && <span className="font-bold text-sm whitespace-nowrap text-clip overflow-hidden text-muted-foreground">{item.label}</span>}
+                                </div>
+                            );
+                        })}
                     </nav>
 
                     <div className="pt-6 border-t border-border flex flex-col gap-4">
@@ -139,7 +157,7 @@ export default function AdminLayout({
                             {!isCompact && (
                                 <div className="flex-1 min-w-0 ml-3">
                                     <p className="text-xs font-bold text-foreground truncate">{user?.email}</p>
-                                    <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest leading-none">Admin</p>
+                                    <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest leading-none">{isModerator ? 'Moderator' : 'Admin'}</p>
                                 </div>
                             )}
                         </div>
