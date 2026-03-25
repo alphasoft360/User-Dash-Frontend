@@ -192,70 +192,131 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
 
       <main className="overflow-hidden">
         {/* Hero Section */}
-        <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden border-b border-border/50">
-          {/* Background Carousel */}
-          <div className="absolute inset-0 z-0">
-            {heroImages.map((img, i) => (
-              <div
-                key={i}
-                className={`absolute inset-0 transition-opacity duration-4s00 ease-in-out ${i === heroImageIndex ? 'opacity-70' : 'opacity-0'}`}
-              >
-                <img
-                  src={img}
-                  alt={`Hero ${i + 1}`}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = `https://images.unsplash.com/photo-${[
-                      '1504384308090-c894fdcc538d',
-                      '1451187580459-43490279c0fa',
-                      '1518770660439-4636190af475'
-                    ][i]}?auto=format&fit=crop&q=80&w=2000`;
-                  }}
-                />
+        <section className="relative w-full min-h-[85vh] bg-background border-b border-border/20 overflow-hidden">
+          {/* Subtle background decoration */}
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none z-0"></div>
+          <div className="absolute bottom-0 left-[-100px] w-[300px] h-[300px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none z-0"></div>
+
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 h-full min-h-[85vh] max-w-screen-2xl mx-auto">
+
+            {/* Left Column - Content */}
+            <div className="flex flex-col justify-center px-8 py-16 lg:py-24 lg:pl-20 xl:pl-32 space-y-8 animate-in fade-in slide-in-from-left-8 duration-1000 mt-8 lg:mt-0">
+
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/80 backdrop-blur-md border border-border/50 rounded-full text-xs font-bold uppercase tracking-widest text-foreground w-fit shadow-sm">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-60"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                </span>
+                {companyInfo?.name || 'Unique Healthcare Solutions'}
               </div>
-            ))}
-            {/* Refined gradient overlays for better atmosphere */}
-            <div className="absolute inset-0 bg-linear-to-b from-background via-transparent to-background/5 z-[1]"></div>
-            <div className="absolute inset-0 bg-blue-100/10 z-[1]"></div>
-          </div>
 
-          {/* Carousel Controls - Moved out of the background layer and z-indexed higher */}
-          <div className="absolute inset-0 z-30 pointer-events-none flex items-center justify-between px-6">
-            <button
-              onClick={prevHero}
-              className="p-3 bg-background/20 backdrop-blur-xl border border-white/10 rounded-xl hover:bg-primary/20 transition-all pointer-events-auto group"
-            >
-              <ChevronRight className="w-5 h-5 rotate-180 group-hover:-translate-x-1 transition-transform" />
-            </button>
-            <button
-              onClick={nextHero}
-              className="p-3 bg-background/20 backdrop-blur-xl border border-white/10 rounded-xl hover:bg-primary/20 transition-all pointer-events-auto group"
-            >
-              <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </button>
-          </div>
+              {/* Heading */}
+              <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-foreground leading-[1.1]">
+                Modernize Your <br />
+                <span className="text-primary font-bold relative inline-block mt-2">
+                  Laboratory
+                  <svg className="absolute w-full h-3 -bottom-1 left-0 text-primary/30" viewBox="0 0 100 10" preserveAspectRatio="none">
+                    <path d="M0 5 Q 50 15 100 5" stroke="currentColor" strokeWidth="4" fill="transparent" />
+                  </svg>
+                </span> <br />
+                Operations.
+              </h1>
 
-          <div className="relative z-10 w-full px-6 md:px-20 py-16 flex items-center justify-center md:justify-start">
-            <div className="max-w-xl w-full p-6 md:p-10 bg-background/60 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl space-y-6 animate-in fade-in duration-1000">
-              <div className="space-y-4">
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary-800 rounded-full text-[10px] font-semibold uppercase tracking-wider border border-primary/20 backdrop-blur-sm">
-                  <Award className="w-3 h-3" />
-                  {companyInfo?.name || 'Unique Helthcare Solutions'}
+              {/* Subtext */}
+              <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-lg font-medium">
+                Equip your facility with innovative diagnostic analyzers and high-precision chemical reagents. Speed, accuracy, and continuous excellence built right in.
+              </p>
+
+              {/* Actions */}
+              <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
+                <Link href="#story" className="w-full sm:w-auto px-8 py-4 bg-primary text-primary-foreground rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-primary/90 hover:-translate-y-1 transition-all shadow-lg shadow-primary/20 group">
+                  Discover Our Story
+                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <Link href="#resources" className="w-full sm:w-auto px-8 py-4 bg-secondary hover:bg-secondary/80 text-foreground border border-border/50 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 transition-all hover:-translate-y-1 group">
+                  View Resources
+                  <Download className="w-4 h-4 text-muted-foreground group-hover:translate-y-0.5 transition-transform" />
+                </Link>
+              </div>
+
+              {/* Minimal Stats */}
+              <div className="flex items-center gap-6 pt-8 md:pt-12 border-t border-border/40 max-w-md w-full">
+                <div className="space-y-1">
+                  <p className="text-2xl font-black text-foreground">100<span className="text-primary">+</span></p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Partners</p>
                 </div>
-                <h1 className="text-2xl md:text-3xl font-semibold tracking-tight leading-snug">
-                  Reliable <span className="text-primary">Laboratory</span> Analyzers & Diagnostic Reagents.
-                </h1>
-                <p className="text-sm md:text-base text-foreground/70 max-w-lg leading-relaxed font-normal">
-                  Innovative solutions enhancing the quality and efficiency of your laboratory operations through precision.
-                </p>
-                <div className="flex flex-wrap gap-3 pt-4">
-                  <Link href="#story" className="group px-6 py-2.5 bg-primary text-primary-foreground rounded-lg font-semibold text-sm flex items-center gap-2 hover:bg-primary/90 transition-all duration-300 shadow-lg shadow-primary/10">
-                    Discover Our Story
-                    <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                  </Link>
+                <div className="w-px h-10 bg-border/50"></div>
+                <div className="space-y-1">
+                  <p className="text-2xl font-black text-foreground">99.9<span className="text-primary">%</span></p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Accuracy</p>
+                </div>
+                <div className="w-px h-10 bg-border/50"></div>
+                <div className="space-y-1">
+                  <p className="text-2xl font-black text-foreground">24<span className="text-primary">/</span>7</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Support</p>
                 </div>
               </div>
             </div>
+
+            {/* Right Column - Image Carousel */}
+            <div className="relative flex items-center justify-center p-6 lg:p-12 min-h-[50vh] lg:h-auto animate-in fade-in slide-in-from-right-8 duration-1000">
+              <div className="relative w-full h-full max-h-[600px] xl:max-h-[700px] rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-2xl border border-border bg-secondary/20">
+                {/* Carousel Images */}
+                <div className="absolute inset-0">
+                  {heroImages.map((img, i) => (
+                    <div
+                      key={i}
+                      className={`absolute inset-0 transition-opacity duration-[2000ms] ease-in-out ${i === heroImageIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-105'}`}
+                    >
+                      <img
+                        src={img}
+                        alt={`Hero Carousel ${i + 1}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const customFallbacks = [
+                            'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=1200',
+                            'https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?auto=format&fit=crop&q=80&w=1200',
+                            'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&q=80&w=1200'
+                          ];
+                          (e.target as HTMLImageElement).src = customFallbacks[i] || customFallbacks[0];
+                        }}
+                      />
+                      {/* Gentle inner shadow to frame the image nicely */}
+                      <div className="absolute inset-0 shadow-[inset_0_0_100px_rgba(0,0,0,0.3)] pointer-events-none"></div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Glassmorphic floating card decoration */}
+                <div className="absolute top-8 left-[-1rem] md:top-12 md:left-[-2rem] bg-background/80 backdrop-blur-2xl border border-border p-4 rounded-2xl shadow-2xl hidden sm:flex items-center gap-4 z-30 animate-in slide-in-from-left-4 duration-1000 delay-500">
+                  <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center text-primary">
+                    <Target className="w-6 h-6" />
+                  </div>
+                  <div className="pr-4">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Precision</p>
+                    <p className="text-sm font-black text-foreground">Highest Guarantee</p>
+                  </div>
+                </div>
+
+                {/* Floating Carousel Controls */}
+                <div className="absolute bottom-6 md:bottom-8 right-6 md:right-8 flex items-center gap-3 z-30">
+                  <button
+                    onClick={prevHero}
+                    className="p-3 bg-background/60 backdrop-blur-xl border border-white/20 rounded-xl hover:bg-background hover:scale-105 transition-all text-foreground shadow-xl group border-border"
+                  >
+                    <ChevronRight className="w-5 h-5 rotate-180 group-hover:-translate-x-0.5 transition-transform" />
+                  </button>
+                  <button
+                    onClick={nextHero}
+                    className="p-3 bg-background/60 backdrop-blur-xl border border-white/20 rounded-xl hover:bg-background hover:scale-105 transition-all text-foreground shadow-xl group border-border"
+                  >
+                    <ChevronRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
           </div>
         </section>
 
@@ -358,10 +419,10 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                   <div className="absolute bottom-4 left-4 right-4 p-5 bg-background/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl transition-all duration-500 group-hover:bg-background/80 group-hover:-translate-y-1">
                     <h3 className="text-xl font-black tracking-tight mb-1">{member.name}</h3>
                     <div className="space-y-1.5">
-                      <p className="text-[13px] font-black uppercase tracking-[0.2em] text-transparent bg-clip-text bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400">
+                      <p className="text-[15px] font-black uppercase tracking-[0.2em] text-transparent bg-clip-text bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400">
                         {member.role}
                       </p>
-                      <p className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-[0.25em] flex items-center gap-2">
+                      <p className="text-[15px] font-bold text-muted-foreground/60 uppercase tracking-[0.25em] flex items-center gap-2">
                         <span className="w-1.5 h-px bg-primary/30"></span>
                         {member.contact}
                       </p>
