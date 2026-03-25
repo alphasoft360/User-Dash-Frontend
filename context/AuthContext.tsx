@@ -9,7 +9,7 @@ import { usePathname } from 'next/navigation';
 interface User {
     email: string;
     roles: string[];
-    name?: string;
+    name: string;
 }
 
 interface AuthContextType {
@@ -72,6 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                         setToken(storedToken);
                         setUser({
                             email: decoded.email || decoded.username || '',
+                            name: decoded.username || decoded.email || 'User',
                             roles: decoded.roles || [],
                         });
                     }
@@ -94,6 +95,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const decoded = jwtDecode<JWTPayload>(newToken);
         setUser({
             email: decoded.email || decoded.username || '',
+            name: decoded.username || decoded.email || 'User',
             roles: decoded.roles || [],
         });
 

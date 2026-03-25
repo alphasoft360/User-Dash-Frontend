@@ -14,8 +14,11 @@ import {
   ChevronDown,
   ChevronUp,
   Menu,
-  X
+  X,
+  LogOut,
+  User as UserIcon
 } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 import AlphasoftBanner from '@/components/AlphasoftBanner';
 import api from '@/lib/api';
 
@@ -33,6 +36,8 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
   const [heroImages, setHeroImages] = useState<string[]>([]);
   const [pdfDocs, setPdfDocs] = useState<any[]>([]);
   const [logoPath, setLogoPath] = useState('/images/logo.png');
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
 
   const [showBanner, setShowBanner] = useState(false);
   const [isCardVisible, setIsCardVisible] = useState(false);
@@ -142,12 +147,53 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-3">
               <ThemeToggle />
-              <Link
-                href={`/${companySlug}/register`}
-                className="px-6 py-2.5 bg-primary text-primary-foreground rounded-full text-sm font-bold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
-              >
-                Get Started
-              </Link>
+              {!isAuthenticated ? (
+                <Link
+                  href={`/${companySlug}/register`}
+                  className="px-6 py-2.5 bg-primary text-primary-foreground rounded-full text-sm font-bold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
+                >
+                  Get Started
+                </Link>
+              ) : (
+                <div className="relative">
+                  <button
+                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                    className="flex items-center gap-2 p-1.5 bg-secondary/50 hover:bg-secondary rounded-full border border-border transition-all active:scale-95"
+                  >
+                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary">
+                      <UserIcon className="w-4 h-4" />
+                    </div>
+                    <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-300 ${isProfileOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {isProfileOpen && (
+                    <>
+                      <div 
+                        className="fixed inset-0 z-40" 
+                        onClick={() => setIsProfileOpen(false)}
+                      />
+                      <div className="absolute right-0 mt-3 w-64 bg-background border border-border rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                        <div className="p-4 border-b border-border bg-secondary/20">
+                          <p className="text-sm font-bold text-foreground truncate">{user?.name}</p>
+                          <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                        </div>
+                        <div className="p-2">
+                          <button
+                            onClick={() => {
+                              setIsProfileOpen(false);
+                              logout();
+                            }}
+                            className="w-full flex items-center gap-3 p-3 text-sm font-medium text-red-500 hover:bg-red-500/10 rounded-xl transition-colors group"
+                          >
+                            <LogOut className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                            Sign Out
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Mobile Menu Toggle */}
@@ -191,19 +237,42 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                 </Link>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 pt-6 border-t border-border">
-                <Link
-                  href={`/${companySlug}/login`}
-                  className="flex items-center justify-center p-4 bg-secondary/50 text-foreground rounded-2xl font-bold border border-border/50"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href={`/${companySlug}/register`}
-                  className="flex items-center justify-center p-4 bg-primary text-primary-foreground rounded-2xl font-bold shadow-lg shadow-primary/20"
-                >
-                  Get Started
-                </Link>
+              <div className="pt-6 border-t border-border">
+                {!isAuthenticated ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    <Link
+                      href={`/${companySlug}/login`}
+                      className="flex items-center justify-center p-4 bg-secondary/50 text-foreground rounded-2xl font-bold border border-border/50"
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      href={`/${companySlug}/register`}
+                      className="flex items-center justify-center p-4 bg-primary text-primary-foreground rounded-2xl font-bold shadow-lg shadow-primary/20"
+                    >
+                      Get Started
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4 p-4 bg-secondary/30 rounded-2xl border border-border/50">
+                      <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center text-primary">
+                        <UserIcon className="w-6 h-6" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-bold text-foreground truncate">{user?.name}</p>
+                        <p className="text-sm text-muted-foreground truncate">{user?.email}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={logout}
+                      className="w-full flex items-center justify-center gap-3 p-4 bg-red-500 text-white rounded-2xl font-bold shadow-lg shadow-red-500/20 active:scale-95 transition-all"
+                    >
+                      <LogOut className="w-5 h-5" />
+                      Sign Out
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
