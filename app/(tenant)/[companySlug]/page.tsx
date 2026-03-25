@@ -340,11 +340,11 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                   contact: '0300 6530048'
                 },
               ].map((member, i) => (
-                <div key={i} className="relative aspect-3/5 rounded-2xl bg-secondary/30 border border-border/50 overflow-hidden group">
+                <div key={i} className="relative aspect-3/5 rounded-2xl bg-secondary/30 border border-border/50 overflow-hidden group transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/50 cursor-pointer">
                   <img
                     src={member.img}
                     alt={member.name}
-                    className="w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700"
+                    className="w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
                     onError={(e) => {
                       const fallbacks = [
                         'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=1000',
@@ -354,8 +354,8 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                       (e.target as HTMLImageElement).src = fallbacks[i];
                     }}
                   />
-                  <div className="absolute inset-0 bg-linear-to-t from-background/90 via-transparent to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4 p-5 bg-background/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl transition-all duration-500 group-hover:bg-background/80">
+                  <div className="absolute inset-0 bg-linear-to-t from-background/90 via-transparent to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="absolute bottom-4 left-4 right-4 p-5 bg-background/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl transition-all duration-500 group-hover:bg-background/80 group-hover:-translate-y-1">
                     <h3 className="text-xl font-black tracking-tight mb-1">{member.name}</h3>
                     <div className="space-y-1.5">
                       <p className="text-[13px] font-black uppercase tracking-[0.2em] text-transparent bg-clip-text bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400">
@@ -434,7 +434,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
               </div>
 
               <div className="pt-8 border-t border-border/50 flex flex-col md:flex-row items-center justify-center gap-8">
-                <a 
+                <a
                   href="https://mail.google.com/mail/?view=cm&fs=1&to=uniquehealthcaresolution.swl@gmail.com"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -450,29 +450,62 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
             </div>
           </section>
         </div>
-      </main>
+      </main>      {/* Brands Footer Section */}
+      <footer className="relative bg-background pt-16 border-t border-border/60 mt-10 overflow-hidden">
 
-      {/* Footer */}
-      <footer className="py-2 border-t border-border mt-5">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8 px-2">
-            <div className="flex items-center gap-6">
-              <img src={logoPath} alt="Logo" className="h-14 w-auto object-contain opacity-90 hover:opacity-100 transition-opacity" />
-              <div className="h-6 w-px bg-border/40 hidden md:block" />
-              <p className="text-sm font-bold tracking-tight text-foreground/70">
-                {companyInfo?.name || 'Unique HealthCare Solution'}
-              </p>
-            </div>
+        {/* Concentric Circles Pattern Background */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05]">
+          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="concentric-circles" width="120" height="120" patternUnits="userSpaceOnUse">
+                <circle cx="60" cy="60" r="15" fill="none" stroke="currentColor" strokeWidth="1" />
+                <circle cx="60" cy="60" r="30" fill="none" stroke="currentColor" strokeWidth="1" />
+                <circle cx="60" cy="60" r="45" fill="none" stroke="currentColor" strokeWidth="1" />
+                <circle cx="60" cy="60" r="60" fill="none" stroke="currentColor" strokeWidth="1" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#concentric-circles)" />
+          </svg>
+        </div>
 
-            <div className="flex flex-col md:items-end gap-1">
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/60">
-                Diagnostic Innovation
-              </p>
-              <p className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest">
-                &copy; {new Date().getFullYear()} • Unique Healthcare Solution
-              </p>
-            </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-6 pb-12">
+          {/* Logo Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
+            {[
+              { name: 'DiaSys', path: '/partner-logos/diasys.png' },
+              { name: 'Human', path: '/partner-logos/human.png' },
+              { name: 'Erba Mannheim', path: '/partner-logos/erba.png' },
+              { name: 'Martin Dow', path: '/partner-logos/martindow.png' },
+              { name: 'Sysmex', path: '/partner-logos/sysmex.png' },
+              { name: 'Mindray', path: '/partner-logos/mindray.png' },
+              { name: 'MERCK', path: '/partner-logos/merck.png' },
+              { name: 'Rayto', path: '/partner-logos/rayto.png' },
+              { name: 'BioMed', path: '/partner-logos/biomed.png' },
+              { name: 'BioHermes', path: '/partner-logos/biohermes.png' },
+              { name: 'Getein Biotech', path: '/partner-logos/getein.png' },
+              { name: 'DIAGAST', path: '/partner-logos/diagast.png' }
+            ].map((p, i) => (
+              <div key={i} className="group relative flex items-center justify-center p-4 h-28 bg-linear-to-b from-secondary/40 to-background/40 backdrop-blur-sm rounded-2xl border border-border/50 shadow-sm hover:shadow-md hover:border-primary/30 hover:-translate-y-1 transition-all overflow-hidden">
+                {/* Elegant subtle shine effect on hover */}
+                <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 dark:via-white/5 to-transparent -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-1000"></div>
+                <img
+                  src={p.path}
+                  alt={p.name}
+                  className="relative z-10 max-h-[5.5rem] max-w-full object-contain opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300 drop-shadow-sm"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                  }}
+                />
+                <span className="hidden font-black text-foreground text-lg md:text-xl uppercase tracking-wider text-center relative z-10">{p.name}</span>
+              </div>
+            ))}
           </div>
+
+          {/* Footer Text */}
+          <p className="text-center font-bold text-primary uppercase md:text-lg lg:text-xl tracking-wide leading-relaxed max-w-5xl mx-auto">
+            WHOLESALE DISTRIBUTOR OF LAB DISPOSABLE ITEMS & DIAGNOSTIC REAGENTS LABORATORY, RADIOLOGY & HOSPITAL EQUIPMENT, BIOMEDICAL SERVICES & GENERAL ORDER SUPPLIER
+          </p>
         </div>
       </footer>
     </div>
