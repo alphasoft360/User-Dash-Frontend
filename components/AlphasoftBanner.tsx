@@ -34,7 +34,7 @@ export default function AlphasoftBanner({ variant = 'default' }: AlphasoftBanner
                     rel="noopener noreferrer"
                     className={`flex items-center justify-center gap-2 rounded-lg bg-secondary/50 font-black uppercase tracking-widest text-muted-foreground transition-all hover:bg-primary hover:text-primary-foreground group-hover:translate-x-0.5 ${isCompact ? 'w-full py-2 text-[9px]' : 'px-3 py-5 text-[10px]'}`}
                 >
-                    Visit Studio
+                    Visit
                     <ArrowUpRight className="h-3 w-3" />
                 </a>
 
