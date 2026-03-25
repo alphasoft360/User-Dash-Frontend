@@ -101,9 +101,6 @@ export default function SalesLabPage() {
     const [showSearchDropdown, setShowSearchDropdown] = useState(false);
     const [searchSource, setSearchSource] = useState<'name' | 'phone'>('name');
 
-    // Balance Adjustment State (Integrated)
-    const [previousBalancePayment, setPreviousBalancePayment] = useState('');
-
     // Success State
     const [lastOrderId, setLastOrderId] = useState<number | null>(null);
     const [isDownloadingInvoice, setIsDownloadingInvoice] = useState(false);
@@ -300,8 +297,7 @@ export default function SalesLabPage() {
     const subtotal = cart.reduce((acc, item) => acc + (parseFloat(item.price) * item.cartQuantity), 0);
     const discountValue = (subtotal * (parseFloat(discountPercentage) || 0)) / 100;
     const saleTotal = subtotal - discountValue;
-    const debtPayment = parseFloat(previousBalancePayment) || 0;
-    const grandTotal = saleTotal + debtPayment;
+    const grandTotal = saleTotal;
     const changeDue = amountGiven ? parseFloat(amountGiven) - grandTotal : 0;
 
     const handleCheckout = async () => {
@@ -333,7 +329,6 @@ export default function SalesLabPage() {
                 changeDue: changeDue,
                 discountPercentage: parseFloat(discountPercentage) || 0,
                 discountAmount: discountValue,
-                previousBalancePayment: debtPayment,
                 registeredCustomerId: selectedCustomerId
             };
 
@@ -357,7 +352,6 @@ export default function SalesLabPage() {
         setSelectedCustomerId(null);
         setSelectedCustomerData(null);
         setAmountGiven('');
-        setPreviousBalancePayment('');
         setDiscountPercentage('');
         setLastOrderId(null);
     };
@@ -737,47 +731,6 @@ export default function SalesLabPage() {
                             />
                         </div>
 
-                        {selectedCustomerData && (
-                            <div className="flex flex-col gap-3 p-4 bg-primary/5 border border-primary/20 rounded-2xl mt-2 mb-2 animate-in slide-in-from-top-2">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-70">Customer's Debt</p>
-                                        <p className={`text-xl font-black italic tracking-tighter leading-none mt-1 ${selectedCustomerData.remainingBalance > 0 ? 'text-red-500' : 'text-emerald-500'}`}>
-                                            PKR {selectedCustomerData.remainingBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                        </p>
-                                    </div>
-                                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                        <Building className="h-5 w-5 text-primary" />
-                                    </div>
-                                </div>
-
-                                {selectedCustomerData.remainingBalance > 0 && (
-                                    <div className="space-y-2 pt-2 border-t border-primary/10">
-                                        <Label className="text-[9px] font-black uppercase tracking-widest text-primary/70 ml-1">Pay Towards Debt</Label>
-                                        <div className="relative">
-                                            <Minus className="absolute left-4 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-emerald-500" />
-                                            <Input
-                                                type="number"
-                                                placeholder="Amount to subtract..."
-                                                value={previousBalancePayment}
-                                                onChange={e => {
-                                                    const val = parseFloat(e.target.value) || 0;
-                                                    if (val <= selectedCustomerData.remainingBalance) {
-                                                        setPreviousBalancePayment(e.target.value);
-                                                    } else {
-                                                        setPreviousBalancePayment(selectedCustomerData.remainingBalance.toString());
-                                                        toast.error("Cannot pay more than outstanding balance");
-                                                    }
-                                                }}
-                                                max={selectedCustomerData.remainingBalance}
-                                                className="pl-11 bg-background border-primary/20 rounded-xl h-10 font-bold text-xs focus:ring-emerald-500/20"
-                                            />
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
                         <div className="relative group">
                             <Wallet className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
                             <Input
@@ -807,17 +760,11 @@ export default function SalesLabPage() {
                             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50">Grand Total</span>
                             <span className="text-3xl font-black italic text-foreground tracking-tighter leading-none">PKR {grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         </div>
-                        {debtPayment > 0 && (
-                            <div className="flex items-center justify-between py-1 px-1 mt-1 bg-emerald-500/5 rounded-lg border border-emerald-500/10">
-                                <span className="text-[9px] font-black uppercase tracking-widest text-emerald-600">Debt Payment Included</span>
-                                <span className="text-[10px] font-black text-emerald-600">+ PKR {debtPayment.toLocaleString()}</span>
-                            </div>
-                        )}
                         <div className="flex items-end justify-between pt-2 border-t border-border/50">
                             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/80">
-                                {changeDue < 0 ? 'New Outstanding' : 'Change Due'}
+                                Change Due
                             </span>
-                            <span className={`text-xl font-black italic tracking-tighter leading-none ${changeDue > 0 ? 'text-primary' : changeDue < 0 ? 'text-red-500' : 'text-muted-foreground/50'}`}>
+                            <span className={`text-xl font-black italic tracking-tighter leading-none ${changeDue > 0 ? 'text-primary' : 'text-muted-foreground/50'}`}>
                                 PKR {Math.abs(changeDue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </span>
                         </div>

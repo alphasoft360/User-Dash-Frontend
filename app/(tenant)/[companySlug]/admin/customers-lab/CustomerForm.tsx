@@ -38,17 +38,27 @@ export default function CustomerForm({ initialData, isEditing = false }: Custome
         address: initialData?.address || '',
         remainingBalance: initialData?.remainingBalance || 0,
     });
+    const [paymentAmount, setPaymentAmount] = useState<string>('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
 
+        const finalBalance = isEditing 
+            ? (formData.remainingBalance || 0) - (parseFloat(paymentAmount) || 0)
+            : formData.remainingBalance || 0;
+
+        const submissionData = {
+            ...formData,
+            remainingBalance: finalBalance
+        };
+
         try {
             if (isEditing && initialData?.id) {
-                await api.put(`/admin/labs/customers/${initialData.id}`, formData);
+                await api.put(`/admin/labs/customers/${initialData.id}`, submissionData);
                 toast.success("Customer record updated successfully");
             } else {
-                await api.post('/admin/labs/customers', formData);
+                await api.post('/admin/labs/customers', submissionData);
                 toast.success("New customer registered successfully");
             }
             router.push(`/${companySlug}/admin/customers-lab`);
@@ -148,18 +158,55 @@ export default function CustomerForm({ initialData, isEditing = false }: Custome
                             </div>
 
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Pending Amount (PKR)</Label>
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
+                                    {isEditing ? 'Current Pending Amount' : 'Initial Pending Amount'} (PKR)
+                                </Label>
                                 <div className="relative">
                                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-muted-foreground">PKR</span>
                                     <Input 
                                         type="number"
+                                        readOnly={isEditing}
                                         value={formData.remainingBalance === undefined ? '' : formData.remainingBalance}
-                                        onChange={(e) => setFormData({...formData, remainingBalance: parseFloat(e.target.value) || 0})}
+                                        onChange={(e) => !isEditing && setFormData({...formData, remainingBalance: parseFloat(e.target.value) || 0})}
                                         placeholder="0.00"
-                                        className="pl-12 bg-secondary/30 border-border h-14 rounded-2xl font-bold focus:ring-primary/20"
+                                        className={`pl-12 bg-secondary/30 border-border h-14 rounded-2xl font-bold focus:ring-primary/20 ${isEditing ? 'opacity-70 cursor-not-allowed' : ''}`}
                                     />
                                 </div>
                             </div>
+
+                            {isEditing && (
+                                <>
+                                    <div className="space-y-3 animate-in slide-in-from-left-2 duration-300">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-primary ml-1">Payment Received Now (Subtracts from Balance)</Label>
+                                        <div className="relative group">
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-primary group-focus-within:scale-110 transition-transform">- PKR</span>
+                                            <Input 
+                                                type="number"
+                                                value={paymentAmount}
+                                                onChange={(e) => setPaymentAmount(e.target.value)}
+                                                placeholder="Enter payment amount..."
+                                                className="pl-16 bg-primary/5 border-primary/20 h-14 rounded-2xl font-black text-primary focus:ring-primary/40 placeholder:text-primary/30"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="md:col-span-2 p-6 bg-secondary/20 rounded-[2rem] border border-dashed border-border flex items-center justify-between animate-in zoom-in-95 duration-500">
+                                        <div>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-70">Resulting Balance Preview</p>
+                                            <p className="text-2xl font-black italic tracking-tighter mt-1">
+                                                PKR {(formData.remainingBalance || 0).toLocaleString()} 
+                                                <span className="text-primary mx-3">→</span> 
+                                                <span className={((formData.remainingBalance || 0) - (parseFloat(paymentAmount) || 0)) > 0 ? 'text-red-500' : 'text-emerald-500'}>
+                                                    PKR {((formData.remainingBalance || 0) - (parseFloat(paymentAmount) || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <div className={`h-12 w-12 rounded-2xl flex items-center justify-center ${((formData.remainingBalance || 0) - (parseFloat(paymentAmount) || 0)) <= 0 ? 'bg-emerald-500/20 text-emerald-500' : 'bg-primary/10 text-primary'}`}>
+                                            <Save className="h-6 w-6" />
+                                        </div>
+                                    </div>
+                                </>
+                            )}
 
                             <div className="space-y-3 md:col-span-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Full Shipping / Billing Address</Label>

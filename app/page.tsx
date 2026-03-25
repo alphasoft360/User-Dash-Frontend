@@ -2,13 +2,13 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { 
-  ArrowRight, 
-  CheckCircle2, 
-  Globe, 
-  ShieldCheck, 
-  Zap, 
-  Layers, 
+import {
+  ArrowRight,
+  CheckCircle2,
+  Globe,
+  ShieldCheck,
+  Zap,
+  Layers,
   Users,
   BarChart3,
   Cpu
@@ -32,8 +32,8 @@ export default function PromotionPage() {
             <a href="#about" className="text-sm font-medium text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors">About</a>
           </div>
           <div className="flex items-center gap-4">
-            <Link 
-              href="/login" 
+            <Link
+              href="/login"
               className="px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition-all shadow-md hover:shadow-lg active:scale-95"
             >
               Sign In
@@ -60,19 +60,19 @@ export default function PromotionPage() {
               <span className="text-indigo-600 dark:text-indigo-400">AlphaSoft360</span>
             </h1>
             <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-10 leading-relaxed">
-              Experience a unified digital ecosystem designed to scale your operations, 
+              Experience a unified digital ecosystem designed to scale your operations,
               streamline workflows, and drive unprecedented growth.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link 
-                href="/login" 
+              <Link
+                href="/login"
                 className="group w-full sm:w-auto px-8 py-4 rounded-xl bg-indigo-600 text-white font-bold text-lg flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-xl hover:shadow-indigo-500/25 active:scale-95"
               >
                 Get Started Now
                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
               </Link>
-              <a 
-                href="#features" 
+              <a
+                href="#features"
                 className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-bold text-lg border border-gray-200 dark:border-gray-800 hover:border-indigo-200 dark:hover:border-indigo-900 transition-all active:scale-95"
               >
                 Learn More
@@ -88,7 +88,7 @@ export default function PromotionPage() {
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Enterprise-Grade Solutions</h2>
               <p className="text-gray-600 dark:text-gray-400">Built for scale, designed for simplicity.</p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
                 {
@@ -179,14 +179,14 @@ export default function PromotionPage() {
             <div className="relative p-8 md:p-16 rounded-3xl bg-indigo-600 text-white overflow-hidden shadow-2xl">
               <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-white/10 rounded-full blur-[100px]" />
               <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-64 h-64 bg-indigo-400/20 rounded-full blur-[80px]" />
-              
+
               <div className="relative z-10 text-center max-w-3xl mx-auto">
                 <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Transform Your Business?</h2>
                 <p className="text-xl text-indigo-100 mb-10">
                   Join hundreds of forward-thinking companies already using AlphaSoft360 to scale their operations.
                 </p>
-                <Link 
-                  href="/login" 
+                <Link
+                  href="/login"
                   className="inline-flex items-center gap-2 px-10 py-5 rounded-xl bg-white text-indigo-600 font-bold text-xl hover:bg-gray-100 transition-all shadow-xl active:scale-95"
                 >
                   Start Your Journey

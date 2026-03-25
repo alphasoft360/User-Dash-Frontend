@@ -626,6 +626,14 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 pb-12">
+          {/* Section Heading */}
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground uppercase">
+              Partner Associate Brands
+            </h2>
+            <div className="h-1 w-12 bg-primary mx-auto rounded-full mt-3"></div>
+          </div>
+
           {/* Logo Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
             {[
