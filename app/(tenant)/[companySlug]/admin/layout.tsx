@@ -103,7 +103,7 @@ export default function AdminLayout({
                 className={`fixed inset-y-0 left-0 z-50 bg-secondary/50 dark:bg-gray-900/80 border-r border-border backdrop-blur-xl transition-all duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} ${isCompact ? 'w-20' : 'w-72'}`}
             >
                 <div className={`h-full flex flex-col ${isCompact ? 'p-4' : 'p-6'}`}>
-                    <div className={`flex items-center ${isCompact ? 'justify-center' : 'justify-between px-2'}`}>
+                    <div className={`flex items-center pb-2 ${isCompact ? 'justify-center' : 'justify-between px-2'}`}>
                         <div className="flex items-center space-x-1 cursor-default">
                             <img src={logoPath} alt="Logo" className="h-10 rounded-lg w-10" />
                             {!isCompact && <span className="text-lg font-black tracking-tighter text-foreground whitespace-nowrap overflow-hidden">ADMIN</span>}
@@ -131,16 +131,7 @@ export default function AdminLayout({
                                     {!isCompact && <span className="font-bold text-sm whitespace-nowrap text-clip overflow-hidden">{item.label}</span>}
                                     {!isCompact && isActive && <ChevronRight className="ml-auto h-4 w-4 shrink-0" />}
                                 </Link>
-                            ) : (
-                                <div
-                                    key={item.label}
-                                    title={isCompact ? `${item.label} (Restricted)` : 'Restricted'}
-                                    className={`flex items-center ${isCompact ? 'justify-center px-0' : 'px-4'} py-3 rounded-xl opacity-30 cursor-not-allowed select-none`}
-                                >
-                                    <item.icon className={`${isCompact ? '' : 'mr-3'} h-5 w-5 shrink-0 text-muted-foreground`} />
-                                    {!isCompact && <span className="font-bold text-sm whitespace-nowrap text-clip overflow-hidden text-muted-foreground">{item.label}</span>}
-                                </div>
-                            );
+                            ) : null;
                         })}
                     </nav>
 
