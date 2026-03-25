@@ -511,6 +511,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                     }}
                   />
                   <div className="absolute inset-0 bg-linear-to-t from-background/90 via-transparent to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 dark:via-white/30 to-transparent -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-1000"></div>
                   <div className="absolute bottom-4 left-4 right-4 p-5 bg-background/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl transition-all duration-500 group-hover:bg-background/80 group-hover:-translate-y-1">
                     <h3 className="text-xl font-black tracking-tight mb-1">{member.name}</h3>
                     <div className="space-y-1.5">
