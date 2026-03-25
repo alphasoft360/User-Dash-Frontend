@@ -227,7 +227,7 @@ export default function SalesLabPage() {
             setSelectedCustomerId(null);
             setSelectedCustomerData(null);
         }
-        
+
         if (query.length < 3) {
             setCustomerSearchResults([]);
             setShowSearchDropdown(false);
@@ -365,86 +365,86 @@ export default function SalesLabPage() {
     if (lastOrderId) {
         return (
             <>
-            <div className="flex flex-col items-center justify-center min-vh-70 h-[70vh] animate-in zoom-in-95 duration-500">
-                <div className="bg-primary/10 h-32 w-32 rounded-full flex items-center justify-center mb-8 border border-primary/20">
-                    <CheckCircle className="h-16 w-16 text-primary" />
-                </div>
-                <h1 className="text-5xl font-black italic uppercase tracking-tighter mb-4">Sale <span className="text-primary">Recorded</span></h1>
-                <p className="text-muted-foreground font-black uppercase tracking-widest text-xs mb-12">Batch Order ID: #{lastOrderId}</p>
-
-                <div className="flex gap-4">
-                    <Button 
-                        disabled={isPreviewing}
-                        onClick={() => lastOrderId && handlePreviewInvoice(lastOrderId)} 
-                        className="h-14 px-10 rounded-2xl bg-secondary text-foreground font-black uppercase tracking-widest min-w-[200px] hover:bg-secondary/80"
-                    >
-                        {isPreviewing ? (
-                            <Loader2 className="mr-3 h-5 w-5 animate-spin" />
-                        ) : (
-                            <Eye className="mr-3 h-5 w-5" />
-                        )}
-                        {isPreviewing ? 'Loading...' : 'Preview Invoice'}
-                    </Button>
-                    <Button 
-                        disabled={isDownloadingInvoice}
-                        onClick={() => lastOrderId && handleDownloadInvoice(lastOrderId)} 
-                        className="h-14 px-10 rounded-2xl bg-primary text-white font-black uppercase tracking-widest min-w-[200px]"
-                    >
-                        {isDownloadingInvoice ? (
-                            <Loader2 className="mr-3 h-5 w-5 animate-spin" />
-                        ) : (
-                            <FileDown className="mr-3 h-5 w-5" />
-                        )}
-                        {isDownloadingInvoice ? 'Generating...' : 'Get Invoice'}
-                    </Button>
-                    <Button onClick={startNewSale} className="h-14 px-10 rounded-2xl bg-secondary text-foreground font-black uppercase tracking-widest">
-                        Next Transaction
-                    </Button>
-                </div>
-            </div>
-
-            {/* FULL SCREEN PDF PREVIEW MODAL */}
-            {previewUrl && (
-                <div className="fixed inset-0 z-100 flex flex-col bg-background/95 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="p-4 border-b border-border flex justify-between items-center bg-card shadow-sm">
-                        <div>
-                            <h2 className="text-xl font-black uppercase italic tracking-tighter text-primary">INVOICE <span className="text-foreground not-italic">Preview</span></h2>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Order #{lastOrderId}</p>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <Button 
-                                onClick={() => {
-                                    const link = document.createElement('a');
-                                    link.href = previewUrl;
-                                    link.setAttribute('download', `Invoice-${lastOrderId}.pdf`);
-                                    document.body.appendChild(link);
-                                    link.click();
-                                    link.remove();
-                                }}
-                                className="bg-primary hover:bg-primary/90 text-white font-black px-6 rounded-xl flex items-center gap-2 uppercase italic shadow-lg shadow-primary/20 h-10"
-                            >
-                                <FileDown className="h-4 w-4" />
-                                DOWNLOAD PDF
-                            </Button>
-                            <div className="w-px h-8 bg-border"></div>
-                            <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                onClick={() => {
-                                    URL.revokeObjectURL(previewUrl);
-                                    setPreviewUrl(null);
-                                }}
-                                className="rounded-full bg-secondary/50 hover:bg-secondary h-10 w-10 shrink-0"
-                            >
-                                <X className="h-5 w-5" />
-                            </Button>
-                        </div>
+                <div className="flex flex-col items-center justify-center min-vh-70 h-[70vh] animate-in zoom-in-95 duration-500">
+                    <div className="bg-primary/10 h-32 w-32 rounded-full flex items-center justify-center mb-8 border border-primary/20">
+                        <CheckCircle className="h-16 w-16 text-primary" />
                     </div>
-                    <div className="flex-1 w-full p-4 md:p-8 bg-secondary/5 overflow-hidden">
-                        <iframe src={previewUrl} className="w-full h-full rounded-2xl shadow-2xl border border-border bg-white" />
+                    <h1 className="text-5xl font-black italic uppercase tracking-tighter mb-4">Sale <span className="text-primary">Recorded</span></h1>
+                    <p className="text-muted-foreground font-black uppercase tracking-widest text-xs mb-12">Batch Order ID: #{lastOrderId}</p>
+
+                    <div className="flex gap-4">
+                        <Button
+                            disabled={isPreviewing}
+                            onClick={() => lastOrderId && handlePreviewInvoice(lastOrderId)}
+                            className="h-14 px-10 rounded-2xl bg-secondary text-foreground font-black uppercase tracking-widest min-w-[200px] hover:bg-secondary/80"
+                        >
+                            {isPreviewing ? (
+                                <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                            ) : (
+                                <Eye className="mr-3 h-5 w-5" />
+                            )}
+                            {isPreviewing ? 'Loading...' : 'Preview Invoice'}
+                        </Button>
+                        <Button
+                            disabled={isDownloadingInvoice}
+                            onClick={() => lastOrderId && handleDownloadInvoice(lastOrderId)}
+                            className="h-14 px-10 rounded-2xl bg-primary text-white font-black uppercase tracking-widest min-w-[200px]"
+                        >
+                            {isDownloadingInvoice ? (
+                                <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                            ) : (
+                                <FileDown className="mr-3 h-5 w-5" />
+                            )}
+                            {isDownloadingInvoice ? 'Generating...' : 'Get Invoice'}
+                        </Button>
+                        <Button onClick={startNewSale} className="h-14 px-10 rounded-2xl bg-secondary text-foreground font-black uppercase tracking-widest">
+                            Next Transaction
+                        </Button>
                     </div>
                 </div>
-            )}
+
+                {/* FULL SCREEN PDF PREVIEW MODAL */}
+                {previewUrl && (
+                    <div className="fixed inset-0 z-100 flex flex-col bg-background/95 backdrop-blur-sm animate-in fade-in duration-300">
+                        <div className="p-4 border-b border-border flex justify-between items-center bg-card shadow-sm">
+                            <div>
+                                <h2 className="text-xl font-black uppercase italic tracking-tighter text-primary">INVOICE <span className="text-foreground not-italic">Preview</span></h2>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Order #{lastOrderId}</p>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <Button
+                                    onClick={() => {
+                                        const link = document.createElement('a');
+                                        link.href = previewUrl;
+                                        link.setAttribute('download', `Invoice-${lastOrderId}.pdf`);
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        link.remove();
+                                    }}
+                                    className="bg-primary hover:bg-primary/90 text-white font-black px-6 rounded-xl flex items-center gap-2 uppercase italic shadow-lg shadow-primary/20 h-10"
+                                >
+                                    <FileDown className="h-4 w-4" />
+                                    DOWNLOAD PDF
+                                </Button>
+                                <div className="w-px h-8 bg-border"></div>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => {
+                                        URL.revokeObjectURL(previewUrl);
+                                        setPreviewUrl(null);
+                                    }}
+                                    className="rounded-full bg-secondary/50 hover:bg-secondary h-10 w-10 shrink-0"
+                                >
+                                    <X className="h-5 w-5" />
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="flex-1 w-full p-4 md:p-8 bg-secondary/5 overflow-hidden">
+                            <iframe src={previewUrl} className="w-full h-full rounded-2xl shadow-2xl border border-border bg-white" />
+                        </div>
+                    </div>
+                )}
             </>
         );
     }
@@ -623,7 +623,7 @@ export default function SalesLabPage() {
                     )}
                 </div>
 
-                <div className="flex-[3] min-h-0 p-6 border-t border-border bg-background z-10">
+                <div className="flex-[3] min-h-0 p-6 border-t border-border bg-background z-10 overflow-y-auto custom-scrollbar">
                     <div className="space-y-3 mb-6">
                         <div className="relative group">
                             <UserCircle className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors z-20" />
@@ -750,7 +750,7 @@ export default function SalesLabPage() {
                                         <Building className="h-5 w-5 text-primary" />
                                     </div>
                                 </div>
-                                
+
                                 {selectedCustomerData.remainingBalance > 0 && (
                                     <div className="space-y-2 pt-2 border-t border-primary/10">
                                         <Label className="text-[9px] font-black uppercase tracking-widest text-primary/70 ml-1">Pay Towards Debt</Label>
