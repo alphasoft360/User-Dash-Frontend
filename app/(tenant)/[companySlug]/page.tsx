@@ -119,7 +119,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
   const prevHero = () => setHeroImageIndex((prev) => (prev - 1 + heroImages.length) % heroImages.length);
 
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-500 overflow-x-hidden selection:bg-primary/30">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-500 selection:bg-primary/30">
       {/* Decorative Background Elements */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[150px] rounded-full animate-pulse-slow"></div>
@@ -168,8 +168,8 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
 
                   {isProfileOpen && (
                     <>
-                      <div 
-                        className="fixed inset-0 z-40" 
+                      <div
+                        className="fixed inset-0 z-40"
                         onClick={() => setIsProfileOpen(false)}
                       />
                       <div className="absolute right-0 mt-3 w-64 bg-background border border-border rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
@@ -198,7 +198,9 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
 
             {/* Mobile Menu Toggle */}
             <div className="lg:hidden flex items-center gap-3">
-              <ThemeToggle />
+              <div className="sm:hidden">
+                <ThemeToggle />
+              </div>
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="p-2 bg-secondary/50 rounded-xl border border-border/50 text-foreground"
