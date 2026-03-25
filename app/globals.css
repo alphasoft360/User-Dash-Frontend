@@ -17,6 +17,22 @@
     --color-accent-foreground: var(--accent-foreground);
     --color-popover: var(--popover);
     --color-popover-foreground: var(--popover-foreground);
+
+    --animate-slide-in-left: slide-in-left 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+    @keyframes slide-in-left {
+        0% {
+            transform: translateX(-70px);
+            opacity: 0;
+            filter: blur(4px);
+        }
+
+        100% {
+            transform: translateX(0);
+            opacity: 1;
+            filter: blur(0);
+        }
+    }
 }
 
 :root {

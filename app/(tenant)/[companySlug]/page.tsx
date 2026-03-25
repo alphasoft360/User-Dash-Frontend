@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, use, useRef } from 'react';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import {
@@ -35,6 +35,27 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
   const [logoPath, setLogoPath] = useState('/images/logo.png');
 
   const [showBanner, setShowBanner] = useState(false);
+  const [isCardVisible, setIsCardVisible] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsCardVisible(true);
+        } else {
+          setIsCardVisible(false);
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const fetchCompanyData = async () => {
@@ -267,7 +288,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                   {heroImages.map((img, i) => (
                     <div
                       key={i}
-                      className={`absolute inset-0 transition-opacity duration-[2000ms] ease-in-out ${i === heroImageIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-105'}`}
+                      className={`absolute inset-0 transition-all duration-[1200ms] ease-[cubic-bezier(0.23,1,0.32,1)] ${i === heroImageIndex ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-105 blur-[2px]'}`}
                     >
                       <img
                         src={img}
@@ -288,17 +309,6 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                   ))}
                 </div>
 
-                {/* Glassmorphic floating card decoration */}
-                <div className="absolute top-8 left-[-1rem] md:top-12 md:left-[-2rem] bg-background/80 backdrop-blur-2xl border border-border p-4 rounded-2xl shadow-2xl hidden sm:flex items-center gap-4 z-30 animate-in slide-in-from-left-4 duration-1000 delay-500">
-                  <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center text-primary">
-                    <Target className="w-6 h-6" />
-                  </div>
-                  <div className="pr-4">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Precision</p>
-                    <p className="text-sm font-black text-foreground">Highest Guarantee</p>
-                  </div>
-                </div>
-
                 {/* Floating Carousel Controls */}
                 <div className="absolute bottom-6 md:bottom-8 right-6 md:right-8 flex items-center gap-3 z-30">
                   <button
@@ -313,6 +323,20 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                   >
                     <ChevronRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
                   </button>
+                </div>
+              </div>
+
+              {/* Glassmorphic floating card decoration - Moved outside overflow-hidden */}
+              <div
+                ref={cardRef}
+                className={`absolute top-14 md:top-24 left-4 md:left-2 bg-background/80 backdrop-blur-2xl border border-border p-4 rounded-2xl shadow-2xl hidden sm:flex items-center gap-4 z-40 ${isCardVisible ? 'animate-slide-in-left' : 'opacity-0'}`}
+              >
+                <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center text-primary">
+                  <Target className="w-6 h-6" />
+                </div>
+                <div className="pr-4">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Precision</p>
+                  <p className="text-sm font-black text-foreground">Highest Guarantee</p>
                 </div>
               </div>
             </div>
