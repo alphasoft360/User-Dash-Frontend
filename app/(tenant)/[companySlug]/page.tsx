@@ -611,7 +611,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
       <footer className="relative bg-background pt-16 border-t border-border/60 mt-10 overflow-hidden">
 
         {/* Concentric Circles Pattern Background */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05]">
+        <div className="absolute inset-0 pointer-events-none opacity-[0.2] dark:opacity-[0.1]">
           <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <pattern id="concentric-circles" width="120" height="120" patternUnits="userSpaceOnUse">
