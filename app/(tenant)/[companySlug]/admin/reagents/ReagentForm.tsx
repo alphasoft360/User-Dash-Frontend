@@ -45,6 +45,7 @@ export default function ReagentForm({ initialData, isEditing = false }: ReagentF
     const companySlug = params.companySlug as string;
     const [loading, setLoading] = useState(false);
     const [savedId, setSavedId] = useState<number | null>(initialData?.id || null);
+    const [isSaved, setIsSaved] = useState(false);
     const [categories, setCategories] = useState<Category[]>([]);
     const [formData, setFormData] = useState<Partial<Product>>({
         name: '',
@@ -123,6 +124,7 @@ export default function ReagentForm({ initialData, isEditing = false }: ReagentF
                 };
                 await api.put(`/admin/products/${formData.id}`, dataToSubmit);
                 setSavedId(formData.id);
+                setIsSaved(true);
                 toast.success("Reagent updated successfully");
             } else {
                 const dataToSubmit = {
@@ -135,6 +137,7 @@ export default function ReagentForm({ initialData, isEditing = false }: ReagentF
                 };
                 const response = await api.post('/products', dataToSubmit);
                 setSavedId(response.data.id);
+                setIsSaved(true);
                 toast.success("Reagent added successfully");
             }
         } catch (err: unknown) {
@@ -356,7 +359,7 @@ export default function ReagentForm({ initialData, isEditing = false }: ReagentF
                         </div>
 
                         <div className="pt-6 border-t border-border flex flex-col md:flex-row gap-4">
-                            {!savedId ? (
+                            {!isSaved ? (
                                 <>
                                     <Button
                                         type="submit"

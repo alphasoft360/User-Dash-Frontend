@@ -54,7 +54,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
 
     const [isStatementOpen, setIsStatementOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
-    const [period, setPeriod] = useState<'monthly' | 'yearly'>('monthly');
+    const [period, setPeriod] = useState<'monthly' | 'yearly' | 'all_time'>('all_time');
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
     const [selectedMonth, setSelectedMonth] = useState((new Date().getMonth() + 1).toString());
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -415,6 +415,12 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Summary Type</Label>
                                 <div className="flex p-1 bg-secondary/30 rounded-2xl gap-1">
                                     <button
+                                        onClick={() => setPeriod('all_time')}
+                                        className={`flex-1 py-3 rounded-xl font-black text-xs uppercase transition-all ${period === 'all_time' ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
+                                    >
+                                        All Time
+                                    </button>
+                                    <button
                                         onClick={() => setPeriod('monthly')}
                                         className={`flex-1 py-3 rounded-xl font-black text-xs uppercase transition-all ${period === 'monthly' ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
                                     >
@@ -429,20 +435,21 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-bottom-2 duration-500">
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Year</Label>
-                                    <Select value={selectedYear} onValueChange={setSelectedYear}>
-                                        <SelectTrigger className="bg-secondary/30 border-border rounded-xl h-12 font-bold">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {years.map(y => (
-                                                <SelectItem key={y} value={y} className="font-bold">{y}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+                            {period !== 'all_time' && (
+                                <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-bottom-2 duration-500">
+                                    <div className="space-y-3">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Year</Label>
+                                        <Select value={selectedYear} onValueChange={setSelectedYear}>
+                                            <SelectTrigger className="bg-secondary/30 border-border rounded-xl h-12 font-bold">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {years.map(y => (
+                                                    <SelectItem key={y} value={y} className="font-bold">{y}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
 
                                 {period === 'monthly' && (
                                     <div className="space-y-3 animate-in fade-in slide-in-from-left-2 duration-500">
@@ -459,7 +466,8 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                                         </Select>
                                     </div>
                                 )}
-                            </div>
+                                </div>
+                            )}
 
                             <div className="flex gap-3 mt-4">
                                 <Button
