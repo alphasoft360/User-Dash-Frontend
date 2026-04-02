@@ -5,6 +5,8 @@ import Link from 'next/link';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import MagneticButton from '@/components/MagneticButton';
+import AnimatedCounter from '@/components/AnimatedCounter';
 import {
   Users,
   FileText,
@@ -140,10 +142,12 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
       </div>
 
       {/* Navigation Layer */}
-      <nav className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border/50">
+      <nav className="sticky top-0 z-50 w-full glass-morphism transition-all duration-500">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src={logoPath} alt="Logo" className="h-10 w-10 rounded-lg" />
+            <MagneticButton>
+              <img src={logoPath} alt="Logo" className="h-10 w-10 rounded-lg shadow-lg" />
+            </MagneticButton>
             <p className="text-base font-semibold text-primary tracking-tight">
               {companyInfo?.name || 'Unique HealthCare Solution'}
             </p>
@@ -151,32 +155,36 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-8 text-sm font-medium text-muted-foreground mr-auto ml-12">
-            <Link href="#story" className="hover:text-primary transition-colors">Our Story</Link>
-            <Link href="#team" className="hover:text-primary transition-colors">The Team</Link>
-            <Link href="#resources" className="hover:text-primary transition-colors">Resources</Link>
+            <MagneticButton><Link href="#story" className="hover:text-primary transition-colors">Our Story</Link></MagneticButton>
+            <MagneticButton><Link href="#team" className="hover:text-primary transition-colors">The Team</Link></MagneticButton>
+            <MagneticButton><Link href="#resources" className="hover:text-primary transition-colors">Resources</Link></MagneticButton>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-3">
               <ThemeToggle />
               {!isAuthenticated ? (
-                <Link
-                  href={`/${companySlug}/register`}
-                  className="px-6 py-2.5 bg-primary text-primary-foreground rounded-full text-sm font-bold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
-                >
-                  Get Started
-                </Link>
+                <MagneticButton>
+                  <Link
+                    href={`/${companySlug}/register`}
+                    className="px-6 py-2.5 bg-primary text-primary-foreground rounded-full text-sm font-bold transition-all shadow-lg shadow-primary/20 hover:shadow-primary/40 block"
+                  >
+                    Get Started
+                  </Link>
+                </MagneticButton>
               ) : (
                 <div className="relative">
-                  <button
-                    onClick={() => setIsProfileOpen(!isProfileOpen)}
-                    className="flex items-center gap-2 p-1.5 bg-secondary/50 hover:bg-secondary rounded-full border border-border transition-all active:scale-95"
-                  >
-                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary">
-                      <UserIcon className="w-4 h-4" />
-                    </div>
-                    <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-300 ${isProfileOpen ? 'rotate-180' : ''}`} />
-                  </button>
+                  <MagneticButton>
+                    <button
+                      onClick={() => setIsProfileOpen(!isProfileOpen)}
+                      className="flex items-center gap-2 p-1.5 bg-secondary/50 hover:bg-secondary rounded-full border border-border transition-all"
+                    >
+                      <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary">
+                        <UserIcon className="w-4 h-4" />
+                      </div>
+                      <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-300 ${isProfileOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                  </MagneticButton>
 
                   {isProfileOpen && (
                     <>
@@ -318,11 +326,8 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
               {/* Heading */}
               <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-foreground leading-[1.1]">
                 Modernize Your <br />
-                <span className="text-primary font-bold relative inline-block mt-2">
+                <span className="animate-gradient-text font-black relative inline-block mt-2">
                   Laboratory
-                  <svg className="absolute w-full h-3 -bottom-1 left-0 text-primary/30" viewBox="0 0 100 10" preserveAspectRatio="none">
-                    <path d="M0 5 Q 50 15 100 5" stroke="currentColor" strokeWidth="4" fill="transparent" />
-                  </svg>
                 </span> <br />
                 Operations.
               </h1>
@@ -334,30 +339,34 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
 
               {/* Actions */}
               <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
-                <Link href="#story" className="w-full sm:w-auto px-8 py-4 bg-primary text-primary-foreground rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-primary/90 hover:-translate-y-1 transition-all shadow-lg shadow-primary/20 group">
-                  Discover Our Story
-                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <Link href="#resources" className="w-full sm:w-auto px-8 py-4 bg-secondary hover:bg-secondary/80 text-foreground border border-border/50 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 transition-all hover:-translate-y-1 group">
-                  View Resources
-                  <Download className="w-4 h-4 text-muted-foreground group-hover:translate-y-0.5 transition-transform" />
-                </Link>
+                <MagneticButton className="w-full sm:w-auto">
+                  <Link href="#story" className="w-full sm:w-auto px-8 py-4 bg-primary text-primary-foreground rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 group">
+                    Discover Our Story
+                    <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </MagneticButton>
+                <MagneticButton className="w-full sm:w-auto">
+                  <Link href="#resources" className="w-full sm:w-auto px-8 py-4 bg-secondary hover:bg-secondary/80 text-foreground border border-border/50 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 transition-all group">
+                    View Resources
+                    <Download className="w-4 h-4 text-muted-foreground group-hover:translate-y-0.5 transition-transform" />
+                  </Link>
+                </MagneticButton>
               </div>
 
               {/* Minimal Stats */}
               <div className="flex items-center gap-6 pt-8 md:pt-12 border-t border-border/40 max-w-md w-full">
                 <div className="space-y-1">
-                  <p className="text-2xl font-black text-foreground">100<span className="text-primary">+</span></p>
+                  <p className="text-2xl font-black text-foreground"><AnimatedCounter value={100} /><span className="text-primary">+</span></p>
                   <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Partners</p>
                 </div>
                 <div className="w-px h-10 bg-border/50"></div>
                 <div className="space-y-1">
-                  <p className="text-2xl font-black text-foreground">99.9<span className="text-primary">%</span></p>
+                  <p className="text-2xl font-black text-foreground"><AnimatedCounter value={99.9} /><span className="text-primary">%</span></p>
                   <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Accuracy</p>
                 </div>
                 <div className="w-px h-10 bg-border/50"></div>
                 <div className="space-y-1">
-                  <p className="text-2xl font-black text-foreground">24<span className="text-primary">/</span>7</p>
+                  <p className="text-2xl font-black text-foreground"><AnimatedCounter value={24} /><span className="text-primary">/</span>7</p>
                   <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Support</p>
                 </div>
               </div>
@@ -437,13 +446,16 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
           {/* Numbers Section - Centered and Tightened */}
           <section className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-80 py-8 border-y border-border/40" data-aos="zoom-in-up" data-aos-delay="100">
             {[
-              { label: 'Active Users', value: '250K+' },
-              { label: 'Enterprises', value: '450+' },
-              { label: 'Global Offices', value: '12' },
-              { label: 'Success Rate', value: '99.9%' },
+              { label: 'Active Users', value: 250000, suffix: 'K+' },
+              { label: 'Enterprises', value: 450, suffix: '+' },
+              { label: 'Global Offices', value: 12, suffix: '' },
+              { label: 'Success Rate', value: 99.9, suffix: '%' },
             ].map((stat, i) => (
               <div key={i} className="text-center">
-                <div className="text-3xl font-semibold text-primary mb-1">{stat.value}</div>
+                <div className="text-3xl font-semibold text-primary mb-1">
+                  <AnimatedCounter value={stat.value} />
+                  {stat.suffix}
+                </div>
                 <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{stat.label}</div>
               </div>
             ))}

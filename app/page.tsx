@@ -4,6 +4,8 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import MagneticButton from '@/components/MagneticButton';
+import AnimatedCounter from '@/components/AnimatedCounter';
 import {
   ArrowRight,
   CheckCircle2,
@@ -30,26 +32,30 @@ export default function PromotionPage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md">
+      <nav className="sticky top-0 z-50 w-full glass-morphism transition-all duration-500">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-xl">
-              A
-            </div>
+            <MagneticButton>
+              <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-500/20">
+                A
+              </div>
+            </MagneticButton>
             <span className="font-bold text-xl tracking-tight">AlphaSoft360</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm font-medium text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors">Features</a>
-            <a href="#solutions" className="text-sm font-medium text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors">Solutions</a>
-            <a href="#about" className="text-sm font-medium text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors">About</a>
+            <MagneticButton><a href="#features" className="text-sm font-medium text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors">Features</a></MagneticButton>
+            <MagneticButton><a href="#solutions" className="text-sm font-medium text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors">Solutions</a></MagneticButton>
+            <MagneticButton><a href="#about" className="text-sm font-medium text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors">About</a></MagneticButton>
           </div>
           <div className="flex items-center gap-4">
-            <Link
-              href="/login"
-              className="px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition-all shadow-md hover:shadow-lg active:scale-95"
-            >
-              Sign In
-            </Link>
+            <MagneticButton>
+              <Link
+                href="/login"
+                className="px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition-all shadow-md hover:shadow-indigo-500/30 block"
+              >
+                Sign In
+              </Link>
+            </MagneticButton>
           </div>
         </div>
       </nav>
@@ -67,28 +73,34 @@ export default function PromotionPage() {
               <Zap size={14} className="fill-current" />
               <span>THE FUTURE OF ENTERPRISE MANAGEMENT</span>
             </div>
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-linear-to-r from-gray-900 via-indigo-800 to-gray-900 dark:from-white dark:via-indigo-300 dark:to-white" data-aos="fade-up">
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6" data-aos="fade-up">
               Elevate Your Business with <br />
-              <span className="text-indigo-600 dark:text-indigo-400">AlphaSoft360</span>
+              <span className="animate-gradient-text">AlphaSoft360</span>
             </h1>
             <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-10 leading-relaxed" data-aos="fade-up" data-aos-delay="100">
               Experience a unified digital ecosystem designed to scale your operations,
               streamline workflows, and drive unprecedented growth.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
-              <Link
-                href="/login"
-                className="group w-full sm:w-auto px-8 py-4 rounded-xl bg-indigo-600 text-white font-bold text-lg flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-xl hover:shadow-indigo-500/25 active:scale-95"
-              >
-                Get Started Now
-                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <a
-                href="#features"
-                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-bold text-lg border border-gray-200 dark:border-gray-800 hover:border-indigo-200 dark:hover:border-indigo-900 transition-all active:scale-95"
-              >
-                Learn More
-              </a>
+              <MagneticButton className="w-full sm:w-auto">
+                <Link
+                  href="/login"
+                  className="group w-full sm:w-auto px-8 py-4 rounded-xl bg-indigo-600 text-white font-bold text-lg flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/20 block"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    Get Started Now
+                    <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+              </MagneticButton>
+              <MagneticButton className="w-full sm:w-auto">
+                <a
+                  href="#features"
+                  className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-bold text-lg border border-gray-200 dark:border-gray-800 hover:border-indigo-200 dark:hover:border-indigo-900 transition-all block"
+                >
+                  Learn More
+                </a>
+              </MagneticButton>
             </div>
           </div>
         </section>
@@ -176,7 +188,9 @@ export default function PromotionPage() {
                 <div className="relative aspect-video rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 overflow-hidden shadow-2xl flex items-center justify-center">
                   <div className="flex flex-col items-center gap-4">
                     <Users size={64} className="text-indigo-600" />
-                    <div className="text-4xl font-bold">10,000+</div>
+                    <div className="text-4xl font-bold">
+                      <AnimatedCounter value={10000} />+
+                    </div>
                     <div className="text-gray-500 uppercase tracking-widest text-sm font-bold">Active Users</div>
                   </div>
                 </div>
@@ -197,13 +211,15 @@ export default function PromotionPage() {
                 <p className="text-xl text-indigo-100 mb-10">
                   Join hundreds of forward-thinking companies already using AlphaSoft360 to scale their operations.
                 </p>
-                <Link
-                  href="/login"
-                  className="inline-flex items-center gap-2 px-10 py-5 rounded-xl bg-white text-indigo-600 font-bold text-xl hover:bg-gray-100 transition-all shadow-xl active:scale-95"
-                >
-                  Start Your Journey
-                  <ArrowRight size={22} />
-                </Link>
+                <MagneticButton className="mx-auto">
+                  <Link
+                    href="/login"
+                    className="inline-flex items-center gap-2 px-10 py-5 rounded-xl bg-white text-indigo-600 font-bold text-xl hover:bg-gray-100 transition-all shadow-xl block"
+                  >
+                    Start Your Journey
+                    <ArrowRight size={22} />
+                  </Link>
+                </MagneticButton>
               </div>
             </div>
           </div>
