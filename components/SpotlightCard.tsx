@@ -19,7 +19,7 @@ export default function SpotlightCard({ children, className = '' }: { children: 
 
     return (
         <div
-            className={`group relative rounded-3xl border border-white/10 bg-gray-900 px-8 py-16 shadow-2xl transition-all duration-300 hover:border-primary/50 overflow-hidden ${className}`}
+            className={`group relative overflow-hidden transition-all duration-300 ${className}`}
             onMouseMove={handleMouseMove}
         >
             {/* The Spotlight Overlay */}
@@ -37,7 +37,7 @@ export default function SpotlightCard({ children, className = '' }: { children: 
             />
             
             {/* Darker inner mask to pop the content */}
-            <div className="relative z-10">
+            <div className="relative z-10 h-full">
                 {children}
             </div>
         </div>

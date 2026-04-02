@@ -12,7 +12,9 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { FileBarChart, Download, FileText, AlertCircle, ShoppingBag, Package, Activity, ChevronDown, Eye, X, Loader2 } from 'lucide-react';
+import { FileBarChart, Download, FileText, AlertCircle, ShoppingBag, Package, Activity, ChevronDown, Eye, X, Loader2, Calendar, BarChart as BarChartIcon } from 'lucide-react';
+import MagneticButton from '@/components/MagneticButton';
+import SpotlightCard from '@/components/SpotlightCard';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 
@@ -112,32 +114,61 @@ export default function ReportsLabPage() {
     if (loading) return <div className="py-20 text-center font-black animate-pulse text-primary tracking-widest uppercase italic">Compiling Intelligence Matrix...</div>;
 
     return (
-        <div className="space-y-10 animate-in fade-in duration-700">
+        <div className="space-y-6 animate-in fade-in duration-700">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
                     <h1 className="text-4xl font-black text-foreground tracking-tighter mb-2 uppercase italic">LAB <span className="text-primary not-italic">Intelligence</span></h1>
-                    <p className="text-muted-foreground font-medium uppercase text-[10px] tracking-widest">Statistical Analysis & Inventory Audits.</p>
+                    <p className="text-muted-foreground font-medium uppercase text-[10px] tracking-widest leading-relaxed">Statistical Analysis & Financial Audits <br />Generated at {new Date().toLocaleTimeString()}</p>
                 </div>
-                <div className="flex gap-4">
-                    <Select onValueChange={(val) => downloadSummary(val)}>
-                        <SelectTrigger className="bg-secondary text-foreground hover:bg-secondary/80 font-black px-6 rounded-xl h-12 shadow-sm border-none w-[200px]">
+            </div>
+
+            {/* Ultra Slim Premium Intelligence Matrix */}
+            <div className="flex flex-col sm:flex-row gap-2">
+                {[
+                    { id: 'monthly', title: 'Monthly Statement', icon: Calendar, bg: 'bg-indigo-500/10', text: 'text-indigo-500', btn: 'bg-indigo-500 hover:bg-indigo-600 shadow-indigo-500/20' },
+                    { id: 'yearly', title: 'Yearly Audit', icon: BarChartIcon, bg: 'bg-pink-500/10', text: 'text-pink-500', btn: 'bg-pink-500 hover:bg-pink-600 shadow-pink-500/20' }
+                ].map((report) => (
+                    <SpotlightCard key={report.id} className="flex-1 border border-border/40 bg-secondary/5 rounded-xl h-22">
+                        <div className="px-4 h-full flex items-center justify-between group">
                             <div className="flex items-center gap-3">
-                                <Download className="h-4 w-4" />
-                                <span>EXPORT REPORT</span>
+                                <div className={`w-10 h-10 rounded-lg ${report.bg} flex items-center justify-center ${report.text} shrink-0`}>
+                                    <report.icon size={14} />
+                                </div>
+                                <h3 className="text-[15px] font-black uppercase italic tracking-wider whitespace-nowrap">{report.title}</h3>
                             </div>
-                        </SelectTrigger>
-                        <SelectContent className="dark:bg-slate-900 border-border">
-                            <SelectItem value="monthly" className="font-bold">Monthly Invoice</SelectItem>
-                            <SelectItem value="yearly" className="font-bold">Yearly Invoice</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
+                            <div className="flex items-center gap-3">
+                                <MagneticButton>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => previewSummary(report.id)}
+                                        disabled={previewing}
+                                        className="rounded-md border-border/40 hover:bg-background h-7 px-2 font-black uppercase text-[10px] tracking-widest gap-1"
+                                    >
+                                        {previewing ? <Loader2 className="h-5 w-5 animate-spin" /> : <Eye className="h-5 w-5" />}
+                                        PREVIEW
+                                    </Button>
+                                </MagneticButton>
+                                <MagneticButton>
+                                    <Button
+                                        size="sm"
+                                        onClick={() => downloadSummary(report.id)}
+                                        className={`rounded-md ${report.btn} text-white h-7 px-2 font-black uppercase text-[10px] tracking-widest gap-1 shadow-sm`}
+                                    >
+                                        <Download className="h-4 w-4" />
+                                        EXPORT
+                                    </Button>
+                                </MagneticButton>
+                            </div>
+                        </div>
+                    </SpotlightCard>
+                ))}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                 {/* Daily Sales Chart/Table */}
-                <Card className="bg-card border-border rounded-[2.5rem] shadow-sm overflow-hidden border-t-4 border-t-indigo-500/20">
-                    <CardHeader className="p-10 border-b border-border bg-secondary/10 flex flex-row items-center justify-between">
+                <Card className="bg-card border-border rounded-3xl shadow-sm overflow-hidden border-t-4 border-t-indigo-500/20">
+                    <CardHeader className="p-6 border-b border-border bg-secondary/5 flex flex-row items-center justify-between">
                         <div>
                             <CardTitle className="text-xl font-black flex items-center gap-3 uppercase">
                                 <ShoppingBag className="h-6 w-6 text-indigo-500" />
@@ -145,9 +176,6 @@ export default function ReportsLabPage() {
                             </CardTitle>
                             <CardDescription className="text-[10px] font-black uppercase tracking-widest">Revenue tracking for the last 30 intervals.</CardDescription>
                         </div>
-                        <Button variant="ghost" size="icon" onClick={() => downloadReport('Sales')}>
-                            <FileText className="h-5 w-5" />
-                        </Button>
                     </CardHeader>
                     <CardContent className="p-0">
                         <Table>
@@ -204,8 +232,8 @@ export default function ReportsLabPage() {
                 </Card>
 
                 {/* Critical Inventory Alerts */}
-                <Card className="bg-card border-border rounded-[2.5rem] shadow-sm overflow-hidden border-t-4 border-t-red-500/20">
-                    <CardHeader className="p-10 border-b border-border bg-secondary/10 flex flex-row items-center justify-between">
+                <Card className="bg-card border-border rounded-3xl shadow-sm overflow-hidden border-t-4 border-t-red-500/20">
+                    <CardHeader className="p-6 border-b border-border bg-secondary/5 flex flex-row items-center justify-between">
                         <div>
                             <CardTitle className="text-xl font-black flex items-center gap-3 uppercase">
                                 <AlertCircle className="h-6 w-6 text-red-500" />
@@ -213,9 +241,6 @@ export default function ReportsLabPage() {
                             </CardTitle>
                             <CardDescription className="text-[10px] font-black uppercase tracking-widest">Items currently below minimum operating thresholds.</CardDescription>
                         </div>
-                        <Button variant="ghost" size="icon" onClick={() => downloadReport('Stock')}>
-                            <FileText className="h-5 w-5" />
-                        </Button>
                     </CardHeader>
                     <CardContent className="p-0">
                         <Table>
@@ -261,7 +286,7 @@ export default function ReportsLabPage() {
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Reviewing statistical summary</p>
                         </div>
                         <div className="flex items-center gap-4">
-                            <Button 
+                            <Button
                                 onClick={() => {
                                     const link = document.createElement('a');
                                     link.href = previewUrl;
@@ -276,9 +301,9 @@ export default function ReportsLabPage() {
                                 DOWNLOAD PDF
                             </Button>
                             <div className="w-px h-8 bg-border"></div>
-                            <Button 
-                                variant="ghost" 
-                                size="icon" 
+                            <Button
+                                variant="ghost"
+                                size="icon"
                                 onClick={() => {
                                     URL.revokeObjectURL(previewUrl);
                                     setPreviewUrl(null);
