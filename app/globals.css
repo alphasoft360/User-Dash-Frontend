@@ -96,8 +96,36 @@
     body {
         background-color: var(--background);
         color: var(--foreground);
-        transition-property: background-color, border-color, color, fill, stroke;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 300ms;
     }
+}
+
+/* View Transition Theme Animations */
+::view-transition-group(root) {
+    animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+::view-transition-new(root),
+::view-transition-old(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+/* Entering dark mode */
+.dark::view-transition-old(root) {
+    z-index: 1;
+}
+
+.dark::view-transition-new(root) {
+    z-index: 2147483646;
+    /* Prevent 1-frame flash before JS takes over */
+    clip-path: circle(0px at var(--x, 50vw) var(--y, 50vh));
+}
+
+/* Entering light mode */
+::view-transition-old(root) {
+    z-index: 2147483646;
+}
+
+::view-transition-new(root) {
+    z-index: 1;
 }

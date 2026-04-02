@@ -1,12 +1,13 @@
 "use client"
 
 import * as React from "react"
+import { flushSync } from "react-dom"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 
 export function ThemeToggle({ className = "" }: { className?: string }) {
-    const { theme, setTheme } = useTheme()
+    const { theme, setTheme, resolvedTheme } = useTheme()
     const [mounted, setMounted] = React.useState(false)
 
     React.useEffect(() => {
@@ -17,12 +18,68 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
         return <Button variant="ghost" size="icon" className={`rounded-xl ${className}`} disabled><span className="w-5 h-5" /></Button> // Placeholder to prevent hydration mismatch
     }
 
+    const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+        const isDark = resolvedTheme === "dark";
+        const newTheme = isDark ? "light" : "dark";
+
+        if (!document.startViewTransition) {
+            setTheme(newTheme);
+            return;
+        }
+
+        const x = e.clientX;
+        const y = e.clientY;
+        const endRadius = Math.hypot(
+            Math.max(x, window.innerWidth - x),
+            Math.max(y, window.innerHeight - y)
+        );
+
+        // Pre-emptively write the coordinates so CSS can clip the first unstyled frame to prevent flashing
+        document.documentElement.style.setProperty("--x", `${x}px`);
+        document.documentElement.style.setProperty("--y", `${y}px`);
+
+        // Inject global style to perfectly freeze all native CSS transitions during the View Transition window
+        const style = document.createElement("style");
+        style.innerHTML = "* { transition: none !important; }";
+        document.head.appendChild(style);
+
+        const transition = document.startViewTransition(() => {
+            setTheme(newTheme);
+        });
+
+        transition.ready.then(() => {
+            const clipPath = [
+                `circle(0px at ${x}px ${y}px)`,
+                `circle(${endRadius}px at ${x}px ${y}px)`,
+            ];
+
+            const animation = document.documentElement.animate(
+                {
+                    clipPath: isDark ? [...clipPath].reverse() : clipPath,
+                },
+                {
+                    duration: 1200,
+                    easing: "cubic-bezier(0.76, 0, 0.24, 1)",
+                    pseudoElement: isDark
+                        ? "::view-transition-old(root)"
+                        : "::view-transition-new(root)",
+                }
+            );
+
+            animation.onfinish = () => {
+                document.head.removeChild(style);
+            };
+        }).catch(() => {
+            document.head.removeChild(style);
+        });
+    };
+
     return (
         <Button
             variant="ghost"
             size="icon"
             className={`relative hover:bg-gray-200 dark:hover:bg-white/5 rounded-xl transition-all ${className}`}
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            onClick={handleToggle}
             aria-label="Toggle theme"
         >
             <Sun className="h-6 w-6 text-gray-700 dark:text-gray-300 transition-all scale-100 rotate-0 dark:scale-0 dark:-rotate-90" />
