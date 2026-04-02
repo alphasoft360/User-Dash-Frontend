@@ -78,12 +78,12 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
         <Button
             variant="ghost"
             size="icon"
-            className={`relative hover:bg-gray-200 dark:hover:bg-white/5 rounded-xl transition-all ${className}`}
+            className={`theme-toggle-btn relative group hover:bg-gray-200 dark:hover:bg-white/5 hover:scale-110 active:scale-95 rounded-xl transition-all duration-300 ${className}`}
             onClick={handleToggle}
             aria-label="Toggle theme"
         >
-            <Sun className="h-6 w-6 text-gray-700 dark:text-gray-300 transition-all scale-100 rotate-0 dark:scale-0 dark:-rotate-90" />
-            <Moon className="absolute h-6 w-6 text-gray-700 dark:text-gray-300 transition-all scale-0 rotate-90 dark:scale-100 dark:rotate-0" />
+            <Sun className="h-6 w-6 text-gray-700 dark:text-gray-300 transition-all duration-500 ease-out scale-100 rotate-0 group-hover:rotate-[15deg] dark:scale-0 dark:-rotate-90" />
+            <Moon className="absolute h-6 w-6 text-gray-700 dark:text-gray-300 transition-all duration-500 ease-out scale-0 rotate-90 dark:scale-100 dark:rotate-0 dark:group-hover:-rotate-[15deg]" />
         </Button>
     )
 }

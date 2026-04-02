@@ -99,6 +99,17 @@
     }
 }
 
+/* Disable all inner CSS transitions so the snapshot captures a perfect frozen state */
+html.theme-transitioning * {
+    transition: none !important;
+}
+
+/* ...except for the toggle button itself, which should run its own native icon morph transitions! */
+html.theme-transitioning .theme-toggle-btn,
+html.theme-transitioning .theme-toggle-btn * {
+    transition: all 0.5s ease-out !important;
+}
+
 /* View Transition Theme Animations */
 ::view-transition-group(root) {
     animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);

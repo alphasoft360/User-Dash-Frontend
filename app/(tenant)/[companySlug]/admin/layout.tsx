@@ -125,11 +125,11 @@ export default function AdminLayout({
                                     key={item.label}
                                     href={item.href}
                                     title={isCompact ? item.label : undefined}
-                                    className={`flex items-center ${isCompact ? 'justify-center px-0' : 'px-4'} py-3 rounded-xl transition-all group ${isActive ? 'bg-primary/10 text-primary border border-primary/20' : 'text-muted-foreground hover:text-foreground hover:bg-secondary'}`}
+                                    className={`flex items-center ${isCompact ? 'justify-center px-0' : 'px-4'} py-3 rounded-xl transition-all duration-300 group ${isActive ? 'bg-primary/10 text-primary border border-primary/20' : 'text-muted-foreground hover:text-foreground hover:bg-secondary'}`}
                                 >
-                                    <item.icon className={`${isCompact ? '' : 'mr-3'} h-5 w-5 shrink-0 ${isActive ? 'text-primary' : 'group-hover:text-primary'}`} />
-                                    {!isCompact && <span className="font-bold text-sm whitespace-nowrap text-clip overflow-hidden">{item.label}</span>}
-                                    {!isCompact && isActive && <ChevronRight className="ml-auto h-4 w-4 shrink-0" />}
+                                    <item.icon className={`${isCompact ? '' : 'mr-3'} h-5 w-5 shrink-0 transition-transform duration-300 ease-out group-hover:scale-110 group-active:scale-95 ${isActive ? 'text-primary scale-110' : 'group-hover:text-primary'}`} />
+                                    {!isCompact && <span className="font-bold text-sm whitespace-nowrap text-clip overflow-hidden transition-transform duration-300 group-active:scale-95">{item.label}</span>}
+                                    {!isCompact && isActive && <ChevronRight className="ml-auto h-4 w-4 shrink-0 transition-transform duration-300 group-hover:translate-x-1" />}
                                 </Link>
                             ) : null;
                         })}
@@ -155,11 +155,11 @@ export default function AdminLayout({
                         <Button
                             variant="ghost"
                             title={isCompact ? "Sign Out" : undefined}
-                            className={`w-full ${isCompact ? 'justify-center px-0' : 'justify-start px-4'} text-red-500 hover:bg-red-500/10 hover:text-red-600 rounded-xl mb-4`}
+                            className={`w-full group ${isCompact ? 'justify-center px-0' : 'justify-start px-4'} text-red-500 hover:bg-red-500/10 hover:text-red-600 rounded-xl mb-4 transition-all duration-300`}
                             onClick={logout}
                         >
-                            <LogOut className={`${isCompact ? '' : 'mr-3'} h-5 w-5 shrink-0`} />
-                            {!isCompact && <span>Sign Out</span>}
+                            <LogOut className={`${isCompact ? '' : 'mr-3'} h-5 w-5 shrink-0 transition-transform duration-300 group-hover:-translate-x-1 group-active:scale-95`} />
+                            {!isCompact && <span className="transition-transform duration-300 group-active:scale-95">Sign Out</span>}
                         </Button>
                     </div>
                 </div>
@@ -167,10 +167,10 @@ export default function AdminLayout({
             <div className={`flex-1 flex flex-col transition-all duration-300 ${isCompact ? 'lg:pl-20' : 'lg:pl-72'}`}>
                 <header className="h-20 border-b border-border bg-background/60 backdrop-blur-xl flex items-center justify-between px-8 sticky top-0 z-40">
                     <div className="flex items-center space-x-2">
-                        <button onClick={() => setIsSidebarOpen(true)} className={`lg:hidden p-2 text-muted-foreground hover:text-foreground ${isSidebarOpen ? 'hidden' : ''}`}>
+                        <button onClick={() => setIsSidebarOpen(true)} className={`lg:hidden p-2 text-muted-foreground hover:text-foreground hover:scale-110 active:scale-95 transition-all duration-300 ${isSidebarOpen ? 'hidden' : ''}`}>
                             <Menu className="h-6 w-6" />
                         </button>
-                        <button onClick={() => setIsCompact(!isCompact)} className="hidden lg:block p-2 text-muted-foreground hover:text-foreground transition-all">
+                        <button onClick={() => setIsCompact(!isCompact)} className="hidden lg:block p-2 text-muted-foreground hover:text-foreground hover:scale-110 active:scale-95 transition-all duration-300">
                             {isCompact ? <PanelLeft className="h-6 w-6" /> : <PanelLeftClose className="h-6 w-6" />}
                         </button>
                         <p className="text-2xl font-bold text-primary ml-2">Dashboard</p>
