@@ -6,6 +6,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import MagneticButton from '@/components/MagneticButton';
 import AnimatedCounter from '@/components/AnimatedCounter';
+import SpotlightCard from '@/components/SpotlightCard';
 import {
   ArrowRight,
   CheckCircle2,
@@ -15,7 +16,10 @@ import {
   Layers,
   Users,
   BarChart3,
-  Cpu
+  Cpu,
+  LayoutDashboard,
+  Package,
+  FlaskConical
 } from 'lucide-react';
 
 export default function PromotionPage() {
@@ -113,48 +117,38 @@ export default function PromotionPage() {
               <p className="text-gray-600 dark:text-gray-400">Built for scale, designed for simplicity.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {[
                 {
-                  title: "Multi-Tenant Architecture",
-                  desc: "Securely manage multiple organizations or departments under a single unified platform.",
-                  icon: <Layers className="text-indigo-600" size={32} />
+                  icon: LayoutDashboard,
+                  title: 'Core Engine 360',
+                  description: 'A centralized dashboard giving you a bird’s eye view of your entire laboratory logistics.'
                 },
                 {
-                  title: "Real-time Analytics",
-                  desc: "Gain deep insights with interactive dashboards and custom reporting tools.",
-                  icon: <BarChart3 className="text-indigo-600" size={32} />
+                  icon: Package,
+                  title: 'Smart Inventory',
+                  description: 'Real-time tracking of reagents and supplies with predictive restock alerts.'
                 },
                 {
-                  title: "Secure by Design",
-                  desc: "Advanced encryption and granular access control to keep your data safe.",
-                  icon: <ShieldCheck className="text-indigo-600" size={32} />
+                  icon: FlaskConical,
+                  title: 'Diagnostic Hub',
+                  description: 'Seamless integration with diagnostic analyzers for rapid and accurate results.'
                 },
                 {
-                  title: "Fast Deployment",
-                  desc: "Get up and running in minutes with our streamlined onboarding process.",
-                  icon: <Zap className="text-indigo-600" size={32} />
-                },
-                {
-                  title: "Global Scalability",
-                  desc: "Our infrastructure grows with you, no matter how large your operations become.",
-                  icon: <Globe className="text-indigo-600" size={32} />
-                },
-                {
-                  title: "Custom Integrations",
-                  desc: "Connect your favorite tools effortlessly with our robust API and plugins.",
-                  icon: <Cpu className="text-indigo-600" size={32} />
+                  icon: ShieldCheck,
+                  title: 'Enterprise Security',
+                  description: 'Bank-grade encryption ensuring your research and patient data remains private.'
                 }
               ].map((feature, i) => (
-                <div key={i} className="p-8 rounded-2xl bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 hover:border-indigo-500/50 transition-all group shadow-sm" data-aos="fade-up" data-aos-delay={i * 100}>
-                  <div className="w-14 h-14 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    {feature.icon}
+                <SpotlightCard key={i} className="px-8 py-12 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-3xl hover:border-indigo-500/30 transition-all text-center" data-aos="fade-up" data-aos-delay={i * 100}>
+                  <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-6">
+                    <feature.icon size={32} />
                   </div>
-                  <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
-                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                    {feature.desc}
+                  <h3 className="text-xl font-bold mb-4">{feature.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
+                    {feature.description}
                   </p>
-                </div>
+                </SpotlightCard>
               ))}
             </div>
           </div>

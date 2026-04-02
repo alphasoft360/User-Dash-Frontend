@@ -1,0 +1,45 @@
+'use client';
+import { useRef, useState } from 'react';
+import { motion, useMotionTemplate, useMotionValue } from 'framer-motion';
+
+export default function SpotlightCard({ children, className = '' }: { children: React.ReactNode, className?: string }) {
+    const mouseX = useMotionValue(0);
+    const mouseY = useMotionValue(0);
+
+    function handleMouseMove({
+        currentTarget,
+        clientX,
+        clientY,
+    }: React.MouseEvent) {
+        let { left, top } = currentTarget.getBoundingClientRect();
+
+        mouseX.set(clientX - left);
+        mouseY.set(clientY - top);
+    }
+
+    return (
+        <div
+            className={`group relative rounded-3xl border border-white/10 bg-gray-900 px-8 py-16 shadow-2xl transition-all duration-300 hover:border-primary/50 overflow-hidden ${className}`}
+            onMouseMove={handleMouseMove}
+        >
+            {/* The Spotlight Overlay */}
+            <motion.div
+                className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 transition duration-300 group-hover:opacity-100"
+                style={{
+                    background: useMotionTemplate`
+                        radial-gradient(
+                          650px circle at ${mouseX}px ${mouseY}px,
+                          rgba(var(--primary-rgb, 99, 102, 241), 0.15),
+                          transparent 80%
+                        )
+                    `,
+                }}
+            />
+            
+            {/* Darker inner mask to pop the content */}
+            <div className="relative z-10">
+                {children}
+            </div>
+        </div>
+    );
+}

@@ -45,6 +45,7 @@
     --popover: #ffffff;
     --popover-foreground: #0f172a;
     --primary: #0ea5e9;
+    --primary-rgb: 14, 165, 233;
     /* Cyan 500 */
     --primary-foreground: #ffffff;
     --secondary: #f1f5f9;
@@ -73,6 +74,7 @@
     --popover: #020617;
     --popover-foreground: #f8fafc;
     --primary: #0ea5e9;
+    --primary-rgb: 14, 165, 233;
     --primary-foreground: #ffffff;
     --secondary: #1e293b;
     /* Slate 800 */
