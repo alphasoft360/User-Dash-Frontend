@@ -2,6 +2,8 @@
 
 import { useState, useEffect, use, useRef } from 'react';
 import Link from 'next/link';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import {
   Users,
@@ -106,6 +108,16 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
     };
     fetchCompanyData();
   }, [companySlug]);
+
+  useEffect(() => {
+    AOS.init({
+      duration: 600,
+      once: false,
+      mirror: true,
+      easing: 'ease-in-out-cubic',
+      offset: 50,
+    });
+  }, []);
 
   useEffect(() => {
     if (heroImages.length === 0) return;
@@ -292,7 +304,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 h-full min-h-[85vh] max-w-screen-2xl mx-auto">
 
             {/* Left Column - Content */}
-            <div className="flex flex-col justify-center px-8 py-16 lg:py-24 lg:pl-20 xl:pl-32 space-y-8 animate-in fade-in slide-in-from-left-8 duration-1000 mt-8 lg:mt-0">
+            <div className="flex flex-col justify-center px-8 py-16 lg:py-24 lg:pl-20 xl:pl-32 space-y-8 mt-8 lg:mt-0" data-aos="fade-up-right">
 
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/80 backdrop-blur-md border border-border/50 rounded-full text-xs font-bold uppercase tracking-widest text-foreground w-fit shadow-sm">
@@ -352,7 +364,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
             </div>
 
             {/* Right Column - Image Carousel */}
-            <div className="relative flex items-center justify-center p-6 lg:p-12 min-h-[50vh] lg:h-auto animate-in fade-in slide-in-from-right-8 duration-1000">
+            <div className="relative flex items-center justify-center p-6 lg:p-12 min-h-[50vh] lg:h-auto" data-aos="fade-up-left">
               <div className="relative w-full h-full max-h-[600px] xl:max-h-[700px] rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-2xl border border-border bg-secondary/20">
                 {/* Carousel Images */}
                 <div className="absolute inset-0">
@@ -416,14 +428,14 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
         </section>
 
         {showBanner && (
-          <div className="max-w-7xl mx-auto px-6 py-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="max-w-7xl mx-auto px-6 py-8" data-aos="fade-up">
             <AlphasoftBanner />
           </div>
         )}
 
         <div className="max-w-7xl mx-auto px-6 py-8 space-y-14">
           {/* Numbers Section - Centered and Tightened */}
-          <section className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-80 py-8 border-y border-border/40">
+          <section className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-80 py-8 border-y border-border/40" data-aos="zoom-in-up" data-aos-delay="100">
             {[
               { label: 'Active Users', value: '250K+' },
               { label: 'Enterprises', value: '450+' },
@@ -438,7 +450,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
           </section>
 
           {/* Company Story Section */}
-          <section id="story" className="max-w-4xl mx-auto space-y-8">
+          <section id="story" className="max-w-4xl mx-auto space-y-8" data-aos="fade-up">
             <div className="space-y-3 text-center">
               <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">Our Mission & Story</h2>
               <div className="h-1 w-12 bg-primary mx-auto rounded-full"></div>
@@ -451,12 +463,12 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                 Founded in 2024, our journey began with a simple goal: to make reliable laboratory supplies and pharmaceutical products easily accessible to professionals, researchers, and healthcare providers. Our team is passionate about supporting scientific progress by providing high-quality reagents, laboratory materials, and trusted pharmacy products.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-10">
-                <div className="p-6 bg-secondary/20 rounded-xl border border-border/50 shadow-sm space-y-3">
+                <div className="p-6 bg-secondary/20 rounded-xl border border-border/50 shadow-sm space-y-3" data-aos="fade-up-right">
                   <Target className="w-8 h-8 text-primary/80" />
                   <h4 className="text-xl font-semibold text-foreground">The Vision</h4>
                   <p className="text-md leading-relaxed text-muted-foreground">To become a trusted supplier of laboratory reagents, pharmaceutical products, and scientific materials that empower laboratories, students, researchers, and healthcare professionals.</p>
                 </div>
-                <div className="p-6 bg-secondary/20 rounded-xl border border-border/50 shadow-sm space-y-3">
+                <div className="p-6 bg-secondary/20 rounded-xl border border-border/50 shadow-sm space-y-3" data-aos="fade-up-left" data-aos-delay="100">
                   <TrendingUp className="w-8 h-8 text-blue-500/80" />
                   <h4 className="text-xl font-semibold text-foreground">The Growth</h4>
                   <p className="text-md leading-relaxed text-muted-foreground">From a small local operation, we are steadily expanding our range of laboratory reagents, chemicals, and pharmaceutical products to serve research labs, educational institutions, and healthcare providers.</p>
@@ -469,7 +481,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
           </section>
 
           {/* Team Section */}
-          <section id="team" className="space-y-10">
+          <section id="team" className="space-y-10" data-aos="fade-up">
             <div className="text-center space-y-2">
               <h2 className="text-2xl md:text-4xl font-semibold tracking-tight">The Minds Behind</h2>
               <p className="text-muted-foreground text-lg">A multidisciplinary team of innovators, dreamers, and builders.</p>
@@ -496,7 +508,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                   contact: '0300 6530048'
                 },
               ].map((member, i) => (
-                <div key={i} className="relative aspect-3/5 rounded-2xl bg-secondary/30 border border-border/50 overflow-hidden group transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/50 cursor-pointer">
+                <div key={i} className="relative aspect-3/5 rounded-2xl bg-secondary/30 border border-border/50 overflow-hidden group transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/50 cursor-pointer" data-aos="fade-up" data-aos-delay={i * 100}>
                   <img
                     src={member.img}
                     alt={member.name}
@@ -546,6 +558,8 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                   <div
                     key={i}
                     className={`border border-border/40 rounded-2xl overflow-hidden transition-all duration-300 ${activePdf === i ? 'bg-background shadow-lg' : 'bg-background/40 hover:bg-background/60'}`}
+                    data-aos="fade-up"
+                    data-aos-delay={i * 100}
                   >
                     <button
                       onClick={() => setActivePdf(activePdf === i ? null : i)}
@@ -608,7 +622,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
           </section>
         </div>
       </main>      {/* Brands Footer Section */}
-      <footer className="relative bg-background pt-16 border-t border-border/60 mt-10 overflow-hidden">
+      <footer className="relative bg-background pt-16 border-t border-border/60 mt-10 overflow-hidden" data-aos="fade-up">
 
         {/* Concentric Circles Pattern Background */}
         <div className="absolute inset-0 pointer-events-none opacity-[0.2] dark:opacity-[0.1]">

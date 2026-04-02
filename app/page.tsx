@@ -1,7 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 import {
   ArrowRight,
   CheckCircle2,
@@ -15,6 +17,16 @@ import {
 } from 'lucide-react';
 
 export default function PromotionPage() {
+  useEffect(() => {
+    AOS.init({
+      duration: 600,
+      once: false,
+      mirror: true,
+      easing: 'ease-in-out-cubic',
+      offset: 50,
+    });
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Navigation */}
@@ -51,19 +63,19 @@ export default function PromotionPage() {
           </div>
 
           <div className="container mx-auto px-4 relative z-10 text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-bold mb-8 animate-fade-in">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-bold mb-8 animate-fade-in" data-aos="fade-down">
               <Zap size={14} className="fill-current" />
               <span>THE FUTURE OF ENTERPRISE MANAGEMENT</span>
             </div>
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-linear-to-r from-gray-900 via-indigo-800 to-gray-900 dark:from-white dark:via-indigo-300 dark:to-white">
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-linear-to-r from-gray-900 via-indigo-800 to-gray-900 dark:from-white dark:via-indigo-300 dark:to-white" data-aos="fade-up">
               Elevate Your Business with <br />
               <span className="text-indigo-600 dark:text-indigo-400">AlphaSoft360</span>
             </h1>
-            <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-10 leading-relaxed">
+            <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-10 leading-relaxed" data-aos="fade-up" data-aos-delay="100">
               Experience a unified digital ecosystem designed to scale your operations,
               streamline workflows, and drive unprecedented growth.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
               <Link
                 href="/login"
                 className="group w-full sm:w-auto px-8 py-4 rounded-xl bg-indigo-600 text-white font-bold text-lg flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-xl hover:shadow-indigo-500/25 active:scale-95"
@@ -122,7 +134,7 @@ export default function PromotionPage() {
                   icon: <Cpu className="text-indigo-600" size={32} />
                 }
               ].map((feature, i) => (
-                <div key={i} className="p-8 rounded-2xl bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 hover:border-indigo-500/50 transition-all group shadow-sm">
+                <div key={i} className="p-8 rounded-2xl bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 hover:border-indigo-500/50 transition-all group shadow-sm" data-aos="fade-up" data-aos-delay={i * 100}>
                   <div className="w-14 h-14 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     {feature.icon}
                   </div>
@@ -140,7 +152,7 @@ export default function PromotionPage() {
         <section id="solutions" className="py-24 overflow-hidden">
           <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row items-center gap-16">
-              <div className="lg:w-1/2">
+              <div className="lg:w-1/2" data-aos="fade-right">
                 <h2 className="text-4xl md:text-5xl font-bold mb-8 leading-tight">
                   Driving Innovation for <br />
                   <span className="text-indigo-600">Modern Businesses</span>
@@ -152,14 +164,14 @@ export default function PromotionPage() {
                     "Responsive design for mobile and desktop access",
                     "Dedicated support team and comprehensive documentation"
                   ].map((item, i) => (
-                    <div key={i} className="flex items-start gap-3">
+                    <div key={i} className="flex items-start gap-3" data-aos="fade-up" data-aos-delay={i * 100}>
                       <CheckCircle2 className="text-emerald-500 mt-1 shrink-0" size={20} />
                       <p className="text-lg text-gray-700 dark:text-gray-300 font-medium">{item}</p>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="lg:w-1/2 relative">
+              <div className="lg:w-1/2 relative" data-aos="zoom-in" data-aos-delay="200">
                 <div className="absolute -inset-4 bg-linear-to-tr from-indigo-500 to-purple-500 rounded-3xl blur-2xl opacity-10 dark:opacity-20 animate-pulse" />
                 <div className="relative aspect-video rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 overflow-hidden shadow-2xl flex items-center justify-center">
                   <div className="flex flex-col items-center gap-4">
@@ -174,7 +186,7 @@ export default function PromotionPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-24">
+        <section className="py-24" data-aos="zoom-up" data-aos-delay="200">
           <div className="container mx-auto px-4">
             <div className="relative p-8 md:p-16 rounded-3xl bg-indigo-600 text-white overflow-hidden shadow-2xl">
               <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-white/10 rounded-full blur-[100px]" />
