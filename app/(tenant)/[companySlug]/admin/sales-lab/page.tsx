@@ -91,6 +91,7 @@ export default function SalesLabPage() {
     const [labName, setLabName] = useState('');
     const [amountGiven, setAmountGiven] = useState('');
     const [discountPercentage, setDiscountPercentage] = useState('');
+    const [previousBalancePayment, setPreviousBalancePayment] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
 
     // Customer Search State
@@ -298,7 +299,7 @@ export default function SalesLabPage() {
     const discountValue = (subtotal * (parseFloat(discountPercentage) || 0)) / 100;
     const saleTotal = subtotal - discountValue;
     const grandTotal = saleTotal;
-    const changeDue = amountGiven ? parseFloat(amountGiven) - grandTotal : 0;
+    const changeDue = (parseFloat(amountGiven) || 0) - grandTotal;
 
     const handleCheckout = async () => {
         if (cart.length === 0) {
@@ -306,7 +307,7 @@ export default function SalesLabPage() {
             return;
         }
 
-        if (!amountGiven || parseFloat(amountGiven) <= 0) {
+        if ((!amountGiven || parseFloat(amountGiven) < 0) && !selectedCustomerId) {
             toast.error("Please enter the amount received from the customer");
             return;
         }
@@ -329,7 +330,8 @@ export default function SalesLabPage() {
                 changeDue: changeDue,
                 discountPercentage: parseFloat(discountPercentage) || 0,
                 discountAmount: discountValue,
-                registeredCustomerId: selectedCustomerId
+                registeredCustomerId: selectedCustomerId,
+                previousBalancePayment: parseFloat(previousBalancePayment) || 0
             };
 
             const response = await api.post('/admin/orders/walk-in', payload);
@@ -353,6 +355,7 @@ export default function SalesLabPage() {
         setSelectedCustomerData(null);
         setAmountGiven('');
         setDiscountPercentage('');
+        setPreviousBalancePayment('');
         setLastOrderId(null);
     };
 
@@ -629,7 +632,7 @@ export default function SalesLabPage() {
                                     setSearchSource('name');
                                     customerName.length >= 2 && setShowSearchDropdown(true);
                                 }}
-                                className={`pl-11 bg-secondary/30 border-border rounded-xl h-11 font-bold text-sm transition-all ${selectedCustomerId ? 'border-primary shadow-[0_0_0_1px_rgba(var(--primary),0.2)]' : ''}`}
+                                className={`pl-11 bg-secondary/30 border-border rounded-xl h-11 font-bold text-base transition-all ${selectedCustomerId ? 'border-primary shadow-[0_0_0_1px_rgba(var(--primary),0.2)]' : ''}`}
                             />
                             {isSearchingCustomer && searchSource === 'name' && (
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20">
@@ -677,7 +680,7 @@ export default function SalesLabPage() {
                                     setSearchSource('phone');
                                     customerPhone.length >= 3 && setShowSearchDropdown(true);
                                 }}
-                                className={`pl-11 bg-secondary/30 border-border rounded-xl h-11 font-bold text-sm transition-all ${selectedCustomerId ? 'border-primary shadow-[0_0_0_1px_rgba(var(--primary),0.2)]' : ''}`}
+                                className={`pl-11 bg-secondary/30 border-border rounded-xl h-11 font-bold text-base transition-all ${selectedCustomerId ? 'border-primary shadow-[0_0_0_1px_rgba(var(--primary),0.2)]' : ''}`}
                             />
                             {isSearchingCustomer && searchSource === 'phone' && (
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20">
@@ -727,7 +730,7 @@ export default function SalesLabPage() {
                                         setSelectedCustomerData(null);
                                     }
                                 }}
-                                className="pl-11 bg-secondary/30 border-border rounded-xl h-11 font-bold text-sm"
+                                className="pl-11 bg-secondary/30 border-border rounded-xl h-11 font-bold text-base"
                             />
                         </div>
 
@@ -739,7 +742,7 @@ export default function SalesLabPage() {
                                 value={amountGiven}
                                 onChange={e => setAmountGiven(e.target.value)}
                                 min="0"
-                                className="pl-11 bg-secondary/30 border-border rounded-xl h-11 font-bold text-sm"
+                                className="pl-11 bg-secondary/30 border-border rounded-xl h-11 font-bold text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
                         </div>
                         <div className="relative group">
@@ -750,9 +753,38 @@ export default function SalesLabPage() {
                                 value={discountPercentage}
                                 onChange={e => setDiscountPercentage(e.target.value)}
                                 min="0" max="100"
-                                className="pl-11 bg-secondary/30 border-border rounded-xl h-11 font-bold text-sm"
+                                className="pl-11 bg-secondary/30 border-border rounded-xl h-11 font-bold text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
+                            {discountValue > 0 && (
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-primary uppercase italic">
+                                    -PKR {discountValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                </div>
+                            )}
                         </div>
+
+                        {selectedCustomerId && (
+                            <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
+                                {selectedCustomerData && (
+                                    <div className="flex justify-between items-center px-1">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-primary/60">Balance Payment</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-primary">
+                                            Current Bal: PKR {selectedCustomerData.remainingBalance.toLocaleString()}
+                                        </span>
+                                    </div>
+                                )}
+                                <div className="relative group">
+                                    <Plus className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-primary transition-colors" />
+                                    <Input
+                                        type="number"
+                                        placeholder="Add to Previous Balance Payment"
+                                        value={previousBalancePayment}
+                                        onChange={e => setPreviousBalancePayment(e.target.value)}
+                                        min="0"
+                                        className="pl-11 bg-primary/10 border-primary/20 rounded-xl h-11 font-bold text-base text-primary placeholder:text-primary/40 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex flex-col gap-2 mb-6 px-2">
