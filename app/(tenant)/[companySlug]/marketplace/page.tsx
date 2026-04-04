@@ -69,7 +69,7 @@ function ProductGrid() {
     return (
         <div className="p-8 max-w-7xl mx-auto">
             {/* Header / Toolbar */}
-            <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+            <div className="flex flex-col md:flex-row justify-between items-center mb-10 space-y-6 md:space-y-0 md:space-x-6">
                 <div>
                     <h1 className="text-3xl font-black text-foreground mb-2">
                         {search ? `Search results for "${search}"` : category ? `${category} Collection` : 'Explore All Products'}
@@ -143,7 +143,7 @@ function ProductGrid() {
                                     </div>
                                     <p className="text-muted-foreground text-sm line-clamp-2 flex-1 font-medium">{product.description}</p>
                                     <div className={`pt-4 flex justify-between items-center border-t border-border mt-auto ${product.isOutOfStock ? 'opacity-50 grayscale' : ''}`}>
-                                        <div className="flex items-center flex-wrap gap-2">
+                                        <div className="flex flex-row items-center flex-wrap space-x-2">
                                             <span className="text-2xl font-black text-foreground">${parseFloat(product.price).toLocaleString()}</span>
                                             {product.unit && (
                                                 <Badge variant="outline" className="text-[9px] font-black px-2 py-0.5 rounded-lg border-border text-muted-foreground bg-secondary/30 uppercase tracking-tighter">

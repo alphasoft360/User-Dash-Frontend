@@ -64,7 +64,7 @@ export default function SuperAdminDashboard() {
                 {stats.map((stat, i) => (
                     <Card key={i} className="bg-card/50 backdrop-blur-sm border-border/50 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 group overflow-hidden">
                         <CardContent className="p-6">
-                            <div className="flex items-center justify-between mb-4">
+                            <div className="flex flex-row items-center justify-between mb-4">
                                 <div className={`p-3 rounded-xl transition-transform duration-500 ${stat.bg} ${stat.color}`}>
                                     {stat.icon}
                                 </div>
@@ -82,7 +82,7 @@ export default function SuperAdminDashboard() {
                     <ShieldCheck className="h-64 w-64 -mr-20 -mt-20" />
                 </div>
                 <CardHeader className="p-10 border-b border-border/50 bg-secondary/5 relative z-10">
-                    <CardTitle className="text-2xl font-bold flex items-center gap-4">
+                    <CardTitle className="text-2xl font-bold flex flex-row items-center space-x-4">
                         <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
                             <ShieldCheck className="h-6 w-6" />
                         </div>
@@ -107,7 +107,7 @@ export default function SuperAdminDashboard() {
                             </p>
                         </div>
                         <div className="pt-4">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-emerald-500 text-[10px] font-black uppercase tracking-widest">
+                            <div className="inline-flex flex-row items-center space-x-2 px-4 py-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-emerald-500 text-[10px] font-black uppercase tracking-widest">
                                 <Activity className="h-3 w-3" />
                                 System Integrity Optimal
                             </div>
@@ -119,7 +119,7 @@ export default function SuperAdminDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <Card className="lg:col-span-2 bg-card/40 backdrop-blur-xl border-border/50 rounded-3xl shadow-xl overflow-hidden border-t-4 border-t-primary/20">
                     <CardHeader className="p-8 border-b border-border/50 bg-secondary/10">
-                        <div className="flex items-center gap-4">
+                        <div className="flex flex-row items-center space-x-4">
                             <div className="h-12 w-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner">
                                 <ShieldPlus className="h-6 w-6" />
                             </div>
@@ -178,12 +178,12 @@ export default function SuperAdminDashboard() {
                                     className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-12 rounded-xl font-black uppercase tracking-[0.25em] text-[10px] shadow-lg shadow-primary/20 transition-all active:scale-95 disabled:opacity-50"
                                 >
                                     {saving ? (
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex flex-row items-center space-x-2">
                                             <Loader2 className="h-4 w-4 animate-spin" />
                                             <span>Provisioning...</span>
                                         </div>
                                     ) : (
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex flex-row items-center space-x-2">
                                             <ShieldPlus className="h-4 w-4" />
                                             <span>Authorize New Operator</span>
                                         </div>
@@ -194,7 +194,7 @@ export default function SuperAdminDashboard() {
                     </CardContent>
                 </Card>
 
-                <Card className="bg-primary/5 border-primary/10 border-dashed rounded-3xl p-8 flex flex-col items-center justify-center text-center gap-4 group hover:bg-primary/[0.08] transition-all">
+                <Card className="bg-primary/5 border-primary/10 border-dashed rounded-3xl p-8 flex flex-col items-center justify-center text-center space-y-4 group hover:bg-primary/8 transition-all">
                     <div className="h-16 w-16 bg-primary/20 rounded-full flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                         <Lock className="h-8 w-8" />
                     </div>

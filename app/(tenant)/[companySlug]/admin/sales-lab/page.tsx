@@ -369,7 +369,7 @@ export default function SalesLabPage() {
                     <h1 className="text-5xl font-black italic uppercase tracking-tighter mb-4">Sale <span className="text-primary">Recorded</span></h1>
                     <p className="text-muted-foreground font-black uppercase tracking-widest text-xs mb-12">Batch Order ID: #{lastOrderId}</p>
 
-                    <div className="flex gap-4">
+                <div className="flex flex-row items-center space-x-4">
                         <Button
                             disabled={isPreviewing}
                             onClick={() => lastOrderId && handlePreviewInvoice(lastOrderId)}
@@ -408,7 +408,7 @@ export default function SalesLabPage() {
                                 <h2 className="text-xl font-black uppercase italic tracking-tighter text-primary">INVOICE <span className="text-foreground not-italic">Preview</span></h2>
                                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Order #{lastOrderId}</p>
                             </div>
-                            <div className="flex items-center gap-4">
+                            <div className="flex flex-row items-center space-x-4">
                                 <Button
                                     onClick={() => {
                                         const link = document.createElement('a');
@@ -447,7 +447,7 @@ export default function SalesLabPage() {
     }
 
     return (
-        <div className="h-[calc(100vh+10rem)] flex flex-col md:flex-row gap-6 animate-in fade-in duration-500 overflow-hidden px-4 pb-4 -mt-8">
+        <div className="h-[calc(100vh+10rem)] flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6 animate-in fade-in duration-500 overflow-hidden px-4 pb-4 -mt-8">
 
             {/* Left Panel: Inventory/Search */}
             <div className="flex-1 flex flex-col bg-card border border-border rounded-[2.5rem] shadow-xl overflow-hidden">
@@ -458,7 +458,7 @@ export default function SalesLabPage() {
                             Lab <span className="text-primary not-italic">Billing POS</span>
                         </h1>
                     </div>
-                    <form onSubmit={handleSearchSubmit} className="flex gap-2 w-full">
+                    <form onSubmit={handleSearchSubmit} className="flex flex-row space-x-2 w-full">
                         <div className="relative flex-1 group">
                             <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                             <Input
@@ -585,14 +585,14 @@ export default function SalesLabPage() {
 
                 <div className="flex-[2] min-h-0 overflow-y-auto p-4 bg-secondary/5 custom-scrollbar z-10">
                     {cart.length === 0 ? (
-                        <div className="h-full flex flex-col items-center justify-center text-center opacity-30 gap-6">
+                        <div className="h-full flex flex-col items-center justify-center text-center opacity-30 space-y-6">
                             <Package className="h-20 w-20 mb-2 text-muted-foreground" />
                             <p className="font-black uppercase tracking-[0.2em] text-[10px] italic">No items drafted</p>
                         </div>
                     ) : (
                         <div className="space-y-3">
                             {cart.map(item => (
-                                <div key={item.id} className="flex flex-col gap-3 p-4 bg-background border border-border rounded-xl shadow-sm animate-in slide-in-from-right-2 duration-300">
+                                <div key={item.id} className="flex flex-col space-y-3 p-4 bg-background border border-border rounded-xl shadow-sm animate-in slide-in-from-right-2 duration-300">
                                     <div className="flex justify-between items-start">
                                         <div className="w-3/4">
                                             <h4 className="font-black uppercase text-[12px] tracking-tighter leading-none">{item.name}</h4>
@@ -601,7 +601,7 @@ export default function SalesLabPage() {
                                         <span className="font-black italic text-primary text-sm">PKR {(parseFloat(item.price) * item.cartQuantity).toLocaleString()}</span>
                                     </div>
                                     <div className="flex items-center justify-between pt-2 border-t border-border/50">
-                                        <div className="flex items-center gap-1 bg-secondary rounded-lg p-0.5 border border-border">
+                                        <div className="flex flex-row items-center space-x-1 bg-secondary rounded-lg p-0.5 border border-border">
                                             <Button variant="ghost" size="sm" onClick={() => updateQuantity(item.id, -1)} className="h-7 w-7 p-0 rounded hover:bg-background">
                                                 <Minus className="h-3 w-3" />
                                             </Button>
@@ -787,7 +787,7 @@ export default function SalesLabPage() {
                         )}
                     </div>
 
-                    <div className="flex flex-col gap-2 mb-6 px-2">
+                    <div className="flex flex-col space-y-2 mb-6 px-2">
                         <div className="flex items-end justify-between">
                             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50">Grand Total</span>
                             <span className="text-3xl font-black italic text-foreground tracking-tighter leading-none">PKR {grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>

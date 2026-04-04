@@ -144,7 +144,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
       {/* Navigation Layer */}
       <nav className="sticky top-0 z-50 w-full glass-morphism transition-all duration-500">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-row items-center space-x-3">
             <MagneticButton>
               <img src={logoPath} alt="Logo" className="h-10 w-10 rounded-lg shadow-lg" />
             </MagneticButton>
@@ -154,14 +154,14 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-8 text-sm font-medium text-muted-foreground mr-auto ml-12">
+          <div className="hidden lg:flex flex-row items-center space-x-8 text-sm font-medium text-muted-foreground mr-auto ml-12">
             <MagneticButton><Link href="#story" className="hover:text-primary transition-colors">Our Story</Link></MagneticButton>
             <MagneticButton><Link href="#team" className="hover:text-primary transition-colors">The Team</Link></MagneticButton>
             <MagneticButton><Link href="#resources" className="hover:text-primary transition-colors">Resources</Link></MagneticButton>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-3">
+          <div className="flex flex-row items-center space-x-3">
+            <div className="hidden sm:flex flex-row items-center space-x-3">
               <ThemeToggle />
               {!isAuthenticated ? (
                 <MagneticButton>
@@ -177,7 +177,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                   <MagneticButton>
                     <button
                       onClick={() => setIsProfileOpen(!isProfileOpen)}
-                      className="flex items-center gap-2 p-1.5 bg-secondary/50 hover:bg-secondary rounded-full border border-border transition-all"
+                      className="flex flex-row items-center space-x-2 p-1.5 bg-secondary/50 hover:bg-secondary rounded-full border border-border transition-all"
                     >
                       <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary">
                         <UserIcon className="w-4 h-4" />
@@ -203,7 +203,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                               setIsProfileOpen(false);
                               logout();
                             }}
-                            className="w-full flex items-center gap-3 p-3 text-sm font-medium text-red-500 hover:bg-red-500/10 rounded-xl transition-colors group"
+                            className="w-full flex flex-row items-center space-x-3 p-3 text-sm font-medium text-red-500 hover:bg-red-500/10 rounded-xl transition-colors group"
                           >
                             <LogOut className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
                             Sign Out
@@ -217,7 +217,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
             </div>
 
             {/* Mobile Menu Toggle */}
-            <div className="lg:hidden flex items-center gap-3">
+            <div className="lg:hidden flex flex-row items-center space-x-3">
               <div className="sm:hidden">
                 <ThemeToggle />
               </div>
@@ -235,7 +235,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
         {isMenuOpen && (
           <div className="lg:hidden absolute top-20 left-0 w-full bg-background border-b border-border shadow-2xl animate-in slide-in-from-top-4 duration-300">
             <div className="p-6 space-y-6">
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col space-y-4">
                 <Link
                   href="#story"
                   onClick={() => setIsMenuOpen(false)}
@@ -277,7 +277,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-4 p-4 bg-secondary/30 rounded-2xl border border-border/50">
+                    <div className="flex flex-row items-center space-x-4 p-4 bg-secondary/30 rounded-2xl border border-border/50">
                       <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center text-primary">
                         <UserIcon className="w-6 h-6" />
                       </div>
@@ -288,7 +288,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                     </div>
                     <button
                       onClick={logout}
-                      className="w-full flex items-center justify-center gap-3 p-4 bg-red-500 text-white rounded-2xl font-bold shadow-lg shadow-red-500/20 active:scale-95 transition-all"
+                      className="w-full flex flex-row items-center justify-center space-x-3 p-4 bg-red-500 text-white rounded-2xl font-bold shadow-lg shadow-red-500/20 active:scale-95 transition-all"
                     >
                       <LogOut className="w-5 h-5" />
                       Sign Out
@@ -315,7 +315,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
             <div className="flex flex-col justify-center px-8 py-16 lg:py-24 lg:pl-20 xl:pl-32 space-y-8 mt-8 lg:mt-0" data-aos="fade-up-right">
 
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/80 backdrop-blur-md border border-border/50 rounded-full text-xs font-bold uppercase tracking-widest text-foreground w-fit shadow-sm">
+              <div className="inline-flex flex-row items-center space-x-2 px-4 py-2 bg-secondary/80 backdrop-blur-md border border-border/50 rounded-full text-xs font-bold uppercase tracking-widest text-foreground w-fit shadow-sm">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-60"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
@@ -338,15 +338,15 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
               </p>
 
               {/* Actions */}
-              <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
+              <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 pt-2">
                 <MagneticButton className="w-full sm:w-auto">
-                  <Link href="#story" className="w-full sm:w-auto px-8 py-4 bg-primary text-primary-foreground rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 group">
+                  <Link href="#story" className="w-full sm:w-auto px-8 py-4 bg-primary text-primary-foreground rounded-2xl font-semibold text-sm flex flex-row items-center justify-center space-x-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 group">
                     Discover Our Story
                     <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </MagneticButton>
                 <MagneticButton className="w-full sm:w-auto">
-                  <Link href="#resources" className="w-full sm:w-auto px-8 py-4 bg-secondary hover:bg-secondary/80 text-foreground border border-border/50 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 transition-all group">
+                  <Link href="#resources" className="w-full sm:w-auto px-8 py-4 bg-secondary hover:bg-secondary/80 text-foreground border border-border/50 rounded-2xl font-semibold text-sm flex flex-row items-center justify-center space-x-2 transition-all group">
                     View Resources
                     <Download className="w-4 h-4 text-muted-foreground group-hover:translate-y-0.5 transition-transform" />
                   </Link>
@@ -354,7 +354,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
               </div>
 
               {/* Minimal Stats */}
-              <div className="flex items-center gap-6 pt-8 md:pt-12 border-t border-border/40 max-w-md w-full">
+              <div className="flex flex-row items-center space-x-6 pt-8 md:pt-12 border-t border-border/40 max-w-md w-full">
                 <div className="space-y-1">
                   <p className="text-2xl font-black text-foreground"><AnimatedCounter value={100} /><span className="text-primary">+</span></p>
                   <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Partners</p>
@@ -402,7 +402,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                 </div>
 
                 {/* Floating Carousel Controls */}
-                <div className="absolute bottom-6 md:bottom-8 right-6 md:right-8 flex items-center gap-3 z-30">
+                <div className="absolute bottom-6 md:bottom-8 right-6 md:right-8 flex flex-row items-center space-x-3 z-30">
                   <button
                     onClick={prevHero}
                     className="p-3 bg-background/60 backdrop-blur-xl border border-white/20 rounded-xl hover:bg-background hover:scale-105 transition-all text-foreground shadow-xl group border-border"
@@ -421,7 +421,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
               {/* Glassmorphic floating card decoration - Moved outside overflow-hidden */}
               <div
                 ref={cardRef}
-                className={`absolute top-14 md:top-24 left-4 md:left-2 bg-background/80 backdrop-blur-2xl border border-border p-4 rounded-2xl shadow-2xl hidden sm:flex items-center gap-4 z-40 ${isCardVisible ? 'animate-slide-in-left' : 'opacity-0'}`}
+                className={`absolute top-14 md:top-24 left-4 md:left-2 bg-background/80 backdrop-blur-2xl border border-border p-4 rounded-2xl shadow-2xl hidden sm:flex flex-row items-center space-x-4 z-40 ${isCardVisible ? 'animate-slide-in-left' : 'opacity-0'}`}
               >
                 <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center text-primary">
                   <Target className="w-6 h-6" />
@@ -444,7 +444,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
 
         <div className="max-w-7xl mx-auto px-6 py-8 space-y-14">
           {/* Numbers Section - Centered and Tightened */}
-          <section className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-80 py-8 border-y border-border/40" data-aos="zoom-in-up" data-aos-delay="100">
+          <section className="flex flex-wrap justify-center items-center space-x-12 md:space-x-0 md:space-y-0 flex-row gap-y-12 md:gap-x-24 opacity-80 py-8 border-y border-border/40" data-aos="zoom-in-up" data-aos-delay="100">
             {[
               { label: 'Active Users', value: 250000, suffix: 'K+' },
               { label: 'Enterprises', value: 450, suffix: '+' },
@@ -542,7 +542,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                       <p className="text-[15px] font-black uppercase tracking-[0.2em] text-transparent bg-clip-text bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400">
                         {member.role}
                       </p>
-                      <p className="text-[15px] font-bold text-muted-foreground/60 uppercase tracking-[0.25em] flex items-center gap-2">
+                      <p className="text-[15px] font-bold text-muted-foreground/60 uppercase tracking-[0.25em] flex flex-row items-center space-x-2">
                         <span className="w-1.5 h-px bg-primary/30"></span>
                         {member.contact}
                       </p>
@@ -577,7 +577,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                       onClick={() => setActivePdf(activePdf === i ? null : i)}
                       className="w-full p-5 flex items-center justify-between text-left group"
                     >
-                      <div className="flex items-center gap-4">
+                      <div className="flex flex-row items-center space-x-4">
                         <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${activePdf === i ? 'bg-primary text-primary-foreground' : 'bg-secondary'}`}>
                           <FileText className="w-6 h-6" />
                         </div>
@@ -586,7 +586,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                           <p className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">{doc.size} • PDF</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
+                      <div className="flex flex-row items-center space-x-4">
                         <a
                           href={doc.file}
                           download
@@ -616,7 +616,7 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
                 ))}
               </div>
 
-              <div className="pt-8 border-t border-border/50 flex flex-col md:flex-row items-center justify-center gap-8">
+              <div className="pt-8 border-t border-border/50 flex flex-col md:flex-row items-center justify-center space-y-8 md:space-y-0 md:space-x-8">
                 <a
                   href="https://mail.google.com/mail/?view=cm&fs=1&to=uniquehealthcaresolution.swl@gmail.com"
                   target="_blank"

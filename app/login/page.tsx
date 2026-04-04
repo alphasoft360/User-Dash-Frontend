@@ -115,7 +115,7 @@ function LoginContent() {
                             </div>
                         </div>
                     </CardContent>
-                    <CardFooter className="flex flex-col gap-4">
+                    <CardFooter className="flex flex-col space-y-4">
                         <Button
                             className="w-full h-12 text-base rounded-2xl group"
                             isLoading={isLoading}

@@ -38,7 +38,7 @@ export default function PromotionPage() {
       {/* Navigation */}
       <nav className="sticky top-0 z-50 w-full glass-morphism transition-all duration-500">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-row items-center space-x-2">
             <MagneticButton>
               <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-500/20">
                 A
@@ -46,12 +46,12 @@ export default function PromotionPage() {
             </MagneticButton>
             <span className="font-bold text-xl tracking-tight">AlphaSoft360</span>
           </div>
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex flex-row items-center space-x-8">
             <MagneticButton><a href="#features" className="text-sm font-medium text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors">Features</a></MagneticButton>
             <MagneticButton><a href="#solutions" className="text-sm font-medium text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors">Solutions</a></MagneticButton>
             <MagneticButton><a href="#about" className="text-sm font-medium text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors">About</a></MagneticButton>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-row items-center space-x-4">
             <MagneticButton>
               <Link
                 href="/login"
@@ -73,7 +73,7 @@ export default function PromotionPage() {
           </div>
 
           <div className="container mx-auto px-4 relative z-10 text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-bold mb-8 animate-fade-in" data-aos="fade-down">
+            <div className="inline-flex flex-row items-center space-x-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-bold mb-8 animate-fade-in" data-aos="fade-down">
               <Zap size={14} className="fill-current" />
               <span>THE FUTURE OF ENTERPRISE MANAGEMENT</span>
             </div>
@@ -85,13 +85,13 @@ export default function PromotionPage() {
               Experience a unified digital ecosystem designed to scale your operations,
               streamline workflows, and drive unprecedented growth.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4" data-aos="fade-up" data-aos-delay="200">
               <MagneticButton className="w-full sm:w-auto">
                 <Link
                   href="/login"
-                  className="group w-full sm:w-auto px-8 py-4 rounded-xl bg-indigo-600 text-white font-bold text-lg flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/20 block"
+                  className="group w-full sm:w-auto px-8 py-4 rounded-xl bg-indigo-600 text-white font-bold text-lg flex flex-row items-center justify-center space-x-2 hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/20"
                 >
-                  <div className="flex items-center justify-center gap-2">
+                  <div className="flex flex-row items-center justify-center space-x-2">
                     Get Started Now
                     <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -157,7 +157,7 @@ export default function PromotionPage() {
         {/* About / Stats */}
         <section id="solutions" className="py-24 overflow-hidden">
           <div className="container mx-auto px-4">
-            <div className="flex flex-col lg:flex-row items-center gap-16">
+            <div className="flex flex-col lg:flex-row items-center space-y-16 lg:space-y-0 lg:space-x-16">
               <div className="lg:w-1/2" data-aos="fade-right">
                 <h2 className="text-4xl md:text-5xl font-bold mb-8 leading-tight">
                   Driving Innovation for <br />
@@ -170,7 +170,7 @@ export default function PromotionPage() {
                     "Responsive design for mobile and desktop access",
                     "Dedicated support team and comprehensive documentation"
                   ].map((item, i) => (
-                    <div key={i} className="flex items-start gap-3" data-aos="fade-up" data-aos-delay={i * 100}>
+                    <div key={i} className="flex flex-row items-start space-x-3" data-aos="fade-up" data-aos-delay={i * 100}>
                       <CheckCircle2 className="text-emerald-500 mt-1 shrink-0" size={20} />
                       <p className="text-lg text-gray-700 dark:text-gray-300 font-medium">{item}</p>
                     </div>
@@ -180,7 +180,7 @@ export default function PromotionPage() {
               <div className="lg:w-1/2 relative" data-aos="zoom-in" data-aos-delay="200">
                 <div className="absolute -inset-4 bg-linear-to-tr from-indigo-500 to-purple-500 rounded-3xl blur-2xl opacity-10 dark:opacity-20 animate-pulse" />
                 <div className="relative aspect-video rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 overflow-hidden shadow-2xl flex items-center justify-center">
-                  <div className="flex flex-col items-center gap-4">
+                  <div className="flex flex-col space-y-4">
                     <Users size={64} className="text-indigo-600" />
                     <div className="text-4xl font-bold">
                       <AnimatedCounter value={10000} />+
@@ -208,7 +208,7 @@ export default function PromotionPage() {
                 <MagneticButton className="mx-auto">
                   <Link
                     href="/login"
-                    className="inline-flex items-center gap-2 px-10 py-5 rounded-xl bg-white text-indigo-600 font-bold text-xl hover:bg-gray-100 transition-all shadow-xl block"
+                    className="inline-flex flex-row items-center space-x-2 px-10 py-5 rounded-xl bg-white text-indigo-600 font-bold text-xl hover:bg-gray-100 transition-all shadow-xl"
                   >
                     Start Your Journey
                     <ArrowRight size={22} />
@@ -223,8 +223,8 @@ export default function PromotionPage() {
       {/* Footer */}
       <footer className="py-12 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col md:flex-row items-center justify-between space-y-8 md:space-y-0 md:space-x-8">
+            <div className="flex flex-row items-center space-x-2">
               <div className="w-8 h-8 rounded bg-indigo-600 flex items-center justify-center text-white font-bold text-lg">
                 A
               </div>
@@ -233,7 +233,7 @@ export default function PromotionPage() {
             <p className="text-gray-500 text-sm">
               &copy; {new Date().getFullYear()} AlphaSoft360. All rights reserved.
             </p>
-            <div className="flex items-center gap-6">
+            <div className="flex flex-row items-center space-x-6">
               <a href="#" className="text-gray-500 hover:text-indigo-600 transition-colors text-sm">Privacy</a>
               <a href="#" className="text-gray-500 hover:text-indigo-600 transition-colors text-sm">Terms</a>
               <a href="#" className="text-gray-500 hover:text-indigo-600 transition-colors text-sm">Contact</a>

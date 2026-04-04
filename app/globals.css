@@ -128,9 +128,8 @@ html.theme-transitioning .theme-toggle-btn * {
         #3b82f6
     );
     background-size: 300% 300%;
-    -webkit-background-clip: text;
     background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: transparent;
     animation: gradient-flow 6s ease infinite;
 }
 
@@ -143,9 +142,8 @@ html.theme-transitioning .theme-toggle-btn * {
         #60a5fa
     );
     background-size: 300% 300%;
-    -webkit-background-clip: text;
     background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: transparent;
 }
 
 /* Premium Glassmorphism Utility */
