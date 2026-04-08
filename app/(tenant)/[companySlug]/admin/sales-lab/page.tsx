@@ -54,6 +54,7 @@ interface Product {
 
 interface CartItem extends Product {
     cartQuantity: number;
+    discountPercentage: number;
 }
 
 interface Category {
@@ -92,7 +93,6 @@ export default function SalesLabPage() {
     const [customerPhone, setCustomerPhone] = useState('');
     const [labName, setLabName] = useState('');
     const [amountGiven, setAmountGiven] = useState('');
-    const [discountPercentage, setDiscountPercentage] = useState('');
     const [previousBalancePayment, setPreviousBalancePayment] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
 
@@ -273,9 +273,19 @@ export default function SalesLabPage() {
                     toast.error("Item out of stock");
                     return prev;
                 }
-                return [...prev, { ...product, cartQuantity: 1 }];
+                return [...prev, { ...product, cartQuantity: 1, discountPercentage: 0 }];
             }
         });
+    };
+
+    const updateDiscount = (id: number, discount: number) => {
+        setCart(prev => prev.map(item => {
+            if (item.id === id) {
+                const val = Math.min(100, Math.max(0, discount));
+                return { ...item, discountPercentage: val };
+            }
+            return item;
+        }));
     };
 
     const updateQuantity = (id: number, delta: number) => {
@@ -298,9 +308,11 @@ export default function SalesLabPage() {
     };
 
     const subtotal = cart.reduce((acc, item) => acc + (parseFloat(item.price) * item.cartQuantity), 0);
-    const discountValue = (subtotal * (parseFloat(discountPercentage) || 0)) / 100;
-    const saleTotal = subtotal - discountValue;
-    const grandTotal = saleTotal;
+    const totalDiscountAmount = cart.reduce((acc, item) => {
+        const itemSubtotal = parseFloat(item.price) * item.cartQuantity;
+        return acc + (itemSubtotal * item.discountPercentage) / 100;
+    }, 0);
+    const grandTotal = subtotal - totalDiscountAmount;
     const changeDue = (parseFloat(amountGiven) || 0) - grandTotal;
 
     const handleCheckout = async () => {
@@ -326,12 +338,11 @@ export default function SalesLabPage() {
                 phone: customerPhone.trim() || null,
                 items: cart.map(item => ({
                     productId: item.id,
-                    quantity: item.cartQuantity
+                    quantity: item.cartQuantity,
+                    discountPercentage: item.discountPercentage
                 })),
                 amountTendered: parseFloat(amountGiven) || 0,
                 changeDue: changeDue,
-                discountPercentage: parseFloat(discountPercentage) || 0,
-                discountAmount: discountValue,
                 registeredCustomerId: selectedCustomerId,
                 previousBalancePayment: parseFloat(previousBalancePayment) || 0
             };
@@ -356,7 +367,6 @@ export default function SalesLabPage() {
         setSelectedCustomerId(null);
         setSelectedCustomerData(null);
         setAmountGiven('');
-        setDiscountPercentage('');
         setPreviousBalancePayment('');
         setLastOrderId(null);
     };
@@ -623,6 +633,23 @@ export default function SalesLabPage() {
                                                 <Plus className="h-3 w-3" />
                                             </Button>
                                         </div>
+                                        <div className="flex items-center gap-1.5 bg-secondary px-2 py-1 rounded-lg border border-border">
+                                            <Percent className="h-3 w-3 text-primary" />
+                                            <input
+                                                type="number"
+                                                value={item.discountPercentage}
+                                                onChange={(e) => updateDiscount(item.id, parseFloat(e.target.value) || 0)}
+                                                className="w-10 bg-transparent font-black text-[10px] focus:outline-hidden [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                placeholder="0"
+                                            />
+                                            <span className="text-[8px] font-bold opacity-30">%</span>
+                                        </div>
+                                        {item.discountPercentage > 0 && (
+                                            <div className="flex flex-col items-end mr-3">
+                                                <span className="text-[13px] font-black text-primary uppercase italic">-PKR {((parseFloat(item.price) * item.cartQuantity * item.discountPercentage) / 100).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                                <span className="text-[10px] font-black text-muted-foreground/80 uppercase tracking-tighter leading-none">Savings</span>
+                                            </div>
+                                        )}
                                         <Button variant="ghost" size="sm" onClick={() => removeFromCart(item.id)} className="h-8 w-8 p-0 rounded-lg text-red-500 hover:bg-red-500 hover:text-white transition-colors">
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
@@ -758,22 +785,6 @@ export default function SalesLabPage() {
                                 className="pl-11 bg-secondary/30 border-border rounded-xl h-11 font-bold text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
                         </div>
-                        <div className="relative group">
-                            <Percent className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
-                            <Input
-                                type="number"
-                                placeholder="Discount (%)"
-                                value={discountPercentage}
-                                onChange={e => setDiscountPercentage(e.target.value)}
-                                min="0" max="100"
-                                className="pl-11 bg-secondary/30 border-border rounded-xl h-11 font-bold text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                            />
-                            {discountValue > 0 && (
-                                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-primary uppercase italic">
-                                    -PKR {discountValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                                </div>
-                            )}
-                        </div>
 
                         {selectedCustomerId && (
                             <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
@@ -802,6 +813,16 @@ export default function SalesLabPage() {
 
                     <div className="flex flex-col space-y-2 mb-6 px-2">
                         <div className="flex items-end justify-between">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50">Subtotal</span>
+                            <span className="text-xl font-black italic text-foreground tracking-tighter leading-none">PKR {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        </div>
+                        {totalDiscountAmount > 0 && (
+                            <div className="flex items-end justify-between">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-primary/60">Total Discount</span>
+                                <span className="text-xl font-black italic text-primary tracking-tighter leading-none">-PKR {totalDiscountAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                            </div>
+                        )}
+                        <div className="flex items-end justify-between pt-2 border-t border-border/50">
                             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50">Grand Total</span>
                             <span className="text-3xl font-black italic text-foreground tracking-tighter leading-none">PKR {grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         </div>
