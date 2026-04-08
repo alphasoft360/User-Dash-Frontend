@@ -253,7 +253,7 @@ export default function ReagentForm({ initialData, isEditing = false }: ReagentF
                                     <SelectTrigger className="bg-secondary/30 border-border rounded-2xl h-14 font-bold text-lg focus:ring-2 focus:ring-primary/20 transition-all">
                                         <SelectValue placeholder="Select Category" />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-popover text-popover-foreground border-border rounded-xl z-[9999]">
+                                    <SelectContent className="bg-popover text-popover-foreground border-border rounded-xl z-50">
                                         {categories.length === 0 ? (
                                             <div className="p-4 text-center text-xs text-muted-foreground font-bold uppercase italic">
                                                 No categories found
@@ -277,7 +277,7 @@ export default function ReagentForm({ initialData, isEditing = false }: ReagentF
                                 />
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Purchase Price ($)</Label>
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Purchase Price (PKR)</Label>
                                 <Input
                                     name="purchasePrice"
                                     type="number"
@@ -290,7 +290,7 @@ export default function ReagentForm({ initialData, isEditing = false }: ReagentF
                             </div>
                             <div className="space-y-3">
                                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
-                                    Sale Price ($) <span className="text-red-500">*</span>
+                                    Sale Price (PKR) <span className="text-red-500">*</span>
                                 </Label>
                                 <Input
                                     name="price"

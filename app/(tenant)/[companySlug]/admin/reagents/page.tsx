@@ -212,6 +212,8 @@ export default function LabReagentsPage({ params }: { params: Promise<{ companyS
                                     <th className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Reagent / Product</th>
                                     <th className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Company</th>
                                     <th className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Pack Size</th>
+                                    <th className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">Purchase Price</th>
+                                    <th className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">Sale Price</th>
                                     <th className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">Stock</th>
                                     <th className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">Expiry</th>
                                     <th className="p-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right">Actions</th>
@@ -233,6 +235,12 @@ export default function LabReagentsPage({ params }: { params: Promise<{ companyS
                                         </td>
                                         <td className="p-6 text-sm font-medium text-muted-foreground">{product.companyName || '—'}</td>
                                         <td className="p-6 text-sm font-medium text-muted-foreground">{product.packSize || '—'}</td>
+                                        <td className="p-6 text-center text-sm font-bold text-primary">
+                                            {product.purchasePrice ? `PKR ${parseFloat(product.purchasePrice).toLocaleString()}` : '—'}
+                                        </td>
+                                        <td className="p-6 text-center text-sm font-bold text-foreground">
+                                            {product.price ? `PKR ${parseFloat(product.price).toLocaleString()}` : '—'}
+                                        </td>
                                         <td className="p-6 text-center">
                                             <div className="flex flex-col items-center">
                                                 <span className={`font-black text-base ${product.stock <= product.minimumStock ? 'text-red-500 animate-pulse' : 'text-foreground'}`}>
