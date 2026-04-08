@@ -674,7 +674,10 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
               { name: 'BioMed', path: '/partner-logos/biomed.png' },
               { name: 'BioHermes', path: '/partner-logos/biohermes.png' },
               { name: 'Getein Biotech', path: '/partner-logos/getein.png' },
-              { name: 'DIAGAST', path: '/partner-logos/diagast.png' }
+              { name: 'DIAGAST', path: '/partner-logos/diagast.png' },
+              { name: 'Daitron', path: '/partner-logos/daitron.png' },
+              { name: 'Lifotronic', path: '/partner-logos/lifotronic.png' },
+              { name: 'Yhlo', path: '/partner-logos/yhlo.png' },
             ].map((p, i) => (
               <div key={i} className="group relative flex items-center justify-center p-4 h-28 bg-linear-to-b from-secondary/40 to-background/40 backdrop-blur-sm rounded-2xl border border-border/50 shadow-sm hover:shadow-md hover:border-primary/30 hover:-translate-y-1 transition-all overflow-hidden">
                 {/* Elegant subtle shine effect on hover */}
