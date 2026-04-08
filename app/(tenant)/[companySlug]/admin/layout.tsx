@@ -30,6 +30,9 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import AlphasoftBanner from '@/components/AlphasoftBanner';
 import api from '@/lib/api';
 
+const MODERATOR_ALLOWED_PATHS = ['/admin/dashboard-lab', '/admin/sales-lab', '/admin/stock', '/admin/reagents'];
+const USER_ALLOWED_PATHS = ['/admin/dashboard-lab', '/admin/sales-lab'];
+
 export default function AdminLayout({
     children,
 }: {
@@ -65,19 +68,36 @@ export default function AdminLayout({
         fetchCompanyData();
     }, [companySlug]);
 
-    const isModerator = user?.roles?.includes('ROLE_MODERATOR') && !user?.roles?.includes('ROLE_ADMIN') && !user?.roles?.includes('ROLE_SUPER_ADMIN');
+    const roles = user?.roles || [];
+    const isAdmin = roles.includes('ROLE_ADMIN') || roles.includes('ROLE_SUPER_ADMIN');
+    const isModerator = roles.includes('ROLE_MODERATOR') && !isAdmin;
+    const isStandardUser = roles.includes('ROLE_USER') && !isAdmin && !isModerator;
 
     useEffect(() => {
         if (!loading) {
             if (!isAuthenticated) {
                 router.push(`/${companySlug}/login`);
-            } else if (!user?.roles?.includes('ROLE_ADMIN') && !user?.roles?.includes('ROLE_SUPER_ADMIN') && !user?.roles?.includes('ROLE_MODERATOR')) {
+            } else if (!isAdmin && !isModerator && !isStandardUser) {
+                // Not an authorized role for admin panel
                 router.push(`/${companySlug}`);
-            } else if (isModerator && !pathname.endsWith('/admin/sales-lab') && !pathname.endsWith('/admin/dashboard-lab')) {
-                router.push(`/${companySlug}/admin/dashboard-lab`);
+            } else {
+                // If moderator, check if accessing restricted path
+                if (isModerator) {
+                    const isAllowed = MODERATOR_ALLOWED_PATHS.some(p => pathname.includes(p));
+                    if (!isAllowed) {
+                        router.push(`/${companySlug}/admin/dashboard-lab`);
+                    }
+                }
+                // If standard user, check if accessing restricted path
+                if (isStandardUser) {
+                    const isAllowed = USER_ALLOWED_PATHS.some(p => pathname.includes(p));
+                    if (!isAllowed) {
+                        router.push(`/${companySlug}/admin/dashboard-lab`);
+                    }
+                }
             }
         }
-    }, [loading, isAuthenticated, user, router, companySlug, isModerator, pathname]);
+    }, [loading, isAuthenticated, isAdmin, isModerator, isStandardUser, companySlug, router, pathname]);
 
     if (loading || !isAuthenticated) {
         return <div className="flex min-h-screen items-center justify-center bg-white dark:bg-gray-950 text-cyan-500 font-black">AUTHENTICATING...</div>;
@@ -93,9 +113,6 @@ export default function AdminLayout({
         { label: 'Lab Reports', icon: ClipboardList, href: `/${companySlug}/admin/reports-lab` },
         { label: 'Lab Invoices', icon: Receipt, href: `/${companySlug}/admin/invoices-lab` },
     ];
-
-    const moderatorAllowedPaths = ['/admin/dashboard-lab', '/admin/sales-lab'];
-
 
     return (
         <div className="min-h-screen bg-background text-foreground flex overflow-hidden">
@@ -115,7 +132,10 @@ export default function AdminLayout({
 
                     <nav className="flex-1 space-y-2 overflow-x-hidden">
                         {allNavItems.map((item) => {
-                            const isAllowed = !isModerator || moderatorAllowedPaths.some(p => item.href.endsWith(p));
+                            let isAllowed = isAdmin;
+                            if (isModerator) isAllowed = MODERATOR_ALLOWED_PATHS.some(p => item.href.endsWith(p));
+                            if (isStandardUser) isAllowed = USER_ALLOWED_PATHS.some(p => item.href.endsWith(p));
+
                             const isActive = pathname === item.href;
 
                             return item.isHeader ? (
