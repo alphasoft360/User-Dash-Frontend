@@ -108,7 +108,7 @@ export default function LabDashboard() {
                                         <p className="text-xs text-muted-foreground font-medium">{new Date(sale.createdAt).toLocaleString()}</p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-sm font-black text-primary">${sale.total.toFixed(2)}</p>
+                                        <p className="text-sm font-black text-primary">PKR {sale.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                                         <p className="text-[10px] text-muted-foreground uppercase font-black">Paid</p>
                                     </div>
                                 </div>

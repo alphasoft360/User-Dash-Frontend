@@ -178,7 +178,7 @@ export default function InvoicesLabPage() {
                                         </div>
                                     </TableCell>
                                     <TableCell className="p-8 text-center">
-                                        <span className="font-black text-lg italic text-foreground">${parseFloat(inv.totalAmount).toLocaleString()}</span>
+                                        <span className="font-black text-lg italic text-foreground">PKR {parseFloat(inv.totalAmount).toLocaleString()}</span>
                                     </TableCell>
                                     <TableCell className="p-8 text-center">
                                         <span className={`font-black text-lg italic ${inv.pendingAmount > 0 ? 'text-pink-500' : 'text-muted-foreground/30'}`}>
