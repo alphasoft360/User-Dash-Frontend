@@ -37,7 +37,8 @@ import {
     Activity,
     Package,
     Eye,
-    X
+    X,
+    AlertTriangle
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -48,6 +49,7 @@ interface Product {
     stock: number;
     companyName?: string;
     packSize?: string;
+    expiryDate?: string;
 }
 
 interface CartItem extends Product {
@@ -506,6 +508,7 @@ export default function SalesLabPage() {
                                         <TableHead className="font-black uppercase tracking-widest text-[10px]">Reagent Name</TableHead>
                                         <TableHead className="font-black uppercase tracking-widest text-[10px]">Company</TableHead>
                                         <TableHead className="font-black uppercase tracking-widest text-[10px] text-right">Unit Price</TableHead>
+                                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-right">Expiry</TableHead>
                                         <TableHead className="font-black uppercase tracking-widest text-[10px] text-right">Stock</TableHead>
                                         <TableHead className="w-[100px]"></TableHead>
                                     </TableRow>
@@ -526,6 +529,16 @@ export default function SalesLabPage() {
                                             <TableCell className="p-4 align-middle italic text-xs text-muted-foreground">{product.companyName || 'Generic'}</TableCell>
                                             <TableCell className="p-4 text-right align-middle font-black text-primary italic text-sm">
                                                 PKR {parseFloat(product.price).toLocaleString()}
+                                            </TableCell>
+                                            <TableCell className="p-4 text-right align-middle">
+                                                <div className="flex flex-col items-end">
+                                                    <span className={`text-[10px] font-bold ${product.expiryDate && new Date(product.expiryDate) < new Date() ? 'text-red-500' : 'text-muted-foreground'}`}>
+                                                        {product.expiryDate || '—'}
+                                                    </span>
+                                                    {product.expiryDate && new Date(product.expiryDate) < new Date() && (
+                                                        <AlertTriangle className="h-3 w-3 text-red-500 mt-0.5" />
+                                                    )}
+                                                </div>
                                             </TableCell>
                                             <TableCell className="p-4 text-right align-middle">
                                                 <span className={`text-[9px] font-black tracking-widest uppercase px-2 py-1 rounded-md inline-block ${product.stock > 0 ? 'bg-secondary text-foreground/70' : 'bg-red-500/10 text-red-500'}`}>
