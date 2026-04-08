@@ -52,7 +52,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
 
-    const [isStatementOpen, setIsStatementOpen] = useState(false);
+    const [isLedgerOpen, setIsLedgerOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
     const [period, setPeriod] = useState<'monthly' | 'yearly' | 'all_time'>('all_time');
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
@@ -123,7 +123,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
         }
     };
 
-    const handleDownloadStatement = async () => {
+    const handleDownloadLedger = async () => {
         if (!selectedCustomer) return;
         setDownloading(true);
         try {
@@ -139,21 +139,21 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `Statement-${selectedCustomer.name}-${period}.pdf`);
+            link.setAttribute('download', `Ledger-${selectedCustomer.name}-${period}.pdf`);
             document.body.appendChild(link);
             link.click();
             link.remove();
-            setIsStatementOpen(false);
-            toast.success("Statement downloaded successfully");
+            setIsLedgerOpen(false);
+            toast.success("Ledger downloaded successfully");
         } catch (err) {
-            console.error("Statement error", err);
-            toast.error("Failed to generate statement");
+            console.error("Ledger error", err);
+            toast.error("Failed to generate ledger");
         } finally {
             setDownloading(false);
         }
     };
 
-    const handlePreviewStatement = async () => {
+    const handlePreviewLedger = async () => {
         if (!selectedCustomer) return;
         setPreviewing(true);
         try {
@@ -324,7 +324,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                                                     className="rounded-xl font-bold h-9 text-[10px] uppercase tracking-widest hover:bg-primary hover:text-primary-foreground transition-all shrink-0"
                                                     onClick={() => {
                                                         setSelectedCustomer(customer);
-                                                        setIsStatementOpen(true);
+                                                        setIsLedgerOpen(true);
                                                     }}
                                                 >
                                                     <FileText className="h-3.5 w-3.5 mr-2" />
@@ -391,19 +391,19 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                 </CardContent>
             </Card>
 
-            {/* STATEMENT SELECTION MODAL */}
-            {isStatementOpen && (
+            {/* LEDGER SELECTION MODAL */}
+            {isLedgerOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-300">
                     <div className="bg-card border border-border w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
                         <div className="p-8 border-b border-border bg-secondary/10 flex items-center justify-between">
                             <div>
-                                <h2 className="text-xl font-black uppercase italic tracking-tighter">ACCOUNT <span className="text-primary not-italic">Statement</span></h2>
+                                <h2 className="text-xl font-black uppercase italic tracking-tighter">ACCOUNT <span className="text-primary not-italic">Ledger</span></h2>
                                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Select period for {selectedCustomer?.name}</p>
                             </div>
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                onClick={() => setIsStatementOpen(false)}
+                                onClick={() => setIsLedgerOpen(false)}
                                 className="rounded-full hover:bg-secondary"
                             >
                                 <X className="h-5 w-5" />
@@ -472,7 +472,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                             <div className="flex gap-3 mt-4">
                                 <Button
                                     className="flex-1 bg-secondary text-foreground hover:bg-secondary/80 font-black h-16 rounded-3xl flex items-center justify-center gap-3 uppercase italic text-sm group"
-                                    onClick={handlePreviewStatement}
+                                    onClick={handlePreviewLedger}
                                     disabled={previewing || downloading}
                                 >
                                     {previewing ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5 group-hover:scale-110 transition-transform" /> }
@@ -480,7 +480,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                                 </Button>
                                 <Button
                                     className="flex-[2] bg-primary hover:opacity-90 text-primary-foreground font-black h-16 rounded-3xl shadow-xl shadow-primary/20 flex items-center justify-center gap-3 uppercase italic text-sm group"
-                                    onClick={handleDownloadStatement}
+                                    onClick={handleDownloadLedger}
                                     disabled={downloading || previewing}
                                 >
                                     {downloading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Download className="h-5 w-5 group-hover:translate-y-0.5 transition-transform" />}
@@ -489,7 +489,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                             </div>
 
                             <p className="text-[9px] text-center text-muted-foreground font-medium px-4 uppercase tracking-tighter opacity-60">
-                                Statements are generated as secure PDF documents showing all purchase history and inventory usage for the selected period.
+                                Ledgers are generated as secure PDF documents showing all purchase history and inventory usage for the selected period.
                             </p>
                         </div>
                     </div>
@@ -501,7 +501,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                 <div className="fixed inset-0 z-[100] flex flex-col bg-background/95 backdrop-blur-sm animate-in fade-in duration-300">
                     <div className="p-4 border-b border-border flex justify-between items-center bg-card shadow-sm">
                         <div>
-                            <h2 className="text-xl font-black uppercase italic tracking-tighter">STATEMENT <span className="text-primary not-italic">Preview</span></h2>
+                            <h2 className="text-xl font-black uppercase italic tracking-tighter">LEDGER <span className="text-primary not-italic">Preview</span></h2>
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Reviewing document before download</p>
                         </div>
                         <div className="flex items-center gap-4">
@@ -509,7 +509,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                                 onClick={() => {
                                     const link = document.createElement('a');
                                     link.href = previewUrl;
-                                    link.setAttribute('download', `Statement-${selectedCustomer?.name}-${period}.pdf`);
+                                    link.setAttribute('download', `Ledger-${selectedCustomer?.name}-${period}.pdf`);
                                     document.body.appendChild(link);
                                     link.click();
                                     link.remove();

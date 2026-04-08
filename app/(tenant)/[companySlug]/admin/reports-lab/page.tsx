@@ -125,7 +125,7 @@ export default function ReportsLabPage() {
             {/* Ultra Slim Premium Intelligence Matrix */}
             <div className="flex flex-col sm:flex-row gap-2">
                 {[
-                    { id: 'monthly', title: 'Monthly Statement', icon: Calendar, bg: 'bg-indigo-500/10', text: 'text-indigo-500', btn: 'bg-indigo-500 hover:bg-indigo-600 shadow-indigo-500/20' },
+                    { id: 'monthly', title: 'Monthly Ledger', icon: Calendar, bg: 'bg-indigo-500/10', text: 'text-indigo-500', btn: 'bg-indigo-500 hover:bg-indigo-600 shadow-indigo-500/20' },
                     { id: 'yearly', title: 'Yearly Audit', icon: BarChartIcon, bg: 'bg-pink-500/10', text: 'text-pink-500', btn: 'bg-pink-500 hover:bg-pink-600 shadow-pink-500/20' }
                 ].map((report) => (
                     <SpotlightCard key={report.id} className="flex-1 border border-border/40 bg-secondary/5 rounded-xl h-22">
