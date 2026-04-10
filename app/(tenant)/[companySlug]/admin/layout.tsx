@@ -23,7 +23,8 @@ import {
     UsersRound,
     TrendingUp,
     ClipboardList,
-    Receipt
+    Receipt,
+    Wallet
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -112,6 +113,7 @@ export default function AdminLayout({
         { label: 'Lab Sales', icon: TrendingUp, href: `/${companySlug}/admin/sales-lab` },
         { label: 'Lab Reports', icon: ClipboardList, href: `/${companySlug}/admin/reports-lab` },
         { label: 'Lab Invoices', icon: Receipt, href: `/${companySlug}/admin/invoices-lab` },
+        { label: 'Lab Expenses', icon: Wallet, href: `/${companySlug}/admin/lab-expenses` },
     ];
 
     return (
