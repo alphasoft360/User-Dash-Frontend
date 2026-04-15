@@ -70,7 +70,9 @@ export default function AdminLayout({
     }, [companySlug]);
 
     const roles = user?.roles || [];
-    const isAdmin = roles.includes('ROLE_ADMIN') || roles.includes('ROLE_SUPER_ADMIN');
+    const isSuperAdmin = roles.includes('ROLE_SUPER_ADMIN');
+    const isArchitectural = roles.includes('ROLE_ARCHITECTURAL') || isSuperAdmin;
+    const isAdmin = roles.includes('ROLE_ADMIN') || isArchitectural;
     const isModerator = roles.includes('ROLE_MODERATOR') && !isAdmin;
     const isStandardUser = roles.includes('ROLE_USER') && !isAdmin && !isModerator;
 
@@ -78,10 +80,24 @@ export default function AdminLayout({
         if (!loading) {
             if (!isAuthenticated) {
                 router.push(`/${companySlug}/login`);
-            } else if (!isAdmin && !isModerator && !isStandardUser) {
+            } else if (!isAdmin && !isModerator && !isStandardUser && !isArchitectural) {
                 // Not an authorized role for admin panel
                 router.push(`/${companySlug}`);
             } else {
+                // Restricted paths for those WHO ARE NOT architectural/superadmin
+                if (!isArchitectural) {
+                    if (pathname.includes('/admin/users')) {
+                        router.push(`/${companySlug}/admin/dashboard-lab`);
+                    }
+                }
+
+                // If admin (but not architectural), and trying to access users
+                if (isAdmin && !isArchitectural) {
+                     if (pathname.includes('/admin/users')) {
+                        router.push(`/${companySlug}/admin/dashboard-lab`);
+                    }
+                }
+
                 // If moderator, check if accessing restricted path
                 if (isModerator) {
                     const isAllowed = MODERATOR_ALLOWED_PATHS.some(p => pathname.includes(p));
@@ -98,7 +114,7 @@ export default function AdminLayout({
                 }
             }
         }
-    }, [loading, isAuthenticated, isAdmin, isModerator, isStandardUser, companySlug, router, pathname]);
+    }, [loading, isAuthenticated, isAdmin, isModerator, isStandardUser, isArchitectural, companySlug, router, pathname]);
 
     if (loading || !isAuthenticated) {
         return <div className="flex min-h-screen items-center justify-center bg-white dark:bg-gray-950 text-cyan-500 font-black">AUTHENTICATING...</div>;
@@ -135,6 +151,12 @@ export default function AdminLayout({
                     <nav className="flex-1 space-y-2 overflow-x-hidden">
                         {allNavItems.map((item) => {
                             let isAllowed = isAdmin;
+                            
+                            // Specific restriction for Users
+                            if (item.label === 'Users') {
+                                isAllowed = isArchitectural;
+                            }
+
                             if (isModerator) isAllowed = MODERATOR_ALLOWED_PATHS.some(p => item.href.endsWith(p));
                             if (isStandardUser) isAllowed = USER_ALLOWED_PATHS.some(p => item.href.endsWith(p));
 
@@ -170,7 +192,9 @@ export default function AdminLayout({
                             {!isCompact && (
                                 <div className="flex-1 min-w-0 ml-3">
                                     <p className="text-xs font-bold text-foreground truncate">{user?.email}</p>
-                                    <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest leading-none">{isModerator ? 'Moderator' : 'Admin'}</p>
+                                    <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest leading-none">
+                                        {isSuperAdmin ? 'Super Admin' : isArchitectural ? 'Architectural' : isModerator ? 'Moderator' : 'Admin'}
+                                    </p>
                                 </div>
                             )}
                         </div>
