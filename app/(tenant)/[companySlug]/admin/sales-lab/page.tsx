@@ -382,11 +382,11 @@ export default function SalesLabPage() {
                     </div>
                     <h1 className="text-5xl font-black italic uppercase tracking-tighter mb-4">Sale <span className="text-primary">Recorded</span></h1>
                     <p className="text-muted-foreground font-black uppercase tracking-widest text-[10px] mb-8">Batch Order ID: #{lastOrderId}</p>
-                    
+
                     <div className="flex bg-secondary/30 p-2 rounded-2xl border border-border items-center gap-3 px-4 h-14 mb-8">
-                        <Switch 
-                            id="show-header-sales" 
-                            checked={showHeader} 
+                        <Switch
+                            id="show-header-sales"
+                            checked={showHeader}
                             onCheckedChange={setShowHeader}
                             className="data-[state=checked]:bg-primary"
                         />

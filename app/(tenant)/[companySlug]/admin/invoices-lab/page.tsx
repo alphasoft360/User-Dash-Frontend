@@ -243,9 +243,9 @@ export default function InvoicesLabPage() {
                 </div>
                 <div className="flex bg-secondary/30 p-2 rounded-2xl border border-border items-center gap-4">
                     <div className="flex items-center gap-2 px-4 border-r border-border py-1">
-                        <Switch 
-                            id="show-header" 
-                            checked={showHeader} 
+                        <Switch
+                            id="show-header"
+                            checked={showHeader}
                             onCheckedChange={setShowHeader}
                             className="data-[state=checked]:bg-pink-500"
                         />
@@ -277,7 +277,6 @@ export default function InvoicesLabPage() {
                                 <TableHead className="p-8 font-black uppercase text-[10px] tracking-widest">Receipt ID</TableHead>
                                 <TableHead className="p-8 font-black uppercase text-[10px] tracking-widest">Customer Node</TableHead>
                                 <TableHead className="p-8 font-black uppercase text-[10px] tracking-widest">Timestamp</TableHead>
-                                <TableHead className="p-8 font-black uppercase text-[10px] tracking-widest text-center">Amount Due</TableHead>
                                 <TableHead className="p-8 font-black uppercase text-[10px] tracking-widest text-center">Pending</TableHead>
                                 <TableHead className="p-8 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
                             </TableRow>
@@ -285,7 +284,7 @@ export default function InvoicesLabPage() {
                         <TableBody>
                             {loading ? (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="p-24 text-center font-black uppercase italic text-pink-500/50 animate-pulse">Accessing Vault...</TableCell>
+                                    <TableCell colSpan={5} className="p-24 text-center font-black uppercase italic text-pink-500/50 animate-pulse">Accessing Vault...</TableCell>
                                 </TableRow>
                             ) : invoices.map((inv) => (
                                 <TableRow key={inv.id} className="border-border hover:bg-pink-500/5 transition-colors">
@@ -303,27 +302,24 @@ export default function InvoicesLabPage() {
                                         </div>
                                     </TableCell>
                                     <TableCell className="p-8 text-center">
-                                        <span className="font-black text-lg italic text-foreground">PKR {parseFloat(inv.totalAmount).toLocaleString()}</span>
-                                    </TableCell>
-                                    <TableCell className="p-8 text-center">
                                         <span className={`font-black text-lg italic ${inv.pendingAmount > 0 ? 'text-pink-500' : 'text-muted-foreground/30'}`}>
                                             PKR {inv.pendingAmount.toLocaleString()}
                                         </span>
                                     </TableCell>
                                     <TableCell className="p-8 text-right">
                                         <div className="flex justify-end gap-3">
-                                            <Button 
-                                                variant="ghost" 
-                                                size="icon" 
-                                                className="h-10 w-10 text-muted-foreground hover:bg-emerald-500/10 hover:text-emerald-500 rounded-xl" 
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-10 w-10 text-muted-foreground hover:bg-emerald-500/10 hover:text-emerald-500 rounded-xl"
                                                 onClick={() => handleEdit(inv.id)}
                                             >
                                                 <Edit className="h-5 w-5" />
                                             </Button>
-                                            <Button 
-                                                variant="ghost" 
-                                                size="icon" 
-                                                className="h-10 w-10 text-muted-foreground hover:bg-pink-500/10 hover:text-pink-500 rounded-xl" 
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-10 w-10 text-muted-foreground hover:bg-pink-500/10 hover:text-pink-500 rounded-xl"
                                                 onClick={() => handlePreview(inv.id)}
                                                 disabled={previewing}
                                             >
@@ -338,7 +334,7 @@ export default function InvoicesLabPage() {
                             ))}
                             {invoices.length === 0 && !loading && (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="p-24 text-center italic opacity-30 font-bold uppercase text-[10px] tracking-[0.3em]">Vault is empty</TableCell>
+                                    <TableCell colSpan={5} className="p-24 text-center italic opacity-30 font-bold uppercase text-[10px] tracking-[0.3em]">Vault is empty</TableCell>
                                 </TableRow>
                             )}
                         </TableBody>
@@ -387,7 +383,7 @@ export default function InvoicesLabPage() {
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Reviewing digital receipt</p>
                         </div>
                         <div className="flex items-center gap-4">
-                            <Button 
+                            <Button
                                 onClick={() => {
                                     const link = document.createElement('a');
                                     link.href = previewUrl;
@@ -402,9 +398,9 @@ export default function InvoicesLabPage() {
                                 DOWNLOAD PDF
                             </Button>
                             <div className="w-px h-8 bg-border"></div>
-                            <Button 
-                                variant="ghost" 
-                                size="icon" 
+                            <Button
+                                variant="ghost"
+                                size="icon"
                                 onClick={() => {
                                     URL.revokeObjectURL(previewUrl);
                                     setPreviewUrl(null);
@@ -433,10 +429,10 @@ export default function InvoicesLabPage() {
                                 </h2>
                                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Itemized reconciliation & financial adjustment</p>
                             </div>
-                            <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                onClick={() => setIsEditModalOpen(false)} 
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setIsEditModalOpen(false)}
                                 className="rounded-full hover:bg-foreground/10 h-10 w-10 shrink-0"
                             >
                                 <X className="h-5 w-5" />
@@ -483,7 +479,7 @@ export default function InvoicesLabPage() {
                                             <ShoppingCart className="h-4 w-4 text-emerald-500" />
                                             Manifest Items
                                         </h3>
-                                        <Button 
+                                        <Button
                                             onClick={() => setIsProductPickerOpen(true)}
                                             size="sm"
                                             className="rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-[10px] uppercase tracking-widest px-4"
@@ -546,9 +542,9 @@ export default function InvoicesLabPage() {
                                                             PKR {(item.quantity * item.price - (item.discountAmount || 0)).toLocaleString()}
                                                         </TableCell>
                                                         <TableCell>
-                                                            <Button 
-                                                                variant="ghost" 
-                                                                size="icon" 
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
                                                                 onClick={() => removeItem(idx)}
                                                                 className="h-8 w-8 text-muted-foreground hover:bg-pink-500/10 hover:text-pink-500 rounded-lg"
                                                             >
@@ -609,14 +605,14 @@ export default function InvoicesLabPage() {
                                 </div>
 
                                 <div className="flex justify-end gap-3 pt-8 pb-4">
-                                    <Button 
-                                        variant="outline" 
+                                    <Button
+                                        variant="outline"
                                         onClick={() => setIsEditModalOpen(false)}
                                         className="h-12 px-8 rounded-xl border-border bg-card font-black uppercase text-[10px] tracking-widest hover:bg-secondary/20 transition-all"
                                     >
                                         Cancel
                                     </Button>
-                                    <Button 
+                                    <Button
                                         onClick={handleSave}
                                         disabled={saving || !calculateNewTotals().total}
                                         className="h-12 px-10 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black uppercase text-[10px] tracking-widest shadow-lg shadow-emerald-500/25 transition-all active:scale-95 flex items-center gap-3"
@@ -640,9 +636,9 @@ export default function InvoicesLabPage() {
                                     </h3>
                                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Search and click to add to manifest</p>
                                 </div>
-                                <Button 
-                                    variant="ghost" 
-                                    size="icon" 
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
                                     onClick={() => setIsProductPickerOpen(false)}
                                     className="rounded-full h-10 w-10"
                                 >
@@ -652,7 +648,7 @@ export default function InvoicesLabPage() {
 
                             <div className="relative mb-6">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                                <Input 
+                                <Input
                                     placeholder="Search by name..."
                                     value={productSearch}
                                     onChange={e => setProductSearch(e.target.value)}
@@ -666,7 +662,7 @@ export default function InvoicesLabPage() {
                                     {availableProducts
                                         .filter(p => p.name.toLowerCase().includes(productSearch.toLowerCase()))
                                         .map(product => (
-                                            <div 
+                                            <div
                                                 key={product.id}
                                                 onClick={() => addItem(product)}
                                                 className="p-5 bg-card border border-border rounded-2xl hover:bg-emerald-500/5 hover:border-emerald-500/20 cursor-pointer transition-all flex flex-col gap-3 group"
