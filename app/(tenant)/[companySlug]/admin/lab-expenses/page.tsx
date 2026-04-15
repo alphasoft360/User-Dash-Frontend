@@ -40,14 +40,15 @@ interface LabExpense {
 }
 
 const EXPENSE_CATEGORIES = [
-    'Utility', 
-    'Equipment', 
-    'Reagents', 
-    'Maintenance', 
-    'Salaries', 
-    'Logistics', 
-    'Marketing', 
-    'Miscellaneous'
+    'Utility',
+    'Equipment',
+    'Reagents',
+    'Maintenance',
+    'Salaries',
+    'Logistics',
+    'Marketing',
+    'Miscellaneous',
+    'Other'
 ];
 
 export default function LabExpensesPage({ params }: { params: Promise<{ companySlug: string }> }) {
@@ -231,8 +232,8 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
                     <div className="flex items-end">
                         <Button
                             variant="ghost"
-                            onClick={() => { 
-                                setSearchQuery(''); 
+                            onClick={() => {
+                                setSearchQuery('');
                                 setCurrentPage(1);
                                 fetchExpenses(1, '');
                             }}
@@ -309,27 +310,27 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
                                         </td>
                                         <td className="p-6 text-right">
                                             <div className="flex justify-end gap-2">
-                                                <Button 
-                                                    variant="ghost" 
-                                                    size="icon" 
-                                                    className="h-10 w-10 text-muted-foreground hover:bg-primary/10 hover:text-primary rounded-xl" 
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-10 w-10 text-muted-foreground hover:bg-primary/10 hover:text-primary rounded-xl"
                                                     onClick={() => handlePreview(expense.id)}
                                                     disabled={previewing === expense.id}
                                                 >
                                                     {previewing === expense.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Eye className="h-4 w-4" />}
                                                 </Button>
-                                                <Button 
-                                                    variant="ghost" 
-                                                    size="icon" 
-                                                    className="h-10 w-10 text-muted-foreground hover:bg-primary/10 hover:text-primary rounded-xl" 
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-10 w-10 text-muted-foreground hover:bg-primary/10 hover:text-primary rounded-xl"
                                                     onClick={() => handleDownload(expense.id)}
                                                 >
                                                     <FileDown className="h-4 w-4" />
                                                 </Button>
-                                                <Button 
-                                                    variant="ghost" 
-                                                    size="icon" 
-                                                    className="h-10 w-10 text-muted-foreground hover:bg-red-500/10 hover:text-red-500 rounded-xl" 
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-10 w-10 text-muted-foreground hover:bg-red-500/10 hover:text-red-500 rounded-xl"
                                                     onClick={() => handleDelete(expense.id)}
                                                 >
                                                     <Trash2 className="h-4 w-4" />
@@ -367,7 +368,7 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
                                 >
                                     <ChevronLeft className="h-4 w-4" />
                                 </Button>
-                                
+
                                 <div className="flex items-center gap-1 mx-2">
                                     <div className="h-10 px-4 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
                                         <span className="text-xs font-black text-primary">Page {currentPage} of {totalPages}</span>
@@ -414,40 +415,40 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
                         <form onSubmit={handleCreateExpense} className="p-6 space-y-5">
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Expense Title / Item</Label>
-                                <Input 
-                                    required 
+                                <Input
+                                    required
                                     autoFocus
-                                    placeholder="e.g. Utility Bill, New Microscopes..." 
+                                    placeholder="e.g. Utility Bill, New Microscopes..."
                                     value={newExpense.title}
-                                    onChange={e => setNewExpense({...newExpense, title: e.target.value})}
+                                    onChange={e => setNewExpense({ ...newExpense, title: e.target.value })}
                                     className="bg-secondary/20 h-11 rounded-xl px-4 font-bold text-sm border-border"
                                 />
                             </div>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Amount (PKR)</Label>
                                     <div className="relative">
                                         <div className="absolute left-3 top-1/2 -translate-y-1/2 font-black text-muted-foreground text-xs">PKR</div>
-                                        <Input 
-                                            required 
+                                        <Input
+                                            required
                                             type="number"
                                             step="0.01"
                                             min="0"
-                                            placeholder="0.00" 
+                                            placeholder="0.00"
                                             value={newExpense.amount}
-                                            onChange={e => setNewExpense({...newExpense, amount: e.target.value})}
+                                            onChange={e => setNewExpense({ ...newExpense, amount: e.target.value })}
                                             className="bg-secondary/20 h-11 rounded-xl pl-12 font-black text-sm border-border text-primary"
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Date</Label>
-                                    <Input 
-                                        required 
+                                    <Input
+                                        required
                                         type="date"
                                         value={newExpense.expenseDate}
-                                        onChange={e => setNewExpense({...newExpense, expenseDate: e.target.value})}
+                                        onChange={e => setNewExpense({ ...newExpense, expenseDate: e.target.value })}
                                         className="bg-secondary/20 h-11 rounded-xl px-4 font-bold text-sm border-border font-mono"
                                     />
                                 </div>
@@ -455,7 +456,7 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
 
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Category</Label>
-                                <Select value={newExpense.category} onValueChange={v => setNewExpense({...newExpense, category: v})}>
+                                <Select value={newExpense.category} onValueChange={v => setNewExpense({ ...newExpense, category: v })}>
                                     <SelectTrigger className="bg-secondary/20 h-11 rounded-xl px-4 font-bold text-sm border-border">
                                         <SelectValue placeholder="Select Category" />
                                     </SelectTrigger>
@@ -469,12 +470,12 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
 
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Description / Notes (Optional)</Label>
-                                <textarea 
+                                <textarea
                                     className="w-full bg-secondary/20 rounded-xl p-3 text-sm font-medium text-foreground border border-border focus:ring-2 focus:ring-primary/50 outline-none resize-none"
                                     rows={3}
                                     placeholder="Add any relevant details about this expense..."
                                     value={newExpense.description}
-                                    onChange={e => setNewExpense({...newExpense, description: e.target.value})}
+                                    onChange={e => setNewExpense({ ...newExpense, description: e.target.value })}
                                 />
                             </div>
 
@@ -500,7 +501,7 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Reviewing digital document</p>
                         </div>
                         <div className="flex items-center gap-4">
-                            <Button 
+                            <Button
                                 onClick={() => {
                                     const link = document.createElement('a');
                                     link.href = previewUrl;
@@ -515,9 +516,9 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
                                 DOWNLOAD PDF
                             </Button>
                             <div className="w-px h-8 bg-border"></div>
-                            <Button 
-                                variant="ghost" 
-                                size="icon" 
+                            <Button
+                                variant="ghost"
+                                size="icon"
                                 onClick={() => {
                                     URL.revokeObjectURL(previewUrl);
                                     setPreviewUrl(null);
