@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from "@/components/ui/switch";
 import {
     Table,
     TableBody,
@@ -109,6 +110,7 @@ export default function SalesLabPage() {
     const [isDownloadingInvoice, setIsDownloadingInvoice] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [isPreviewing, setIsPreviewing] = useState(false);
+    const [showHeader, setShowHeader] = useState(true);
 
     const fetchCategories = useCallback(async () => {
         try {
@@ -155,7 +157,7 @@ export default function SalesLabPage() {
         setIsDownloadingInvoice(true);
         try {
             const response = await api.get(`/admin/labs/invoice/download`, {
-                params: { orderId },
+                params: { orderId, showHeader },
                 responseType: 'blob'
             });
 
@@ -181,7 +183,7 @@ export default function SalesLabPage() {
         try {
             toast.info(`Generating preview for invoice #${orderId}...`);
             const response = await api.get(`/admin/labs/invoice/download`, {
-                params: { orderId },
+                params: { orderId, showHeader },
                 responseType: 'blob'
             });
             const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
@@ -379,9 +381,19 @@ export default function SalesLabPage() {
                         <CheckCircle className="h-16 w-16 text-primary" />
                     </div>
                     <h1 className="text-5xl font-black italic uppercase tracking-tighter mb-4">Sale <span className="text-primary">Recorded</span></h1>
-                    <p className="text-muted-foreground font-black uppercase tracking-widest text-xs mb-12">Batch Order ID: #{lastOrderId}</p>
+                    <p className="text-muted-foreground font-black uppercase tracking-widest text-[10px] mb-8">Batch Order ID: #{lastOrderId}</p>
+                    
+                    <div className="flex bg-secondary/30 p-2 rounded-2xl border border-border items-center gap-3 px-4 h-14 mb-8">
+                        <Switch 
+                            id="show-header-sales" 
+                            checked={showHeader} 
+                            onCheckedChange={setShowHeader}
+                            className="data-[state=checked]:bg-primary"
+                        />
+                        <Label htmlFor="show-header-sales" className="text-[10px] font-black uppercase tracking-widest cursor-pointer opacity-70">Include Branding (Header/Footer)</Label>
+                    </div>
 
-                <div className="flex flex-row items-center space-x-4">
+                    <div className="flex flex-row items-center space-x-4">
                         <Button
                             disabled={isPreviewing}
                             onClick={() => lastOrderId && handlePreviewInvoice(lastOrderId)}

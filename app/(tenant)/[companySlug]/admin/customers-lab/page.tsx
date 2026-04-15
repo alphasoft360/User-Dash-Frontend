@@ -28,6 +28,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Loader2, FileText, Download } from 'lucide-react';
+import { Switch } from "@/components/ui/switch";
 
 interface Customer {
     id: number;
@@ -59,6 +60,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
     const [selectedMonth, setSelectedMonth] = useState((new Date().getMonth() + 1).toString());
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [previewing, setPreviewing] = useState(false);
+    const [showHeader, setShowHeader] = useState(true);
 
     const fetchCustomers = async (currentPage = page, searchQuery = search, pending = pendingFilter) => {
         setLoading(true);
@@ -131,7 +133,8 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                 params: {
                     period,
                     year: selectedYear,
-                    month: selectedMonth
+                    month: selectedMonth,
+                    showHeader
                 },
                 responseType: 'blob'
             });
@@ -161,7 +164,8 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                 params: {
                     period,
                     year: selectedYear,
-                    month: selectedMonth
+                    month: selectedMonth,
+                    showHeader
                 },
                 responseType: 'blob'
             });
@@ -468,6 +472,18 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                                 )}
                                 </div>
                             )}
+
+                            <div className="flex items-center justify-between p-4 bg-secondary/20 rounded-2xl">
+                                <div className="flex flex-col">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground">Header & Footer</Label>
+                                    <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-tighter">Include UHS branding in PDF</p>
+                                </div>
+                                <Switch 
+                                    checked={showHeader} 
+                                    onCheckedChange={setShowHeader}
+                                    className="data-[state=checked]:bg-primary"
+                                />
+                            </div>
 
                             <div className="flex gap-3 mt-4">
                                 <Button

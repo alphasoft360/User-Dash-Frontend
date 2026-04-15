@@ -17,6 +17,7 @@ import {
 import { Receipt, Search, FileDown, Eye, Calendar, User, Building, Trash2, ChevronLeft, ChevronRight, Loader2, X, Edit, Plus, Minus, ShoppingCart, Percent, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 interface Invoice {
     id: number;
@@ -36,6 +37,7 @@ export default function InvoicesLabPage() {
     const [totalItems, setTotalItems] = useState(0);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [previewing, setPreviewing] = useState(false);
+    const [showHeader, setShowHeader] = useState(true);
 
     // Editing State
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -198,7 +200,7 @@ export default function InvoicesLabPage() {
         try {
             toast.info(`Downloading digital invoice #${id}...`);
             const response = await api.get(`/admin/labs/invoice/download`, {
-                params: { orderId: id },
+                params: { orderId: id, showHeader },
                 responseType: 'blob'
             });
             const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
@@ -219,7 +221,7 @@ export default function InvoicesLabPage() {
         try {
             toast.info(`Generating preview for invoice #${id}...`);
             const response = await api.get(`/admin/labs/invoice/download`, {
-                params: { orderId: id },
+                params: { orderId: id, showHeader },
                 responseType: 'blob'
             });
             const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
@@ -239,14 +241,25 @@ export default function InvoicesLabPage() {
                     <h1 className="text-4xl font-black text-foreground tracking-tighter mb-2 uppercase italic text-pink-500">INVOICE <span className="text-foreground not-italic">Archive</span></h1>
                     <p className="text-muted-foreground font-medium uppercase text-[10px] tracking-widest">Digital Receipts & Billing History Records.</p>
                 </div>
-                <div className="flex bg-secondary/30 p-2 rounded-2xl border border-border">
-                    <Search className="h-10 w-10 p-2 text-muted-foreground" />
-                    <Input
-                        placeholder="Filter by ID or Name..."
-                        value={search}
-                        onChange={handleSearchChange}
-                        className="bg-transparent border-none font-bold placeholder:font-medium focus-visible:ring-0 w-64 uppercase text-[10px] tracking-widest"
-                    />
+                <div className="flex bg-secondary/30 p-2 rounded-2xl border border-border items-center gap-4">
+                    <div className="flex items-center gap-2 px-4 border-r border-border py-1">
+                        <Switch 
+                            id="show-header" 
+                            checked={showHeader} 
+                            onCheckedChange={setShowHeader}
+                            className="data-[state=checked]:bg-pink-500"
+                        />
+                        <Label htmlFor="show-header" className="text-[9px] font-black uppercase tracking-widest cursor-pointer opacity-70">Header/Footer</Label>
+                    </div>
+                    <div className="flex items-center">
+                        <Search className="h-10 w-10 p-2 text-muted-foreground" />
+                        <Input
+                            placeholder="Filter by ID or Name..."
+                            value={search}
+                            onChange={handleSearchChange}
+                            className="bg-transparent border-none font-bold placeholder:font-medium focus-visible:ring-0 w-64 uppercase text-[10px] tracking-widest"
+                        />
+                    </div>
                 </div>
             </div>
 

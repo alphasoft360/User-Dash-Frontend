@@ -26,6 +26,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from "@/components/ui/switch";
 import { toast } from 'sonner';
 
 interface LabExpense {
@@ -69,6 +70,7 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
     const [showAddModal, setShowAddModal] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [previewing, setPreviewing] = useState<number | null>(null);
+    const [showHeader, setShowHeader] = useState(true);
 
     // Form states
     const [newExpense, setNewExpense] = useState({
@@ -162,6 +164,7 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
         try {
             toast.info(`Downloading digital expense receipt #${id}...`);
             const response = await api.get(`/admin/labs/invoice/expense/${id}`, {
+                params: { showHeader },
                 responseType: 'blob'
             });
             const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
@@ -182,6 +185,7 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
         try {
             toast.info(`Generating preview for expense #${id}...`);
             const response = await api.get(`/admin/labs/invoice/expense/${id}`, {
+                params: { showHeader },
                 responseType: 'blob'
             });
             const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
@@ -205,6 +209,17 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
                     </p>
                 </div>
                 <div className="flex items-center gap-4">
+                    <div className="flex bg-secondary/30 p-2 rounded-2xl border border-border items-center gap-4 px-4 h-11">
+                        <div className="flex items-center gap-2">
+                            <Switch 
+                                id="show-header" 
+                                checked={showHeader} 
+                                onCheckedChange={setShowHeader}
+                                className="data-[state=checked]:bg-primary"
+                            />
+                            <Label htmlFor="show-header" className="text-[9px] font-black uppercase tracking-widest cursor-pointer opacity-70">Header/Footer</Label>
+                        </div>
+                    </div>
                     <Button
                         onClick={() => setShowAddModal(true)}
                         className="bg-primary hover:opacity-90 text-primary-foreground font-black px-6 rounded-xl h-11 shadow-lg shadow-primary/20 flex items-center gap-2 transition-all active:scale-95"

@@ -17,6 +17,8 @@ import MagneticButton from '@/components/MagneticButton';
 import SpotlightCard from '@/components/SpotlightCard';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface DailySale {
     date: string;
@@ -42,6 +44,7 @@ export default function ReportsLabPage() {
     const [loading, setLoading] = useState(true);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [previewing, setPreviewing] = useState(false);
+    const [showHeader, setShowHeader] = useState(true);
 
     const fetchReports = async () => {
         try {
@@ -72,6 +75,7 @@ export default function ReportsLabPage() {
                 const now = new Date();
                 endpoint += `&year=${now.getFullYear()}&month=${now.getMonth() + 1}`;
             }
+            endpoint += `&showHeader=${showHeader}`;
 
             toast.info(`Compiling ${type} intelligence report...`);
             const response = await api.get(endpoint, { responseType: 'blob' });
@@ -99,6 +103,7 @@ export default function ReportsLabPage() {
                 const now = new Date();
                 endpoint += `&year=${now.getFullYear()}&month=${now.getMonth() + 1}`;
             }
+            endpoint += `&showHeader=${showHeader}`;
 
             toast.info(`Generating ${type} preview...`);
             const response = await api.get(endpoint, { responseType: 'blob' });
@@ -119,6 +124,18 @@ export default function ReportsLabPage() {
                 <div>
                     <h1 className="text-4xl font-black text-foreground tracking-tighter mb-2 uppercase italic">LAB <span className="text-primary not-italic">Intelligence</span></h1>
                     <p className="text-muted-foreground font-medium uppercase text-[10px] tracking-widest leading-relaxed">Statistical Analysis & Financial Audits <br />Generated at {new Date().toLocaleTimeString()}</p>
+                </div>
+
+                <div className="flex bg-secondary/30 p-4 rounded-2xl border border-border items-center gap-4">
+                    <div className="flex flex-col">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-foreground">Header & Footer</Label>
+                        <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-tighter">Include branding in Intelligence PDFs</p>
+                    </div>
+                    <Switch 
+                        checked={showHeader} 
+                        onCheckedChange={setShowHeader}
+                        className="data-[state=checked]:bg-primary"
+                    />
                 </div>
             </div>
 

@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import Link from 'next/link';
 import {
     Package,
@@ -20,7 +22,9 @@ import {
     ChevronLeft,
     ChevronRight,
     Edit2,
-    FileDown
+    FileDown,
+    Eye,
+    X
 } from 'lucide-react';
 
 interface Product {
@@ -36,6 +40,9 @@ export default function StockManagementPage({ params }: { params: Promise<{ comp
     const { companySlug } = use(params);
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
+    const [showHeader, setShowHeader] = useState(true);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [previewingId, setPreviewingId] = useState<number | null>(null);
 
     // Pagination & Filters
     const [searchTerm, setSearchTerm] = useState('');
@@ -87,7 +94,16 @@ export default function StockManagementPage({ params }: { params: Promise<{ comp
                     <h1 className="text-4xl font-black text-foreground tracking-tighter mb-2 uppercase italic">STOCK <span className="text-primary not-italic">Manager</span></h1>
                     <p className="text-muted-foreground font-medium uppercase text-[10px] tracking-widest">Update Reagent Inventory & Manage Stock Volume.</p>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex gap-4 items-center">
+                    <div className="flex bg-secondary/30 p-2 rounded-2xl border border-border items-center gap-3 px-4 h-14">
+                        <Switch 
+                            id="show-header" 
+                            checked={showHeader} 
+                            onCheckedChange={setShowHeader}
+                            className="data-[state=checked]:bg-primary"
+                        />
+                        <Label htmlFor="show-header" className="text-[10px] font-black uppercase tracking-widest cursor-pointer opacity-70">Header/Footer</Label>
+                    </div>
                     <Link href={`/${companySlug}/admin/stock/vendors/new`}>
                         <Button
                             variant="outline"
@@ -193,7 +209,10 @@ export default function StockManagementPage({ params }: { params: Promise<{ comp
                                         const handleDownloadRecord = async () => {
                                             try {
                                                 toast.info("Preparing record...");
-                                                const response = await api.get(`/admin/labs/invoice/reagent/${product.id}`, { responseType: 'blob' });
+                                                const response = await api.get(`/admin/labs/invoice/reagent/${product.id}`, { 
+                                                    params: { showHeader },
+                                                    responseType: 'blob' 
+                                                });
                                                 const url = window.URL.createObjectURL(new Blob([response.data]));
                                                 const link = document.createElement('a');
                                                 link.href = url;
@@ -204,6 +223,23 @@ export default function StockManagementPage({ params }: { params: Promise<{ comp
                                                 window.URL.revokeObjectURL(url);
                                             } catch (err) {
                                                 toast.error("Failed to download record");
+                                            }
+                                        };
+
+                                        const handlePreviewRecord = async () => {
+                                            setPreviewingId(product.id);
+                                            try {
+                                                toast.info("Generating preview...");
+                                                const response = await api.get(`/admin/labs/invoice/reagent/${product.id}`, { 
+                                                    params: { showHeader },
+                                                    responseType: 'blob' 
+                                                });
+                                                const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+                                                setPreviewUrl(url);
+                                            } catch (err) {
+                                                toast.error("Failed to generate preview");
+                                            } finally {
+                                                setPreviewingId(null);
                                             }
                                         };
 
@@ -236,6 +272,16 @@ export default function StockManagementPage({ params }: { params: Promise<{ comp
                                                 </TableCell>
                                                 <TableCell className="p-6 text-right pr-6">
                                                     <div className="flex items-center justify-end gap-2">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={handlePreviewRecord}
+                                                            title="Preview Record"
+                                                            disabled={previewingId === product.id}
+                                                            className="h-9 w-9 text-muted-foreground hover:bg-primary/10 hover:text-primary rounded-lg border border-transparent hover:border-primary/20"
+                                                        >
+                                                            {previewingId === product.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Eye className="h-4 w-4" />}
+                                                        </Button>
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
@@ -306,6 +352,49 @@ export default function StockManagementPage({ params }: { params: Promise<{ comp
                     )}
                 </CardContent>
             </Card>
+
+            {/* FULL SCREEN PDF PREVIEW MODAL */}
+            {previewUrl && (
+                <div className="fixed inset-0 z-[100] flex flex-col bg-background/95 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="p-4 border-b border-border flex justify-between items-center bg-card shadow-sm">
+                        <div>
+                            <h2 className="text-xl font-black uppercase italic tracking-tighter text-primary">INVENTORY <span className="text-foreground not-italic">Record</span></h2>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Reviewing digital document</p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <Button
+                                onClick={() => {
+                                    const link = document.createElement('a');
+                                    link.href = previewUrl;
+                                    link.setAttribute('download', `Inventory-Record.pdf`);
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    link.remove();
+                                }}
+                                className="bg-primary hover:bg-primary/90 text-white font-black px-6 rounded-xl flex items-center gap-2 uppercase italic shadow-lg shadow-primary/20 h-10 text-xs"
+                            >
+                                <FileDown className="h-4 w-4" />
+                                DOWNLOAD PDF
+                            </Button>
+                            <div className="w-px h-8 bg-border"></div>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                    URL.revokeObjectURL(previewUrl);
+                                    setPreviewUrl(null);
+                                }}
+                                className="rounded-full bg-secondary/50 hover:bg-secondary h-10 w-10 shrink-0"
+                            >
+                                <X className="h-5 w-5" />
+                            </Button>
+                        </div>
+                    </div>
+                    <div className="flex-1 w-full p-4 md:p-8 bg-secondary/5 overflow-hidden">
+                        <iframe src={previewUrl} className="w-full h-full rounded-2xl shadow-2xl border border-border bg-white" />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
