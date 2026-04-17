@@ -85,7 +85,7 @@ export default function ForgotPassword({ params }: { params: Promise<{ companySl
             toast.success("Success!", {
                 description: "Your password has been reset successfully.",
             });
-            router.push(`/${companySlug}/login`);
+            window.location.href = `/${companySlug}/login`;
         } catch (err: unknown) {
             const axiosError = err as AxiosError<{ message?: string }>;
             const message = axiosError.response?.data?.message || 'Something went wrong';

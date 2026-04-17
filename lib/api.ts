@@ -1,10 +1,7 @@
 import axios from 'axios';
 
-const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-const prodUrl = rawApiUrl.endsWith('/api') ? rawApiUrl.slice(0, -4) : (rawApiUrl.endsWith('/api/') ? rawApiUrl.slice(0, -5) : rawApiUrl);
-
-const BACKEND_URL = process.env.NODE_ENV === 'production' 
-    ? (prodUrl || 'https://unique-healthcare.duckdns.org')
+const BACKEND_URL = process.env.NODE_ENV === 'production'
+    ? 'https://unique-healthcare.duckdns.org'
     : 'http://127.0.0.1:8000';
 
 const api = axios.create({
