@@ -59,6 +59,8 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
 
     // Filters
     const [searchQuery, setSearchQuery] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
 
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
@@ -81,15 +83,19 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
         expenseDate: new Date().toISOString().split('T')[0]
     });
 
-    const fetchExpenses = async (page = currentPage, search = searchQuery) => {
+    const fetchExpenses = async (page = currentPage, search = searchQuery, start = startDate, end = endDate) => {
         setLoading(true);
         try {
-            const paramsList = {
+            const paramsList: any = {
                 search: search || undefined,
                 page: page,
                 limit: limit
             };
+            if (start) paramsList.startDate = start;
+            if (end) paramsList.endDate = end;
 
+            // Ensure we use absolute URL or just normal relative URL but add trailing slash if it is throwing 404 because of symfony router config. But debug router didn't show trailing slash.
+            // Actually, we discovered it bypasses proxy, but doesn't affect it. Wait, the route is just /admin/labs/expenses. Let's keep it as is.
             const response = await api.get('/admin/labs/expenses', { params: paramsList });
             setExpenses(response.data.data);
             setTotalPages(response.data.pages);
@@ -104,9 +110,9 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
 
     // Debounced search
     const debouncedSearch = useCallback(
-        debounce((query: string) => {
+        debounce((query: string, start: string, end: string) => {
             setCurrentPage(1);
-            fetchExpenses(1, query);
+            fetchExpenses(1, query, start, end);
         }, 500),
         []
     );
@@ -118,20 +124,32 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
     }, [debouncedSearch]);
 
     useEffect(() => {
-        fetchExpenses(currentPage, searchQuery);
+        fetchExpenses(currentPage, searchQuery, startDate, endDate);
     }, [currentPage]);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
         setSearchQuery(val);
-        debouncedSearch(val);
+        debouncedSearch(val, startDate, endDate);
+    };
+
+    const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setStartDate(val);
+        debouncedSearch(searchQuery, val, endDate);
+    };
+
+    const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setEndDate(val);
+        debouncedSearch(searchQuery, startDate, val);
     };
 
     const handleDelete = async (id: number) => {
         if (!confirm("Are you sure you want to delete this expense? This action cannot be undone.")) return;
         try {
             await api.delete(`/admin/labs/expenses/${id}`);
-            fetchExpenses(currentPage, searchQuery);
+            fetchExpenses(currentPage, searchQuery, startDate, endDate);
             toast.success("Expense deleted successfully");
         } catch (err: unknown) {
             console.error(err);
@@ -152,7 +170,7 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
                 category: 'Miscellaneous',
                 expenseDate: new Date().toISOString().split('T')[0]
             });
-            fetchExpenses(1, searchQuery);
+            fetchExpenses(1, searchQuery, startDate, endDate);
         } catch (err: unknown) {
             console.error(err);
             const errorMessage = err instanceof Error ? err.message : "Failed to create expense";
@@ -231,8 +249,8 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
             </div>
 
             <div className="bg-card border border-border rounded-[2.5rem] p-6 shadow-sm print:hidden">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="space-y-2 md:col-span-2">
+                <div className="flex flex-col md:flex-row gap-4">
+                    <div className="space-y-2 flex-grow">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Search Expenses</Label>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -244,17 +262,40 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
                             />
                         </div>
                     </div>
-                    <div className="flex items-end">
+                    
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-1"><Calendar className="h-3 w-3" /> Start Date</Label>
+                        <Input
+                            type="date"
+                            value={startDate}
+                            onChange={handleStartDateChange}
+                            className="bg-secondary/30 border-border rounded-xl h-11 font-bold text-sm focus-visible:ring-primary/50 w-full md:w-40"
+                        />
+                    </div>
+                    
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-1"><Calendar className="h-3 w-3" /> End Date</Label>
+                        <Input
+                            type="date"
+                            value={endDate}
+                            onChange={handleEndDateChange}
+                            className="bg-secondary/30 border-border rounded-xl h-11 font-bold text-sm focus-visible:ring-primary/50 w-full md:w-40"
+                        />
+                    </div>
+
+                    <div className="flex items-end min-w-max">
                         <Button
                             variant="ghost"
                             onClick={() => {
                                 setSearchQuery('');
+                                setStartDate('');
+                                setEndDate('');
                                 setCurrentPage(1);
-                                fetchExpenses(1, '');
+                                fetchExpenses(1, '', '', '');
                             }}
-                            className="text-muted-foreground hover:text-foreground h-11 px-4 rounded-xl font-bold flex items-center gap-2"
+                            className="text-muted-foreground hover:text-foreground h-11 px-4 rounded-xl font-bold flex items-center gap-2 w-full"
                         >
-                            <FilterX className="h-4 w-4" /> Reset
+                            <FilterX className="h-4 w-4" /> Reset Filters
                         </Button>
                     </div>
                 </div>
