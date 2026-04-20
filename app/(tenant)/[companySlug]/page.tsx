@@ -142,8 +142,8 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
       </div>
 
       {/* Navigation Layer */}
-      <nav className="sticky top-0 z-50 w-full glass-morphism transition-all duration-500">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <nav className="sticky top-0 z-50 w-full glass-morphism transition-all duration-500 flex flex-col items-center">
+        <div className="max-w-7xl w-full mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex flex-row items-center space-x-3">
             <MagneticButton>
               <img src={logoPath} alt="Logo" className="h-10 w-10 rounded-lg shadow-lg" />
@@ -300,6 +300,15 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
           </div>
         )}
 
+        {showBanner && (
+          <div className="w-full max-w-4xl px-6 pb-6 animate-in slide-in-from-top-8 duration-1000 ease-out">
+            <div className="relative group/banner scale-95 hover:scale-100 transition-all duration-700">
+               <AlphasoftBanner />
+               {/* Enhanced glow effect */}
+               <div className="absolute inset-0 bg-primary/5 blur-2xl rounded-3xl -z-10 group-hover/banner:bg-primary/10 transition-colors opacity-0 group-hover/banner:opacity-100 duration-1000"></div>
+            </div>
+          </div>
+        )}
       </nav>
 
       <main className="overflow-hidden">
@@ -436,17 +445,12 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
           </div>
         </section>
 
-        {showBanner && (
-          <div className="max-w-7xl mx-auto px-6 py-8" data-aos="fade-up">
-            <AlphasoftBanner />
-          </div>
-        )}
 
         <div className="max-w-7xl mx-auto px-6 py-8 space-y-14">
           {/* Numbers Section - Centered and Tightened */}
           <section className="flex flex-wrap justify-center items-center space-x-12 md:space-x-0 md:space-y-0 flex-row gap-y-12 md:gap-x-24 opacity-80 py-8 border-y border-border/40" data-aos="zoom-in-up" data-aos-delay="100">
             {[
-              { label: 'Active Users', value: 250000, suffix: 'K+' },
+              { label: 'Active Users', value: 250, suffix: 'K+' },
               { label: 'Enterprises', value: 450, suffix: '+' },
               { label: 'Global Offices', value: 12, suffix: '' },
               { label: 'Success Rate', value: 99.9, suffix: '%' },

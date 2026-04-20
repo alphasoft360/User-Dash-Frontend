@@ -25,7 +25,7 @@ export default function AlphasoftBanner({ variant = 'default' }: AlphasoftBanner
                         <h4 className={`${isCompact ? 'text-[12px]' : 'text-[16px]'} font-black uppercase tracking-widest text-foreground flex items-center gap-2`}>
                             AlphaSoft 360
                         </h4>
-                        <p className={`${isCompact ? 'text-[7px]' : 'text-[9px]'} font-bold text-muted-foreground/60 uppercase tracking-[0.15em] -mt-0.5`}>
+                        <p className={`${isCompact ? 'text-[7px]' : 'text-[9px]'} font-bold text-white uppercase tracking-[0.15em] -mt-0.5`}>
                             This Site is developed by alphasoft 360
                         </p>
                     </div>
