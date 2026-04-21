@@ -30,6 +30,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import CategoryManagement from '@/components/CategoryManagement';
+import ReagentRecoveryModal from '@/components/ReagentRecoveryModal';
+import { History } from 'lucide-react';
 
 interface Product {
     id: number;
@@ -58,6 +60,7 @@ export default function LabReagentsPage({ params }: { params: Promise<{ companyS
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [categories, setCategories] = useState<Category[]>([]);
+    const [isRecoveryOpen, setIsRecoveryOpen] = useState(false);
 
     // Filters
     const [searchName, setSearchName] = useState('');
@@ -132,6 +135,14 @@ export default function LabReagentsPage({ params }: { params: Promise<{ companyS
                     >
                         <Settings2 className="h-5 w-5" />
                         MANAGE CATEGORIES
+                    </Button>
+                    <Button
+                        variant="outline"
+                        onClick={() => setIsRecoveryOpen(true)}
+                        className="border-primary/20 hover:border-primary text-muted-foreground hover:text-primary font-black px-6 rounded-2xl h-14 flex items-center gap-3 transition-all uppercase italic"
+                    >
+                        <History className="h-5 w-5" />
+                        RECOVERY
                     </Button>
                     <Link href={`/${companySlug}/admin/reagents/new`}>
                         <Button
@@ -338,6 +349,12 @@ export default function LabReagentsPage({ params }: { params: Promise<{ companyS
             <div className="pt-10 border-t border-border/50">
                 <CategoryManagement companySlug={companySlug} />
             </div>
+
+            <ReagentRecoveryModal 
+                isOpen={isRecoveryOpen}
+                onClose={() => setIsRecoveryOpen(false)}
+                onRestoreSuccess={() => fetchProducts()}
+            />
         </div>
     );
 }

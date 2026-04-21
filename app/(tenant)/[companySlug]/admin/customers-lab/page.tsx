@@ -29,6 +29,8 @@ import {
 } from "@/components/ui/select";
 import { Loader2, FileText, Download } from 'lucide-react';
 import { Switch } from "@/components/ui/switch";
+import CustomerRecoveryModal from '@/components/CustomerRecoveryModal';
+import { History } from 'lucide-react';
 
 interface Customer {
     id: number;
@@ -61,6 +63,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [previewing, setPreviewing] = useState(false);
     const [showHeader, setShowHeader] = useState(true);
+    const [isRecoveryOpen, setIsRecoveryOpen] = useState(false);
 
     const fetchCustomers = async (currentPage = page, searchQuery = search, pending = pendingFilter) => {
         setLoading(true);
@@ -198,14 +201,24 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                     <h1 className="text-4xl font-black text-foreground tracking-tighter mb-2 uppercase italic">CUSTOMER <span className="text-primary not-italic">Registry</span></h1>
                     <p className="text-muted-foreground font-medium uppercase text-[10px] tracking-widest">Manage Lab & Pharmacy Customers.</p>
                 </div>
-                <Link href={`/${companySlug}/admin/customers-lab/new`}>
+                <div className="flex items-center gap-4">
                     <Button
-                        className="bg-primary hover:opacity-90 text-primary-foreground font-black px-8 rounded-2xl h-14 shadow-lg shadow-primary/20 flex items-center gap-3 uppercase italic"
+                        variant="outline"
+                        onClick={() => setIsRecoveryOpen(true)}
+                        className="border-primary/20 hover:border-primary text-muted-foreground hover:text-primary font-black px-6 rounded-2xl h-14 flex items-center gap-3 transition-all uppercase italic"
                     >
-                        <Plus className="h-5 w-5" />
-                        REGISTER NEW CUSTOMER
+                        <History className="h-5 w-5" />
+                        RECOVERY
                     </Button>
-                </Link>
+                    <Link href={`/${companySlug}/admin/customers-lab/new`}>
+                        <Button
+                            className="bg-primary hover:opacity-90 text-primary-foreground font-black px-8 rounded-2xl h-14 shadow-lg shadow-primary/20 flex items-center gap-3 uppercase italic"
+                        >
+                            <Plus className="h-5 w-5" />
+                            REGISTER NEW CUSTOMER
+                        </Button>
+                    </Link>
+                </div>
             </div>
 
             <div className="bg-card border border-border rounded-[2.5rem] p-8 shadow-sm">
@@ -554,6 +567,12 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                     </div>
                 </div>
             )}
+
+            <CustomerRecoveryModal 
+                isOpen={isRecoveryOpen}
+                onClose={() => setIsRecoveryOpen(false)}
+                onRestoreSuccess={() => fetchCustomers(page, search, pendingFilter)}
+            />
         </div>
     );
 }
