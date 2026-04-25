@@ -9,7 +9,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { User, Mail, Lock, CheckCircle2 } from 'lucide-react';
+import { User, Mail, Lock, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 
 export default function Register({ params }: { params: Promise<{ companySlug: string }> }) {
     const { companySlug } = use(params);
@@ -20,6 +20,8 @@ export default function Register({ params }: { params: Promise<{ companySlug: st
         confirmPassword: ''
     });
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const router = useRouter();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -128,13 +130,20 @@ export default function Register({ params }: { params: Promise<{ companySlug: st
                                 <Lock className="absolute left-3.5 top-3 h-5 w-5 text-gray-400 dark:text-gray-500" />
                                 <Input
                                     name="password"
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     placeholder="Password"
-                                    className="pl-11"
+                                    className="pl-11 pr-11"
                                     required
                                     value={formData.password}
                                     onChange={handleChange}
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3.5 top-3 text-gray-400 dark:text-gray-500 hover:text-primary transition-colors focus:outline-none"
+                                >
+                                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                </button>
                             </div>
                         </div>
                         <div className="space-y-2">
@@ -142,13 +151,20 @@ export default function Register({ params }: { params: Promise<{ companySlug: st
                                 <CheckCircle2 className="absolute left-3.5 top-3 h-5 w-5 text-gray-400 dark:text-gray-500" />
                                 <Input
                                     name="confirmPassword"
-                                    type="password"
+                                    type={showConfirmPassword ? "text" : "password"}
                                     placeholder="Confirm Password"
-                                    className="pl-11"
+                                    className="pl-11 pr-11"
                                     required
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute right-3.5 top-3 text-gray-400 dark:text-gray-500 hover:text-primary transition-colors focus:outline-none"
+                                >
+                                    {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                </button>
                             </div>
                         </div>
                     </CardContent>

@@ -162,21 +162,33 @@ export default function InvoicesLabPage() {
     };
 
     const calculateNewTotals = () => {
-        if (!editingInvoice) return { subtotal: 0, discount: 0, total: 0, changeDue: 0 };
+        if (!editingInvoice) return { subtotal: 0, discount: 0, total: 0, changeDue: 0, amountDue: 0, newCustomerBalance: 0, totalPaid: 0 };
         const subtotal = editingInvoice.items.reduce((acc: number, item: any) => acc + (item.quantity * item.price), 0);
         const discount = editingInvoice.items.reduce((acc: number, item: any) => acc + (item.discountAmount || 0), 0);
         const total = subtotal - discount;
-        const changeDue = (editingInvoice.amountTendered || 0) - total;
-        return { subtotal, discount, total, changeDue };
+        
+        const oldPaid = editingInvoice.amountTendered || 0;
+        const paymentNow = editingInvoice.paymentReceived || 0;
+        const totalPaid = oldPaid + paymentNow;
+        
+        // Amount due for this specific modified invoice
+        const amountDue = total - totalPaid;
+        
+        // Overall customer balance update
+        const balanceChange = (total - (editingInvoice.total || 0)) - paymentNow;
+        const newCustomerBalance = (editingInvoice.customerBalance || 0) + balanceChange;
+
+        return { subtotal, discount, total, amountDue, newCustomerBalance, totalPaid };
     };
 
     const handleSave = async () => {
         setSaving(true);
         try {
+            const totals = calculateNewTotals();
             const payload = {
                 customerName: editingInvoice.customerName,
                 phone: editingInvoice.phone,
-                amountTendered: editingInvoice.amountTendered,
+                amountTendered: totals.totalPaid,
                 items: editingInvoice.items
             };
             await api.put(`/admin/labs/invoices/${editingInvoice.id}`, payload);
@@ -565,40 +577,74 @@ export default function InvoicesLabPage() {
 
                                 {/* Summary & Reconciliation */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div className="bg-card border border-border p-6 rounded-2xl space-y-4 shadow-sm">
-                                        <h3 className="text-[10px] font-black uppercase tracking-widest opacity-50 flex items-center gap-2">
-                                            <Building className="h-3 w-3" /> Financial Adjustments
-                                        </h3>
-                                        <div className="space-y-3">
+                                    <div className="bg-card border border-border p-6 rounded-2xl space-y-6 shadow-sm">
+                                        <div className="flex items-center justify-between border-b border-border pb-3">
+                                            <h3 className="text-[10px] font-black uppercase tracking-widest opacity-50 flex items-center gap-2">
+                                                <Building className="h-3 w-3" /> Financial Adjustments
+                                            </h3>
+                                            <div className="flex flex-col items-end">
+                                                <span className="text-[9px] font-bold text-muted-foreground uppercase opacity-40">Previous Paid</span>
+                                                <span className="text-xs font-black text-foreground">PKR {editingInvoice.amountTendered?.toLocaleString()}</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="space-y-4">
                                             <div className="flex items-center justify-between">
-                                                <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Amount Tendered</Label>
-                                                <div className="relative group w-32">
+                                                <div className="space-y-0.5">
+                                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary">Amount Received Now</Label>
+                                                    <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-tight">Record any new payment</p>
+                                                </div>
+                                                <div className="relative group w-40">
+                                                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-muted-foreground">PKR</div>
                                                     <Input
                                                         type="number"
-                                                        value={editingInvoice.amountTendered}
-                                                        onChange={e => setEditingInvoice({ ...editingInvoice, amountTendered: parseFloat(e.target.value) })}
-                                                        className="bg-secondary/20 border-border rounded-xl h-10 font-black text-right focus-visible:ring-emerald-500/20"
+                                                        placeholder="0.00"
+                                                        value={editingInvoice.paymentReceived || ''}
+                                                        onChange={e => setEditingInvoice({ ...editingInvoice, paymentReceived: parseFloat(e.target.value) || 0 })}
+                                                        className="bg-secondary/20 border-border rounded-xl h-12 font-black text-right pl-10 focus-visible:ring-primary/20 text-lg text-primary"
                                                     />
+                                                </div>
+                                            </div>
+
+                                            <div className="pt-4 border-t border-dashed border-border/50 space-y-3">
+                                                <div className="flex items-center justify-between opacity-60">
+                                                    <span className="text-[9px] font-bold uppercase tracking-widest">Customer Current Balance</span>
+                                                    <span className="text-xs font-black">PKR {editingInvoice.customerBalance?.toLocaleString()}</span>
+                                                </div>
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500">New Potential Balance</span>
+                                                    <span className={`text-sm font-black italic ${calculateNewTotals().newCustomerBalance > 0 ? 'text-pink-500' : 'text-emerald-500'}`}>
+                                                        PKR {calculateNewTotals().newCustomerBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="bg-emerald-500/10 p-6 rounded-2xl border border-emerald-500/20 space-y-4 shadow-sm">
+                                    <div className="bg-emerald-500/10 p-6 rounded-2xl border border-emerald-500/20 space-y-4 shadow-sm relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 p-4 opacity-5">
+                                            <Receipt className="h-20 w-20 rotate-12" />
+                                        </div>
+                                        
                                         <div className="flex items-end justify-between border-b border-emerald-500/10 pb-3 opacity-40">
                                             <span className="text-[10px] font-black uppercase tracking-widest">Original Total</span>
                                             <span className="font-black text-sm italic">PKR {editingInvoice.total?.toLocaleString()}</span>
                                         </div>
+                                        
                                         <div className="flex items-end justify-between pt-1">
                                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600/70">Modified Total</span>
                                             <span className="text-3xl font-black italic text-foreground tracking-tighter leading-none">
                                                 PKR {calculateNewTotals().total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                             </span>
                                         </div>
-                                        <div className="flex items-end justify-between pt-1 opacity-60">
-                                            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Pending Diff</span>
-                                            <span className={`font-black text-sm italic ${calculateNewTotals().changeDue < 0 ? 'text-pink-500' : 'text-emerald-500'}`}>
-                                                PKR {calculateNewTotals().changeDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+
+                                        <div className="flex items-end justify-between pt-4 mt-4 border-t border-emerald-500/20">
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Amount Due</span>
+                                                <span className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">Remaining for this invoice</span>
+                                            </div>
+                                            <span className={`text-2xl font-black italic ${calculateNewTotals().amountDue > 0 ? 'text-pink-500' : 'text-emerald-500'}`}>
+                                                PKR {calculateNewTotals().amountDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                             </span>
                                         </div>
                                     </div>
@@ -627,7 +673,7 @@ export default function InvoicesLabPage() {
 
                     {/* PRODUCT PICKER OVERLAY */}
                     {isProductPickerOpen && (
-                        <div className="absolute inset-0 z-20 bg-card flex flex-col p-8 animate-in zoom-in-95 duration-300">
+                        <div className="absolute inset-0 z-20 bg-background/98 backdrop-blur-2xl flex flex-col p-8 animate-in zoom-in-95 duration-300 shadow-[0_0_100px_rgba(0,0,0,0.5)] border border-border/50 rounded-[2rem]">
                             <div className="flex items-center justify-between mb-8">
                                 <div>
                                     <h3 className="text-xl font-black uppercase italic tracking-tighter flex items-center gap-3">
