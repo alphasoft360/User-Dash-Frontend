@@ -166,10 +166,10 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
               {!isAuthenticated ? (
                 <MagneticButton>
                   <Link
-                    href={`/${companySlug}/register`}
+                    href={`/${companySlug}/login`}
                     className="px-6 py-2.5 bg-primary text-primary-foreground rounded-full text-sm font-bold transition-all shadow-lg shadow-primary/20 hover:shadow-primary/40 block"
                   >
-                    Get Started
+                    Login
                   </Link>
                 </MagneticButton>
               ) : (
@@ -261,18 +261,12 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
 
               <div className="pt-6 border-t border-border">
                 {!isAuthenticated ? (
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col space-y-4">
                     <Link
                       href={`/${companySlug}/login`}
-                      className="flex items-center justify-center p-4 bg-secondary/50 text-foreground rounded-2xl font-bold border border-border/50"
-                    >
-                      Sign In
-                    </Link>
-                    <Link
-                      href={`/${companySlug}/register`}
                       className="flex items-center justify-center p-4 bg-primary text-primary-foreground rounded-2xl font-bold shadow-lg shadow-primary/20"
                     >
-                      Get Started
+                      Login
                     </Link>
                   </div>
                 ) : (
