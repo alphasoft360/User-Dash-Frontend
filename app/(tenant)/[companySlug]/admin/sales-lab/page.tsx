@@ -310,13 +310,13 @@ export default function SalesLabPage() {
         setCart(prev => prev.filter(item => item.id !== id));
     };
 
-    const subtotal = cart.reduce((acc, item) => acc + (parseFloat(item.price) * item.cartQuantity), 0);
-    const totalDiscountAmount = cart.reduce((acc, item) => {
+    const subtotal = Math.round(cart.reduce((acc, item) => acc + (parseFloat(item.price) * item.cartQuantity), 0));
+    const totalDiscountAmount = Math.round(cart.reduce((acc, item) => {
         const itemSubtotal = parseFloat(item.price) * item.cartQuantity;
         return acc + (itemSubtotal * item.discountPercentage) / 100;
-    }, 0);
+    }, 0));
     const grandTotal = subtotal - totalDiscountAmount;
-    const changeDue = (parseFloat(amountGiven) || 0) - grandTotal;
+    const changeDue = Math.round((parseFloat(amountGiven) || 0) - grandTotal);
 
     const handleCheckout = async () => {
         if (cart.length === 0) {
@@ -330,7 +330,7 @@ export default function SalesLabPage() {
         }
 
         if (changeDue < 0 && !selectedCustomerId) {
-            toast.error(`Non-registered customers must pay the full amount. Total is PKR ${grandTotal.toFixed(2)}`);
+            toast.error(`Non-registered customers must pay the full amount. Total is PKR ${grandTotal.toLocaleString()}`);
             return;
         }
 
@@ -344,10 +344,10 @@ export default function SalesLabPage() {
                     quantity: item.cartQuantity,
                     discountPercentage: item.discountPercentage
                 })),
-                amountTendered: parseFloat(amountGiven) || 0,
+                amountTendered: Math.round(parseFloat(amountGiven) || 0),
                 changeDue: changeDue,
                 registeredCustomerId: selectedCustomerId,
-                previousBalancePayment: parseFloat(previousBalancePayment) || 0,
+                previousBalancePayment: Math.round(parseFloat(previousBalancePayment) || 0),
                 remarks: remarks.trim() || null
             };
 
@@ -553,7 +553,7 @@ export default function SalesLabPage() {
                                             </TableCell>
                                             <TableCell className="p-4 align-middle italic text-xs text-muted-foreground">{product.companyName || 'Generic'}</TableCell>
                                             <TableCell className="p-4 text-right align-middle font-black text-primary italic text-sm">
-                                                PKR {parseFloat(product.price).toLocaleString()}
+                                                PKR {Math.round(parseFloat(product.price)).toLocaleString()}
                                             </TableCell>
                                             <TableCell className="p-4 text-right align-middle">
                                                 <div className="flex flex-col items-end">
@@ -636,7 +636,7 @@ export default function SalesLabPage() {
                                             <h4 className="font-black uppercase text-[12px] tracking-tighter leading-none">{item.name}</h4>
                                             {item.companyName && <span className="text-[9px] font-bold text-muted-foreground italic uppercase">{item.companyName}</span>}
                                         </div>
-                                        <span className="font-black italic text-primary text-sm">PKR {(parseFloat(item.price) * item.cartQuantity).toLocaleString()}</span>
+                                        <span className="font-black italic text-primary text-sm">PKR {Math.round(parseFloat(item.price) * item.cartQuantity).toLocaleString()}</span>
                                     </div>
                                     <div className="flex items-center justify-between pt-2 border-t border-border/50">
                                         <div className="flex flex-row items-center space-x-1 bg-secondary rounded-lg p-0.5 border border-border">
@@ -661,7 +661,7 @@ export default function SalesLabPage() {
                                         </div>
                                         {item.discountPercentage > 0 && (
                                             <div className="flex flex-col items-end mr-3">
-                                                <span className="text-[13px] font-black text-primary uppercase italic">-PKR {((parseFloat(item.price) * item.cartQuantity * item.discountPercentage) / 100).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                                <span className="text-[13px] font-black text-primary uppercase italic">-PKR {Math.round((parseFloat(item.price) * item.cartQuantity * item.discountPercentage) / 100).toLocaleString()}</span>
                                                 <span className="text-[10px] font-black text-muted-foreground/80 uppercase tracking-tighter leading-none">Savings</span>
                                             </div>
                                         )}
@@ -839,24 +839,24 @@ export default function SalesLabPage() {
                     <div className="flex flex-col space-y-2 mb-6 px-2">
                         <div className="flex items-end justify-between">
                             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50">Subtotal</span>
-                            <span className="text-xl font-black italic text-foreground tracking-tighter leading-none">PKR {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                            <span className="text-xl font-black italic text-foreground tracking-tighter leading-none">PKR {subtotal.toLocaleString()}</span>
                         </div>
                         {totalDiscountAmount > 0 && (
                             <div className="flex items-end justify-between">
                                 <span className="text-[10px] font-black uppercase tracking-widest text-primary/60">Total Discount</span>
-                                <span className="text-xl font-black italic text-primary tracking-tighter leading-none">-PKR {totalDiscountAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                <span className="text-xl font-black italic text-primary tracking-tighter leading-none">-PKR {totalDiscountAmount.toLocaleString()}</span>
                             </div>
                         )}
                         <div className="flex items-end justify-between pt-2 border-t border-border/50">
                             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50">Grand Total</span>
-                            <span className="text-3xl font-black italic text-foreground tracking-tighter leading-none">PKR {grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                            <span className="text-3xl font-black italic text-foreground tracking-tighter leading-none">PKR {grandTotal.toLocaleString()}</span>
                         </div>
                         <div className="flex items-end justify-between pt-2 border-t border-border/50">
                             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/80">
                                 Change Due
                             </span>
                             <span className={`text-xl font-black italic tracking-tighter leading-none ${changeDue > 0 ? 'text-primary' : 'text-muted-foreground/50'}`}>
-                                PKR {Math.abs(changeDue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                PKR {Math.abs(changeDue).toLocaleString()}
                             </span>
                         </div>
                     </div>

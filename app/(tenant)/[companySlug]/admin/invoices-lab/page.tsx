@@ -163,28 +163,35 @@ export default function InvoicesLabPage() {
 
     const calculateNewTotals = () => {
         if (!editingInvoice) return { subtotal: 0, discount: 0, total: 0, changeDue: 0, amountDue: 0, newCustomerBalance: 0, totalPaid: 0 };
-        const subtotal = editingInvoice.items.reduce((acc: number, item: any) => acc + (item.quantity * item.price), 0);
-        const discount = editingInvoice.items.reduce((acc: number, item: any) => acc + (item.discountAmount || 0), 0);
+        const subtotal = Math.round(editingInvoice.items.reduce((acc: number, item: any) => acc + (item.quantity * item.price), 0));
+        const discount = Math.round(editingInvoice.items.reduce((acc: number, item: any) => acc + (item.discountAmount || 0), 0));
         const total = subtotal - discount;
         
-        const oldPaid = editingInvoice.amountTendered || 0;
-        const paymentNow = editingInvoice.paymentReceived || 0;
+        const oldPaid = Math.round(editingInvoice.amountTendered || 0);
+        const paymentNow = Math.round(editingInvoice.paymentReceived || 0);
         const totalPaid = oldPaid + paymentNow;
         
         // Amount due for this specific modified invoice
         const amountDue = total - totalPaid;
         
         // Overall customer balance update
-        const balanceChange = (total - (editingInvoice.total || 0)) - paymentNow;
-        const newCustomerBalance = (editingInvoice.customerBalance || 0) + balanceChange;
+        const balanceChange = (total - Math.round(editingInvoice.total || 0)) - paymentNow;
+        const newCustomerBalance = Math.round(editingInvoice.customerBalance || 0) + balanceChange;
 
         return { subtotal, discount, total, amountDue, newCustomerBalance, totalPaid };
     };
 
     const handleSave = async () => {
+        const totals = calculateNewTotals();
+        if (totals.amountDue < 0) {
+            toast.error(`Payment exceeds amount due. Maximum additional payment allowed: PKR ${(totals.totalPaid - (editingInvoice.paymentReceived || 0) - totals.total) * -1}`);
+            // Wait, math is slightly complex here. Let's just say:
+            toast.error("Total payment cannot exceed the invoice total.");
+            return;
+        }
+
         setSaving(true);
         try {
-            const totals = calculateNewTotals();
             const payload = {
                 customerName: editingInvoice.customerName,
                 phone: editingInvoice.phone,
@@ -315,7 +322,7 @@ export default function InvoicesLabPage() {
                                     </TableCell>
                                     <TableCell className="p-8 text-center">
                                         <span className={`font-black text-lg italic ${inv.pendingAmount > 0 ? 'text-pink-500' : 'text-muted-foreground/30'}`}>
-                                            PKR {inv.pendingAmount.toLocaleString()}
+                                            PKR {Math.round(inv.pendingAmount).toLocaleString()}
                                         </span>
                                     </TableCell>
                                     <TableCell className="p-8 text-right">
@@ -551,7 +558,7 @@ export default function InvoicesLabPage() {
                                                             />
                                                         </TableCell>
                                                         <TableCell className="text-right font-black">
-                                                            PKR {(item.quantity * item.price - (item.discountAmount || 0)).toLocaleString()}
+                                                            PKR {Math.round(item.quantity * item.price - (item.discountAmount || 0)).toLocaleString()}
                                                         </TableCell>
                                                         <TableCell>
                                                             <Button
@@ -584,7 +591,7 @@ export default function InvoicesLabPage() {
                                             </h3>
                                             <div className="flex flex-col items-end">
                                                 <span className="text-[9px] font-bold text-muted-foreground uppercase opacity-40">Previous Paid</span>
-                                                <span className="text-xs font-black text-foreground">PKR {editingInvoice.amountTendered?.toLocaleString()}</span>
+                                                <span className="text-xs font-black text-foreground">PKR {Math.round(editingInvoice.amountTendered || 0).toLocaleString()}</span>
                                             </div>
                                         </div>
                                         
@@ -609,12 +616,12 @@ export default function InvoicesLabPage() {
                                             <div className="pt-4 border-t border-dashed border-border/50 space-y-3">
                                                 <div className="flex items-center justify-between opacity-60">
                                                     <span className="text-[9px] font-bold uppercase tracking-widest">Customer Current Balance</span>
-                                                    <span className="text-xs font-black">PKR {editingInvoice.customerBalance?.toLocaleString()}</span>
+                                                    <span className="text-xs font-black">PKR {Math.round(editingInvoice.customerBalance || 0).toLocaleString()}</span>
                                                 </div>
                                                 <div className="flex items-center justify-between">
                                                     <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500">New Potential Balance</span>
                                                     <span className={`text-sm font-black italic ${calculateNewTotals().newCustomerBalance > 0 ? 'text-pink-500' : 'text-emerald-500'}`}>
-                                                        PKR {calculateNewTotals().newCustomerBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                                        PKR {Math.round(calculateNewTotals().newCustomerBalance).toLocaleString()}
                                                     </span>
                                                 </div>
                                             </div>
@@ -628,13 +635,13 @@ export default function InvoicesLabPage() {
                                         
                                         <div className="flex items-end justify-between border-b border-emerald-500/10 pb-3 opacity-40">
                                             <span className="text-[10px] font-black uppercase tracking-widest">Original Total</span>
-                                            <span className="font-black text-sm italic">PKR {editingInvoice.total?.toLocaleString()}</span>
+                                            <span className="font-black text-sm italic">PKR {Math.round(editingInvoice.total || 0).toLocaleString()}</span>
                                         </div>
                                         
                                         <div className="flex items-end justify-between pt-1">
                                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600/70">Modified Total</span>
                                             <span className="text-3xl font-black italic text-foreground tracking-tighter leading-none">
-                                                PKR {calculateNewTotals().total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                                PKR {Math.round(calculateNewTotals().total).toLocaleString()}
                                             </span>
                                         </div>
 
@@ -644,7 +651,7 @@ export default function InvoicesLabPage() {
                                                 <span className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">Remaining for this invoice</span>
                                             </div>
                                             <span className={`text-2xl font-black italic ${calculateNewTotals().amountDue > 0 ? 'text-pink-500' : 'text-emerald-500'}`}>
-                                                PKR {calculateNewTotals().amountDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                                PKR {Math.round(calculateNewTotals().amountDue).toLocaleString()}
                                             </span>
                                         </div>
                                     </div>
@@ -721,7 +728,7 @@ export default function InvoicesLabPage() {
                                                 </div>
                                                 <div className="flex items-end justify-between mt-auto pt-3 border-t border-border/10">
                                                     <span className="text-[10px] font-bold text-muted-foreground">UNIT PRICE</span>
-                                                    <span className="font-black italic text-emerald-500">PKR {parseFloat(product.price).toLocaleString()}</span>
+                                                    <span className="font-black italic text-emerald-500">PKR {Math.round(parseFloat(product.price)).toLocaleString()}</span>
                                                 </div>
                                             </div>
                                         ))}

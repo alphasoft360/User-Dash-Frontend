@@ -129,6 +129,7 @@ export default function AdminLayout({
         { label: 'Lab Sales', icon: TrendingUp, href: `/${companySlug}/admin/sales-lab` },
         { label: 'Lab Reports', icon: ClipboardList, href: `/${companySlug}/admin/reports-lab` },
         { label: 'Lab Invoices', icon: Receipt, href: `/${companySlug}/admin/invoices-lab` },
+        { label: 'Cash Recovery', icon: Wallet, href: `/${companySlug}/admin/cash-recovery` },
         { label: 'Lab Expenses', icon: Wallet, href: `/${companySlug}/admin/lab-expenses` },
     ];
 

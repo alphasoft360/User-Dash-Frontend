@@ -208,11 +208,11 @@ export default function ReportsLabPage() {
                                     <TableRow key={i} className="border-border hover:bg-secondary/5 group">
                                         <TableCell className="p-6 font-bold text-muted-foreground">{sale.date}</TableCell>
                                         <TableCell className="p-6 text-right font-black text-pink-500/40 group-hover:text-pink-500 transition-colors italic">
-                                            PKR {parseFloat((sale.pending || 0).toString()).toLocaleString()}
+                                            PKR {Math.round(sale.pending || 0).toLocaleString()}
                                         </TableCell>
                                         <TableCell className="p-6 text-right font-black text-indigo-500 italic">
                                             <div className="flex items-center justify-end gap-2">
-                                                <span>PKR {parseFloat(sale.total.toString()).toLocaleString()}</span>
+                                                <span>PKR {Math.round(sale.total).toLocaleString()}</span>
                                                 <div className="flex bg-secondary/30 rounded-lg p-0.5 opacity-0 group-hover:opacity-100 transition-opacity ml-4">
                                                     <Button
                                                         variant="ghost"

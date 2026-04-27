@@ -124,7 +124,7 @@ export default function StockInForm({ initialProductId = '', products: initialPr
             await api.post('/admin/labs/stock-in', {
                 productId: parseInt(selectedProductId),
                 quantity: parseInt(quantity),
-                purchasePrice: purchasePrice ? parseFloat(purchasePrice) : undefined,
+                purchasePrice: purchasePrice ? Math.round(parseFloat(purchasePrice)) : undefined,
                 supplier: supplierName
             });
             setLastEntry({
@@ -228,7 +228,6 @@ export default function StockInForm({ initialProductId = '', products: initialPr
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Purchase Price</Label>
                     <Input
                         type="number"
-                        step="0.01"
                         value={purchasePrice}
                         onChange={(e) => setPurchasePrice(e.target.value)}
                         className="bg-secondary/30 border-border h-14 rounded-2xl font-bold focus:ring-primary/20"

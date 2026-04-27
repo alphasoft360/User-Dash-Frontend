@@ -160,7 +160,11 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
     const handleCreateExpense = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await api.post('/admin/labs/expenses', newExpense);
+            const payload = {
+                ...newExpense,
+                amount: Math.round(parseFloat(newExpense.amount))
+            };
+            await api.post('/admin/labs/expenses', payload);
             toast.success("Expense recorded successfully");
             setShowAddModal(false);
             setNewExpense({
@@ -355,7 +359,7 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
                                         </td>
                                         <td className="p-6 text-center">
                                             <span className="text-base font-black text-red-500">
-                                                PKR {parseFloat(expense.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                                PKR {Math.round(parseFloat(expense.amount)).toLocaleString()}
                                             </span>
                                         </td>
                                         <td className="p-6 text-center">
@@ -489,9 +493,8 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
                                         <Input
                                             required
                                             type="number"
-                                            step="0.01"
                                             min="0"
-                                            placeholder="0.00"
+                                            placeholder="0"
                                             value={newExpense.amount}
                                             onChange={e => setNewExpense({ ...newExpense, amount: e.target.value })}
                                             className="bg-secondary/20 h-11 rounded-xl pl-12 font-black text-sm border-border text-primary"

@@ -247,10 +247,10 @@ export default function LabReagentsPage({ params }: { params: Promise<{ companyS
                                         <td className="p-6 text-sm font-medium text-muted-foreground">{product.companyName || '—'}</td>
                                         <td className="p-6 text-sm font-medium text-muted-foreground">{product.packSize || '—'}</td>
                                         <td className="p-6 text-center text-sm font-bold text-primary">
-                                            {product.purchasePrice ? `PKR ${parseFloat(product.purchasePrice).toLocaleString()}` : '—'}
+                                            {product.purchasePrice ? `PKR ${Math.round(parseFloat(product.purchasePrice)).toLocaleString()}` : '—'}
                                         </td>
                                         <td className="p-6 text-center text-sm font-bold text-foreground">
-                                            {product.price ? `PKR ${parseFloat(product.price).toLocaleString()}` : '—'}
+                                            {product.price ? `PKR ${Math.round(parseFloat(product.price)).toLocaleString()}` : '—'}
                                         </td>
                                         <td className="p-6 text-center">
                                             <div className="flex flex-col items-center">

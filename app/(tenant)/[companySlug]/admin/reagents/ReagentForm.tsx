@@ -110,8 +110,8 @@ export default function ReagentForm({ initialData, isEditing = false }: ReagentF
                 const dataToSubmit = {
                     name: formData.name,
                     description: formData.description,
-                    price: parseFloat(formData.price?.toString() || "0"),
-                    purchasePrice: formData.purchasePrice ? parseFloat(formData.purchasePrice.toString()) : undefined,
+                    price: Math.round(parseFloat(formData.price?.toString() || "0")),
+                    purchasePrice: formData.purchasePrice ? Math.round(parseFloat(formData.purchasePrice.toString())) : undefined,
                     stock: parseInt(formData.stock?.toString() || "0"),
                     minimumStock: parseInt(formData.minimumStock?.toString() || "0"),
                     categoryId: formData.category?.id,
@@ -130,8 +130,8 @@ export default function ReagentForm({ initialData, isEditing = false }: ReagentF
                 const dataToSubmit = {
                     ...formData,
                     category_id: formData.category?.id,
-                    price: parseFloat(formData.price?.toString() || "0"),
-                    purchasePrice: formData.purchasePrice ? parseFloat(formData.purchasePrice.toString()) : undefined,
+                    price: Math.round(parseFloat(formData.price?.toString() || "0")),
+                    purchasePrice: formData.purchasePrice ? Math.round(parseFloat(formData.purchasePrice.toString())) : undefined,
                     stock: parseInt(formData.stock?.toString() || "0"),
                     minimumStock: parseInt(formData.minimumStock?.toString() || "0"),
                 };
@@ -281,7 +281,6 @@ export default function ReagentForm({ initialData, isEditing = false }: ReagentF
                                 <Input
                                     name="purchasePrice"
                                     type="number"
-                                    step="0.01"
                                     value={formData.purchasePrice || ''}
                                     onChange={handleChange}
                                     className="bg-secondary/30 border-border rounded-2xl h-14 font-bold text-lg focus:ring-2 focus:ring-primary/20 transition-all"
@@ -296,7 +295,6 @@ export default function ReagentForm({ initialData, isEditing = false }: ReagentF
                                     name="price"
                                     required
                                     type="number"
-                                    step="0.01"
                                     value={formData.price || ''}
                                     onChange={handleChange}
                                     className="bg-secondary/30 border-border rounded-2xl h-14 font-bold text-lg focus:ring-2 focus:ring-primary/20 transition-all"

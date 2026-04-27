@@ -44,9 +44,18 @@ export default function CustomerForm({ initialData, isEditing = false }: Custome
         e.preventDefault();
         setLoading(true);
 
+        const currentBalance = formData.remainingBalance || 0;
+        const pAmount = Math.round(parseFloat(paymentAmount) || 0);
+
+        if (isEditing && pAmount > currentBalance) {
+            toast.error(`Payment exceeds pending balance. Maximum allowed: PKR ${currentBalance}`);
+            setLoading(false);
+            return;
+        }
+
         const finalBalance = isEditing 
-            ? (formData.remainingBalance || 0) - (parseFloat(paymentAmount) || 0)
-            : formData.remainingBalance || 0;
+            ? currentBalance - pAmount
+            : Math.round(formData.remainingBalance || 0);
 
         const submissionData = {
             ...formData,
@@ -194,10 +203,10 @@ export default function CustomerForm({ initialData, isEditing = false }: Custome
                                         <div>
                                             <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-70">Resulting Balance Preview</p>
                                             <p className="text-2xl font-black italic tracking-tighter mt-1">
-                                                PKR {(formData.remainingBalance || 0).toLocaleString()} 
+                                                PKR {Math.round(formData.remainingBalance || 0).toLocaleString()} 
                                                 <span className="text-primary mx-3">→</span> 
-                                                <span className={((formData.remainingBalance || 0) - (parseFloat(paymentAmount) || 0)) > 0 ? 'text-red-500' : 'text-emerald-500'}>
-                                                    PKR {((formData.remainingBalance || 0) - (parseFloat(paymentAmount) || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                                <span className={((formData.remainingBalance || 0) - (Math.round(parseFloat(paymentAmount) || 0))) > 0 ? 'text-red-500' : 'text-emerald-500'}>
+                                                    PKR {Math.round((formData.remainingBalance || 0) - (Math.round(parseFloat(paymentAmount) || 0))).toLocaleString()}
                                                 </span>
                                             </p>
                                         </div>
