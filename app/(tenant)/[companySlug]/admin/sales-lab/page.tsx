@@ -94,6 +94,7 @@ export default function SalesLabPage() {
     const [customerPhone, setCustomerPhone] = useState('');
     const [labName, setLabName] = useState('');
     const [amountGiven, setAmountGiven] = useState('');
+    const [remarks, setRemarks] = useState('');
     const [previousBalancePayment, setPreviousBalancePayment] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
 
@@ -346,7 +347,8 @@ export default function SalesLabPage() {
                 amountTendered: parseFloat(amountGiven) || 0,
                 changeDue: changeDue,
                 registeredCustomerId: selectedCustomerId,
-                previousBalancePayment: parseFloat(previousBalancePayment) || 0
+                previousBalancePayment: parseFloat(previousBalancePayment) || 0,
+                remarks: remarks.trim() || null
             };
 
             const response = await api.post('/admin/orders/walk-in', payload);
@@ -369,6 +371,7 @@ export default function SalesLabPage() {
         setSelectedCustomerId(null);
         setSelectedCustomerData(null);
         setAmountGiven('');
+        setRemarks('');
         setPreviousBalancePayment('');
         setLastOrderId(null);
     };
@@ -795,6 +798,16 @@ export default function SalesLabPage() {
                                 onChange={e => setAmountGiven(e.target.value)}
                                 min="0"
                                 className="pl-11 bg-secondary/30 border-border rounded-xl h-11 font-bold text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            />
+                        </div>
+
+                        <div className="relative group">
+                            <MonitorPlay className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
+                            <Input
+                                placeholder="Order Remarks (Optional)"
+                                value={remarks}
+                                onChange={e => setRemarks(e.target.value)}
+                                className="pl-11 bg-secondary/30 border-border rounded-xl h-11 font-bold text-base"
                             />
                         </div>
 
