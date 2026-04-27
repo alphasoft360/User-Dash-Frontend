@@ -28,6 +28,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { debounce } from 'lodash';
+import { Dialog } from '@/components/ui/dialog';
 
 interface UserData {
     id: number;
@@ -46,6 +47,16 @@ export default function AdminUsersPage() {
     const [totalPages, setTotalPages] = useState(1);
     const [totalUsers, setTotalUsers] = useState(0);
     const [deletingIds, setDeletingIds] = useState<number[]>([]);
+    
+    // Create User Modal State
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: '',
+        role: 'ROLE_USER'
+    });
 
     const fetchUsers = async (page: number, search: string, role: string) => {
         setLoading(true);
@@ -132,6 +143,26 @@ export default function AdminUsersPage() {
         }
     };
 
+    const handleCreateUser = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsCreating(true);
+        try {
+            const response = await api.post('/admin/users', {
+                ...formData,
+                roles: [formData.role]
+            });
+            toast.success("User identity initialized successfully");
+            setIsCreateModalOpen(false);
+            setFormData({ name: '', email: '', password: '', role: 'ROLE_USER' });
+            fetchUsers(currentPage, searchQuery, roleFilter);
+        } catch (err: any) {
+            console.error(err);
+            toast.error(err.response?.data?.message || "User initialization failed");
+        } finally {
+            setIsCreating(false);
+        }
+    };
+
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
             {/* Header section - more compact */}
@@ -150,6 +181,13 @@ export default function AdminUsersPage() {
                         <CheckCircle2 className="h-2.5 w-2.5 text-primary" />
                         Total: <span className="text-primary">{totalUsers}</span>
                     </div>
+                    <Button 
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="rounded-xl h-9 px-4 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 shadow-primary/20"
+                    >
+                        <UserPlus className="h-3.5 w-3.5" />
+                        Create User
+                    </Button>
                 </div>
             </div>
 
@@ -340,6 +378,86 @@ export default function AdminUsersPage() {
                     </div>
                 </Card>
             </div>
+
+            {/* Create User Dialog */}
+            <Dialog 
+                isOpen={isCreateModalOpen} 
+                onClose={() => !isCreating && setIsCreateModalOpen(false)}
+                title="Initialize New User"
+                description="Securely add a new entity to the system directory"
+            >
+                <form onSubmit={handleCreateUser} className="space-y-4">
+                    <div className="space-y-1.5">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Full Name</Label>
+                        <Input 
+                            required
+                            placeholder="John Doe"
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            className="bg-secondary/20 border-border rounded-xl h-11 font-medium transition-all focus:ring-primary/10 text-xs"
+                        />
+                    </div>
+                    <div className="space-y-1.5">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Email Address</Label>
+                        <Input 
+                            required
+                            type="email"
+                            placeholder="user@gmail.com"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            className="bg-secondary/20 border-border rounded-xl h-11 font-medium transition-all focus:ring-primary/10 text-xs"
+                        />
+                        <p className="text-[8px] text-muted-foreground font-medium uppercase tracking-widest ml-1 mt-1">Only Gmail, Outlook, and Yahoo are supported</p>
+                    </div>
+                    <div className="space-y-1.5">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Security Protocol (Role)</Label>
+                        <Select 
+                            value={formData.role} 
+                            onValueChange={(val) => setFormData({ ...formData, role: val })}
+                        >
+                            <SelectTrigger className="bg-secondary/20 border-border h-11 rounded-xl font-bold text-[10px] tracking-widest uppercase transition-all">
+                                <SelectValue placeholder="SELECT ROLE" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-popover border-border rounded-xl shadow-xl">
+                                <SelectItem value="ROLE_USER" className="font-semibold text-[10px] uppercase py-2">STAFF / USER</SelectItem>
+                                <SelectItem value="ROLE_MODERATOR" className="font-semibold text-[10px] uppercase py-2">MODERATOR</SelectItem>
+                                <SelectItem value="ROLE_ADMIN" className="font-semibold text-[10px] uppercase py-2">ADMINISTRATOR</SelectItem>
+                                <SelectItem value="ROLE_ARCHITECTURAL" className="font-semibold text-[10px] uppercase py-2 text-cyan-500">ARCHITECTURAL</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Access Password</Label>
+                        <Input 
+                            required
+                            type="password"
+                            placeholder="••••••••"
+                            value={formData.password}
+                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                            className="bg-secondary/20 border-border rounded-xl h-11 font-medium transition-all focus:ring-primary/10 text-xs"
+                        />
+                    </div>
+                    
+                    <div className="pt-4 flex gap-3">
+                        <Button 
+                            type="button" 
+                            variant="outline" 
+                            onClick={() => setIsCreateModalOpen(false)}
+                            disabled={isCreating}
+                            className="flex-1 rounded-xl uppercase text-[10px] font-bold tracking-widest"
+                        >
+                            Cancel
+                        </Button>
+                        <Button 
+                            type="submit" 
+                            isLoading={isCreating}
+                            className="flex-1 rounded-xl uppercase text-[10px] font-bold tracking-widest"
+                        >
+                            Create Entity
+                        </Button>
+                    </div>
+                </form>
+            </Dialog>
         </div>
     );
 }
