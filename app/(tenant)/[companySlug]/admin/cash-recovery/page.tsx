@@ -295,7 +295,7 @@ export default function CashRecoveryPage() {
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                         <Button
                             key={p}
-                            variant={page === p ? 'default' : 'secondary'}
+                            variant={page === p ? 'primary' : 'secondary'}
                             onClick={() => setPage(p)}
                             className="w-10 h-10 rounded-xl font-bold"
                         >
