@@ -108,8 +108,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             
             if (companySlug) {
                 // If logging in from a company-specific page
-                if (roles.includes('ROLE_ADMIN') || roles.includes('ROLE_SUPER_ADMIN')) {
-                    router.push(`/${companySlug}/admin/dashboard`);
+                if (roles.includes('ROLE_ADMIN') || roles.includes('ROLE_SUPER_ADMIN') || roles.includes('ROLE_ARCHITECTURAL')) {
+                    router.push(`/${companySlug}/admin/dashboard-lab`);
+                } else if (roles.includes('ROLE_MODERATOR') || roles.includes('ROLE_EMPLOYEE')) {
+                    router.push(`/${companySlug}/admin/dashboard-lab`);
                 } else {
                     router.push(`/${companySlug}`);
                 }

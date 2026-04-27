@@ -215,6 +215,7 @@ export default function AdminUsersPage() {
                             <SelectContent className="bg-popover border-border rounded-xl shadow-xl">
                                 <SelectItem value="ALL" className="font-semibold text-[9px] uppercase py-2">ALL ENTITIES</SelectItem>
                                 <SelectItem value="ROLE_USER" className="font-semibold text-[9px] uppercase py-2">STAFF / USER</SelectItem>
+                                <SelectItem value="ROLE_EMPLOYEE" className="font-semibold text-[9px] uppercase py-2 text-primary">LAB EMPLOYEE</SelectItem>
                                 <SelectItem value="ROLE_MODERATOR" className="font-semibold text-[9px] uppercase py-2">MODERATOR</SelectItem>
                                 <SelectItem value="ROLE_ADMIN" className="font-semibold text-[9px] uppercase py-2">ADMINISTRATOR</SelectItem>
                                 <SelectItem value="ROLE_ARCHITECTURAL" className="font-semibold text-[9px] uppercase py-2 text-cyan-500">ARCHITECTURAL</SelectItem>
@@ -300,13 +301,14 @@ export default function AdminUsersPage() {
                                                     <Select
                                                         disabled={updating === u.id}
                                                         onValueChange={(val) => handleRoleUpdate(u.id, val)}
-                                                        defaultValue={u.roles.includes('ROLE_ADMIN') ? 'ROLE_ADMIN' : u.roles.includes('ROLE_ARCHITECTURAL') ? 'ROLE_ARCHITECTURAL' : u.roles.includes('ROLE_MODERATOR') ? 'ROLE_MODERATOR' : 'ROLE_USER'}
+                                                        defaultValue={u.roles.includes('ROLE_ADMIN') ? 'ROLE_ADMIN' : u.roles.includes('ROLE_ARCHITECTURAL') ? 'ROLE_ARCHITECTURAL' : u.roles.includes('ROLE_MODERATOR') ? 'ROLE_MODERATOR' : u.roles.includes('ROLE_EMPLOYEE') ? 'ROLE_EMPLOYEE' : 'ROLE_USER'}
                                                     >
                                                         <SelectTrigger className="w-36 bg-secondary/30 border-border rounded-lg h-8 font-bold text-[8px] tracking-widest text-foreground uppercase px-3 transition-all">
                                                             <SelectValue placeholder="ACCESS" />
                                                         </SelectTrigger>
                                                         <SelectContent className="bg-popover border-border rounded-xl shadow-2xl font-bold">
                                                             <SelectItem value="ROLE_USER" className="text-[9px] uppercase py-2">USER / STAFF</SelectItem>
+                                                            <SelectItem value="ROLE_EMPLOYEE" className="text-[9px] uppercase py-2 text-primary">LAB EMPLOYEE</SelectItem>
                                                             <SelectItem value="ROLE_MODERATOR" className="text-[9px] uppercase py-2">MODERATOR</SelectItem>
                                                             <SelectItem value="ROLE_ADMIN" className="text-[9px] uppercase py-2 text-primary">ADMINISTRATOR</SelectItem>
                                                             <SelectItem value="ROLE_ARCHITECTURAL" className="text-[9px] uppercase py-2 text-cyan-500">ARCHITECTURAL</SelectItem>
@@ -420,6 +422,7 @@ export default function AdminUsersPage() {
                             </SelectTrigger>
                             <SelectContent className="bg-popover border-border rounded-xl shadow-xl">
                                 <SelectItem value="ROLE_USER" className="font-semibold text-[10px] uppercase py-2">STAFF / USER</SelectItem>
+                                <SelectItem value="ROLE_EMPLOYEE" className="font-semibold text-[10px] uppercase py-2 text-primary">LAB EMPLOYEE</SelectItem>
                                 <SelectItem value="ROLE_MODERATOR" className="font-semibold text-[10px] uppercase py-2">MODERATOR</SelectItem>
                                 <SelectItem value="ROLE_ADMIN" className="font-semibold text-[10px] uppercase py-2">ADMINISTRATOR</SelectItem>
                                 <SelectItem value="ROLE_ARCHITECTURAL" className="font-semibold text-[10px] uppercase py-2 text-cyan-500">ARCHITECTURAL</SelectItem>

@@ -32,7 +32,8 @@ import AlphasoftBanner from '@/components/AlphasoftBanner';
 import api from '@/lib/api';
 
 const MODERATOR_ALLOWED_PATHS = ['/admin/dashboard-lab', '/admin/sales-lab', '/admin/stock', '/admin/reagents'];
-const USER_ALLOWED_PATHS = ['/admin/dashboard-lab', '/admin/sales-lab'];
+const EMPLOYEE_ALLOWED_PATHS = ['/admin/dashboard-lab', '/admin/sales-lab', '/admin/customers-lab', '/admin/invoices-lab'];
+const USER_ALLOWED_PATHS: string[] = []; // ROLE_USER (Customers) have no admin access
 
 export default function AdminLayout({
     children,
@@ -74,14 +75,15 @@ export default function AdminLayout({
     const isArchitectural = roles.includes('ROLE_ARCHITECTURAL') || isSuperAdmin;
     const isAdmin = roles.includes('ROLE_ADMIN') || isArchitectural;
     const isModerator = roles.includes('ROLE_MODERATOR') && !isAdmin;
-    const isStandardUser = roles.includes('ROLE_USER') && !isAdmin && !isModerator;
+    const isEmployee = roles.includes('ROLE_EMPLOYEE') && !isAdmin && !isModerator;
+    const isStandardUser = roles.includes('ROLE_USER') && !isAdmin && !isModerator && !isEmployee;
 
     useEffect(() => {
         if (!loading) {
             if (!isAuthenticated) {
                 router.push(`/${companySlug}/login`);
-            } else if (!isAdmin && !isModerator && !isStandardUser && !isArchitectural) {
-                // Not an authorized role for admin panel
+            } else if (!isAdmin && !isModerator && !isEmployee && !isArchitectural) {
+                // Not an authorized role for admin panel (ROLE_USER/Customers redirected)
                 router.push(`/${companySlug}`);
             } else {
                 // Restricted paths for those WHO ARE NOT architectural/superadmin
@@ -105,19 +107,31 @@ export default function AdminLayout({
                         router.push(`/${companySlug}/admin/dashboard-lab`);
                     }
                 }
-                // If standard user, check if accessing restricted path
-                if (isStandardUser) {
-                    const isAllowed = USER_ALLOWED_PATHS.some(p => pathname.includes(p));
+                
+                // If employee, check if accessing restricted path
+                if (isEmployee) {
+                    const isAllowed = EMPLOYEE_ALLOWED_PATHS.some(p => pathname.includes(p));
                     if (!isAllowed) {
                         router.push(`/${companySlug}/admin/dashboard-lab`);
                     }
+                }
+
+                // If standard user (should not reach here based on logic above, but for safety), redirect
+                if (isStandardUser) {
+                    router.push(`/${companySlug}`);
                 }
             }
         }
     }, [loading, isAuthenticated, isAdmin, isModerator, isStandardUser, isArchitectural, companySlug, router, pathname]);
 
+    const isAuthorized = isAdmin || isModerator || isEmployee || isArchitectural;
+
     if (loading || !isAuthenticated) {
-        return <div className="flex min-h-screen items-center justify-center bg-white dark:bg-gray-950 text-cyan-500 font-black">AUTHENTICATING...</div>;
+        return <div className="flex min-h-screen items-center justify-center bg-white dark:bg-gray-950 text-cyan-500 font-black tracking-widest animate-pulse">AUTHENTICATING...</div>;
+    }
+
+    if (!isAuthorized) {
+        return <div className="flex min-h-screen items-center justify-center bg-white dark:bg-gray-950 text-red-500 font-black tracking-widest animate-pulse">ACCESS DENIED - REDIRECTING...</div>;
     }
 
     const allNavItems: { label: string; icon: any; href: string; isHeader?: boolean }[] = [
@@ -159,7 +173,8 @@ export default function AdminLayout({
                             }
 
                             if (isModerator) isAllowed = MODERATOR_ALLOWED_PATHS.some(p => item.href.endsWith(p));
-                            if (isStandardUser) isAllowed = USER_ALLOWED_PATHS.some(p => item.href.endsWith(p));
+                            if (isEmployee) isAllowed = EMPLOYEE_ALLOWED_PATHS.some(p => item.href.endsWith(p));
+                            if (isStandardUser) isAllowed = false; // ROLE_USER (Customers) have no items
 
                             const isActive = pathname === item.href;
 
@@ -194,7 +209,7 @@ export default function AdminLayout({
                                 <div className="flex-1 min-w-0 ml-3">
                                     <p className="text-xs font-bold text-foreground truncate">{user?.email}</p>
                                     <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest leading-none">
-                                        {isSuperAdmin ? 'Super Admin' : isArchitectural ? 'Architectural' : isModerator ? 'Moderator' : 'Admin'}
+                                        {isSuperAdmin ? 'Super Admin' : isArchitectural ? 'Architectural' : isModerator ? 'Moderator' : isEmployee ? 'Lab Employee' : 'Admin'}
                                     </p>
                                 </div>
                             )}
