@@ -145,6 +145,7 @@ export default function AdminLayout({
         { label: 'Lab Invoices', icon: Receipt, href: `/${companySlug}/admin/invoices-lab` },
         { label: 'Cash Recovery', icon: Wallet, href: `/${companySlug}/admin/cash-recovery` },
         { label: 'Lab Expenses', icon: Wallet, href: `/${companySlug}/admin/lab-expenses` },
+        { label: 'Settings', icon: Settings, href: `/${companySlug}/admin/settings` },
     ];
 
     return (
