@@ -57,9 +57,8 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
 
     const [isLedgerOpen, setIsLedgerOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
-    const [period, setPeriod] = useState<'monthly' | 'yearly' | 'all_time'>('all_time');
-    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
-    const [selectedMonth, setSelectedMonth] = useState((new Date().getMonth() + 1).toString());
+    const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+    const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [previewing, setPreviewing] = useState(false);
     const [showHeader, setShowHeader] = useState(true);
@@ -134,9 +133,9 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
         try {
             const response = await api.get(`/admin/labs/invoice/customer/${selectedCustomer.id}`, {
                 params: {
-                    period,
-                    year: selectedYear,
-                    month: selectedMonth,
+                    period: 'custom',
+                    startDate,
+                    endDate,
                     showHeader
                 },
                 responseType: 'blob'
@@ -145,7 +144,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `Ledger-${selectedCustomer.name}-${period}.pdf`);
+            link.setAttribute('download', `Ledger-${selectedCustomer.name}.pdf`);
             document.body.appendChild(link);
             link.click();
             link.remove();
@@ -165,9 +164,9 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
         try {
             const response = await api.get(`/admin/labs/invoice/customer/${selectedCustomer.id}`, {
                 params: {
-                    period,
-                    year: selectedYear,
-                    month: selectedMonth,
+                    period: 'custom',
+                    startDate,
+                    endDate,
                     showHeader
                 },
                 responseType: 'blob'
@@ -185,14 +184,6 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
 
     // Note: Filtering is now handled on the backend!
     const filteredCustomers = customers;
-
-    const years = Array.from({ length: 5 }, (_, i) => (new Date().getFullYear() - i).toString());
-    const months = [
-        { name: 'January', val: '1' }, { name: 'February', val: '2' }, { name: 'March', val: '3' },
-        { name: 'April', val: '4' }, { name: 'May', val: '5' }, { name: 'June', val: '6' },
-        { name: 'July', val: '7' }, { name: 'August', val: '8' }, { name: 'September', val: '9' },
-        { name: 'October', val: '10' }, { name: 'November', val: '11' }, { name: 'December', val: '12' },
-    ];
 
     return (
         <div className="space-y-10 animate-in fade-in duration-700">
@@ -428,63 +419,26 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                         </div>
 
                         <div className="p-8 space-y-8">
-                            <div className="space-y-3">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Summary Type</Label>
-                                <div className="flex p-1 bg-secondary/30 rounded-2xl gap-1">
-                                    <button
-                                        onClick={() => setPeriod('all_time')}
-                                        className={`flex-1 py-3 rounded-xl font-black text-xs uppercase transition-all ${period === 'all_time' ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
-                                    >
-                                        All Time
-                                    </button>
-                                    <button
-                                        onClick={() => setPeriod('monthly')}
-                                        className={`flex-1 py-3 rounded-xl font-black text-xs uppercase transition-all ${period === 'monthly' ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
-                                    >
-                                        Monthly
-                                    </button>
-                                    <button
-                                        onClick={() => setPeriod('yearly')}
-                                        className={`flex-1 py-3 rounded-xl font-black text-xs uppercase transition-all ${period === 'yearly' ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
-                                    >
-                                        Yearly
-                                    </button>
+                            <div className="grid grid-cols-1 gap-6">
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Range Initiation</Label>
+                                    <input 
+                                        type="date" 
+                                        value={startDate} 
+                                        onChange={(e) => setStartDate(e.target.value)}
+                                        className="w-full bg-secondary/30 border border-border rounded-xl h-12 px-4 font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Range Termination</Label>
+                                    <input 
+                                        type="date" 
+                                        value={endDate} 
+                                        onChange={(e) => setEndDate(e.target.value)}
+                                        className="w-full bg-secondary/30 border border-border rounded-xl h-12 px-4 font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                                    />
                                 </div>
                             </div>
-
-                            {period !== 'all_time' && (
-                                <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-bottom-2 duration-500">
-                                    <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Year</Label>
-                                        <Select value={selectedYear} onValueChange={setSelectedYear}>
-                                            <SelectTrigger className="bg-secondary/30 border-border rounded-xl h-12 font-bold">
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {years.map(y => (
-                                                    <SelectItem key={y} value={y} className="font-bold">{y}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-
-                                {period === 'monthly' && (
-                                    <div className="space-y-3 animate-in fade-in slide-in-from-left-2 duration-500">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Month</Label>
-                                        <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                                            <SelectTrigger className="bg-secondary/30 border-border rounded-xl h-12 font-bold">
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {months.map(m => (
-                                                    <SelectItem key={m.val} value={m.val} className="font-bold">{m.name}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                )}
-                                </div>
-                            )}
 
                             <div className="flex items-center justify-between p-4 bg-secondary/20 rounded-2xl">
                                 <div className="flex flex-col">
@@ -538,7 +492,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                                 onClick={() => {
                                     const link = document.createElement('a');
                                     link.href = previewUrl;
-                                    link.setAttribute('download', `Ledger-${selectedCustomer?.name}-${period}.pdf`);
+                                    link.setAttribute('download', `Ledger-${selectedCustomer?.name}.pdf`);
                                     document.body.appendChild(link);
                                     link.click();
                                     link.remove();

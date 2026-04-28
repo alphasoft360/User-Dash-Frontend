@@ -45,6 +45,8 @@ export default function ReportsLabPage() {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [previewing, setPreviewing] = useState(false);
     const [showHeader, setShowHeader] = useState(true);
+    const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+    const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
 
     const fetchReports = async () => {
         try {
@@ -70,8 +72,11 @@ export default function ReportsLabPage() {
     const downloadSummary = async (type: string, date?: string) => {
         try {
             let endpoint = `/admin/labs/invoice/summary?type=${type}`;
-            if (date) endpoint += `&date=${date}`;
-            else {
+            if (type === 'custom') {
+                endpoint += `&startDate=${startDate}&endDate=${endDate}`;
+            } else if (date) {
+                endpoint += `&date=${date}`;
+            } else {
                 const now = new Date();
                 endpoint += `&year=${now.getFullYear()}&month=${now.getMonth() + 1}`;
             }
@@ -98,8 +103,11 @@ export default function ReportsLabPage() {
         setPreviewing(true);
         try {
             let endpoint = `/admin/labs/invoice/summary?type=${type}`;
-            if (date) endpoint += `&date=${date}`;
-            else {
+            if (type === 'custom') {
+                endpoint += `&startDate=${startDate}&endDate=${endDate}`;
+            } else if (date) {
+                endpoint += `&date=${date}`;
+            } else {
                 const now = new Date();
                 endpoint += `&year=${now.getFullYear()}&month=${now.getMonth() + 1}`;
             }
@@ -139,48 +147,69 @@ export default function ReportsLabPage() {
                 </div>
             </div>
 
-            {/* Ultra Slim Premium Intelligence Matrix */}
-            <div className="flex flex-col sm:flex-row gap-2">
-                {[
-                    { id: 'monthly', title: 'Monthly Ledger', icon: Calendar, bg: 'bg-indigo-500/10', text: 'text-indigo-500', btn: 'bg-indigo-500 hover:bg-indigo-600 shadow-indigo-500/20' },
-                    { id: 'yearly', title: 'Yearly Audit', icon: BarChartIcon, bg: 'bg-pink-500/10', text: 'text-pink-500', btn: 'bg-pink-500 hover:bg-pink-600 shadow-pink-500/20' }
-                ].map((report) => (
-                    <SpotlightCard key={report.id} className="flex-1 border border-border/40 bg-secondary/5 rounded-xl h-22">
-                        <div className="px-4 h-full flex items-center justify-between group">
-                            <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-lg ${report.bg} flex items-center justify-center ${report.text} shrink-0`}>
-                                    <report.icon size={14} />
-                                </div>
-                                <h3 className="text-[15px] font-black uppercase italic tracking-wider whitespace-nowrap">{report.title}</h3>
+            {/* Ultra Slim Premium Intelligence Matrix - Date Range Selector */}
+            <SpotlightCard className="border border-border/40 bg-secondary/5 rounded-2xl p-6 overflow-hidden">
+                <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+                    <div className="flex flex-col sm:flex-row items-center gap-6 w-full lg:w-auto">
+                        <div className="flex items-center gap-4 w-full sm:w-auto">
+                            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 shrink-0">
+                                <Calendar size={20} />
                             </div>
-                            <div className="flex items-center gap-3">
-                                <MagneticButton>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => previewSummary(report.id)}
-                                        disabled={previewing}
-                                        className="rounded-md border-border/40 hover:bg-background h-7 px-2 font-black uppercase text-[10px] tracking-widest gap-1"
-                                    >
-                                        {previewing ? <Loader2 className="h-5 w-5 animate-spin" /> : <Eye className="h-5 w-5" />}
-                                        PREVIEW
-                                    </Button>
-                                </MagneticButton>
-                                <MagneticButton>
-                                    <Button
-                                        size="sm"
-                                        onClick={() => downloadSummary(report.id)}
-                                        className={`rounded-md ${report.btn} text-white h-7 px-2 font-black uppercase text-[10px] tracking-widest gap-1 shadow-sm`}
-                                    >
-                                        <Download className="h-4 w-4" />
-                                        EXPORT
-                                    </Button>
-                                </MagneticButton>
+                            <div className="flex flex-col gap-1 w-full sm:w-auto">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Range Initiation</Label>
+                                <input 
+                                    type="date" 
+                                    value={startDate} 
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                    className="bg-background/50 border border-border/40 rounded-xl px-4 py-2 text-sm font-bold uppercase tracking-tight focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all w-full"
+                                />
                             </div>
                         </div>
-                    </SpotlightCard>
-                ))}
-            </div>
+
+                        <div className="hidden sm:block text-muted-foreground/30 font-black">
+                            <ChevronDown size={20} className="-rotate-90" />
+                        </div>
+
+                        <div className="flex items-center gap-4 w-full sm:w-auto">
+                            <div className="w-12 h-12 rounded-2xl bg-pink-500/10 flex items-center justify-center text-pink-500 shrink-0">
+                                <Activity size={20} />
+                            </div>
+                            <div className="flex flex-col gap-1 w-full sm:w-auto">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Range Termination</Label>
+                                <input 
+                                    type="date" 
+                                    value={endDate} 
+                                    onChange={(e) => setEndDate(e.target.value)}
+                                    className="bg-background/50 border border-border/40 rounded-xl px-4 py-2 text-sm font-bold uppercase tracking-tight focus:outline-none focus:ring-2 focus:ring-pink-500/20 transition-all w-full"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-4 w-full lg:w-auto pt-4 lg:pt-0 border-t lg:border-t-0 border-border/40">
+                        <MagneticButton>
+                            <Button
+                                variant="outline"
+                                onClick={() => previewSummary('custom')}
+                                disabled={previewing}
+                                className="flex-1 lg:flex-none rounded-xl border-border/40 hover:bg-background h-12 px-8 font-black uppercase text-[12px] tracking-widest gap-2"
+                            >
+                                {previewing ? <Loader2 className="h-5 w-5 animate-spin text-indigo-500" /> : <Eye className="h-5 w-5 text-indigo-500" />}
+                                PREVIEW AUDIT
+                            </Button>
+                        </MagneticButton>
+                        <MagneticButton>
+                            <Button
+                                onClick={() => downloadSummary('custom')}
+                                className="flex-1 lg:flex-none rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white h-12 px-8 font-black uppercase text-[12px] tracking-widest gap-2 shadow-lg shadow-indigo-500/20 transition-all active:scale-95"
+                            >
+                                <Download className="h-5 w-5" />
+                                EXPORT PDF
+                            </Button>
+                        </MagneticButton>
+                    </div>
+                </div>
+            </SpotlightCard>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                 {/* Daily Sales Chart/Table */}
