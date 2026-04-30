@@ -47,8 +47,7 @@ export default function AdminUsersPage() {
     const [totalPages, setTotalPages] = useState(1);
     const [totalUsers, setTotalUsers] = useState(0);
     const [deletingIds, setDeletingIds] = useState<number[]>([]);
-    
-    // Create User Modal State
+
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     const [formData, setFormData] = useState({
@@ -81,7 +80,6 @@ export default function AdminUsersPage() {
         }
     };
 
-    // Debounced search to prevent excessive API calls
     const debouncedSearch = useCallback(
         debounce((query: string, role: string) => {
             fetchUsers(1, query, role);
@@ -181,7 +179,7 @@ export default function AdminUsersPage() {
                         <CheckCircle2 className="h-2.5 w-2.5 text-primary" />
                         Total: <span className="text-primary">{totalUsers}</span>
                     </div>
-                    <Button 
+                    <Button
                         onClick={() => setIsCreateModalOpen(true)}
                         className="rounded-xl h-9 px-4 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 shadow-primary/20"
                     >
@@ -382,8 +380,8 @@ export default function AdminUsersPage() {
             </div>
 
             {/* Create User Dialog */}
-            <Dialog 
-                isOpen={isCreateModalOpen} 
+            <Dialog
+                isOpen={isCreateModalOpen}
                 onClose={() => !isCreating && setIsCreateModalOpen(false)}
                 title="Initialize New User"
                 description="Securely add a new entity to the system directory"
@@ -391,7 +389,7 @@ export default function AdminUsersPage() {
                 <form onSubmit={handleCreateUser} className="space-y-4">
                     <div className="space-y-1.5">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Full Name</Label>
-                        <Input 
+                        <Input
                             required
                             placeholder="John Doe"
                             value={formData.name}
@@ -401,7 +399,7 @@ export default function AdminUsersPage() {
                     </div>
                     <div className="space-y-1.5">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Email Address</Label>
-                        <Input 
+                        <Input
                             required
                             type="email"
                             placeholder="user@gmail.com"
@@ -413,8 +411,8 @@ export default function AdminUsersPage() {
                     </div>
                     <div className="space-y-1.5">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Security Protocol (Role)</Label>
-                        <Select 
-                            value={formData.role} 
+                        <Select
+                            value={formData.role}
                             onValueChange={(val) => setFormData({ ...formData, role: val })}
                         >
                             <SelectTrigger className="bg-secondary/20 border-border h-11 rounded-xl font-bold text-[10px] tracking-widest uppercase transition-all">
@@ -431,7 +429,7 @@ export default function AdminUsersPage() {
                     </div>
                     <div className="space-y-1.5">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Access Password</Label>
-                        <Input 
+                        <Input
                             required
                             type="password"
                             placeholder="••••••••"
@@ -440,19 +438,19 @@ export default function AdminUsersPage() {
                             className="bg-secondary/20 border-border rounded-xl h-11 font-medium transition-all focus:ring-primary/10 text-xs"
                         />
                     </div>
-                    
+
                     <div className="pt-4 flex gap-3">
-                        <Button 
-                            type="button" 
-                            variant="outline" 
+                        <Button
+                            type="button"
+                            variant="outline"
                             onClick={() => setIsCreateModalOpen(false)}
                             disabled={isCreating}
                             className="flex-1 rounded-xl uppercase text-[10px] font-bold tracking-widest"
                         >
                             Cancel
                         </Button>
-                        <Button 
-                            type="submit" 
+                        <Button
+                            type="submit"
                             isLoading={isCreating}
                             className="flex-1 rounded-xl uppercase text-[10px] font-bold tracking-widest"
                         >

@@ -65,7 +65,6 @@ export default function ReportsLabPage() {
     }, []);
 
     const downloadReport = (type: string) => {
-        // Implementation for downloading PDF/Excel would go here
         toast.info(`Generating ${type} report...`);
     };
 
@@ -139,8 +138,8 @@ export default function ReportsLabPage() {
                         <Label className="text-[10px] font-black uppercase tracking-widest text-foreground">Header & Footer</Label>
                         <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-tighter">Include branding in Intelligence PDFs</p>
                     </div>
-                    <Switch 
-                        checked={showHeader} 
+                    <Switch
+                        checked={showHeader}
                         onCheckedChange={setShowHeader}
                         className="data-[state=checked]:bg-primary"
                     />
@@ -157,9 +156,9 @@ export default function ReportsLabPage() {
                             </div>
                             <div className="flex flex-col gap-1 w-full sm:w-auto">
                                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Range Initiation</Label>
-                                <input 
-                                    type="date" 
-                                    value={startDate} 
+                                <input
+                                    type="date"
+                                    value={startDate}
                                     onChange={(e) => setStartDate(e.target.value)}
                                     className="bg-background/50 border border-border/40 rounded-xl px-4 py-2 text-sm font-bold uppercase tracking-tight focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all w-full"
                                 />
@@ -176,9 +175,9 @@ export default function ReportsLabPage() {
                             </div>
                             <div className="flex flex-col gap-1 w-full sm:w-auto">
                                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Range Termination</Label>
-                                <input 
-                                    type="date" 
-                                    value={endDate} 
+                                <input
+                                    type="date"
+                                    value={endDate}
                                     onChange={(e) => setEndDate(e.target.value)}
                                     className="bg-background/50 border border-border/40 rounded-xl px-4 py-2 text-sm font-bold uppercase tracking-tight focus:outline-none focus:ring-2 focus:ring-pink-500/20 transition-all w-full"
                                 />

@@ -33,7 +33,7 @@ import api from '@/lib/api';
 
 const MODERATOR_ALLOWED_PATHS = ['/admin/dashboard-lab', '/admin/sales-lab', '/admin/stock', '/admin/reagents'];
 const EMPLOYEE_ALLOWED_PATHS = ['/admin/dashboard-lab', '/admin/sales-lab', '/admin/customers-lab', '/admin/invoices-lab'];
-const USER_ALLOWED_PATHS: string[] = []; // ROLE_USER (Customers) have no admin access
+const USER_ALLOWED_PATHS: string[] = [];
 
 export default function AdminLayout({
     children,
@@ -61,7 +61,6 @@ export default function AdminLayout({
                     setLogoPath(`/tenants/${companySlug}/images/${settings.logo}`);
                 }
 
-                // Use per-company banner setting if available, otherwise fallback to global (handled later)
                 setShowBanner(settings.show_alphasoft_banner === '1');
             } catch (error) {
                 console.error('Failed to fetch company data', error);
@@ -83,32 +82,27 @@ export default function AdminLayout({
             if (!isAuthenticated) {
                 router.push(`/${companySlug}/login`);
             } else if (!isAdmin && !isModerator && !isEmployee && !isArchitectural) {
-                // Not an authorized role for admin panel (ROLE_USER/Customers redirected)
                 router.push(`/${companySlug}`);
             } else {
-                // Restricted paths for those WHO ARE NOT architectural/superadmin
                 if (!isArchitectural) {
                     if (pathname.includes('/admin/users')) {
                         router.push(`/${companySlug}/admin/dashboard-lab`);
                     }
                 }
 
-                // If admin (but not architectural), and trying to access users
                 if (isAdmin && !isArchitectural) {
-                     if (pathname.includes('/admin/users')) {
+                    if (pathname.includes('/admin/users')) {
                         router.push(`/${companySlug}/admin/dashboard-lab`);
                     }
                 }
 
-                // If moderator, check if accessing restricted path
                 if (isModerator) {
                     const isAllowed = MODERATOR_ALLOWED_PATHS.some(p => pathname.includes(p));
                     if (!isAllowed) {
                         router.push(`/${companySlug}/admin/dashboard-lab`);
                     }
                 }
-                
-                // If employee, check if accessing restricted path
+
                 if (isEmployee) {
                     const isAllowed = EMPLOYEE_ALLOWED_PATHS.some(p => pathname.includes(p));
                     if (!isAllowed) {
@@ -116,7 +110,6 @@ export default function AdminLayout({
                     }
                 }
 
-                // If standard user (should not reach here based on logic above, but for safety), redirect
                 if (isStandardUser) {
                     router.push(`/${companySlug}`);
                 }
@@ -167,15 +160,14 @@ export default function AdminLayout({
                     <nav className="flex-1 space-y-2 overflow-x-hidden">
                         {allNavItems.map((item) => {
                             let isAllowed = isAdmin;
-                            
-                            // Specific restriction for Users
+
                             if (item.label === 'Users') {
                                 isAllowed = isArchitectural;
                             }
 
                             if (isModerator) isAllowed = MODERATOR_ALLOWED_PATHS.some(p => item.href.endsWith(p));
                             if (isEmployee) isAllowed = EMPLOYEE_ALLOWED_PATHS.some(p => item.href.endsWith(p));
-                            if (isStandardUser) isAllowed = false; // ROLE_USER (Customers) have no items
+                            if (isStandardUser) isAllowed = false;
 
                             const isActive = pathname === item.href;
 

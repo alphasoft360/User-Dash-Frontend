@@ -39,7 +39,6 @@ export default function InvoicesLabPage() {
     const [previewing, setPreviewing] = useState(false);
     const [showHeader, setShowHeader] = useState(true);
 
-    // Editing State
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingInvoice, setEditingInvoice] = useState<any>(null);
     const [editLoading, setEditLoading] = useState(false);
@@ -69,7 +68,6 @@ export default function InvoicesLabPage() {
         }
     };
 
-    // Debounced search
     const debouncedSearch = useCallback(
         debounce((query: string) => {
             setPage(1);
@@ -153,7 +151,6 @@ export default function InvoicesLabPage() {
             item[field] = value;
         }
 
-        // Recalculate item discount amount if percentage or quantity/price changed
         const subtotal = item.quantity * item.price;
         item.discountAmount = (subtotal * (item.discountPercentage || 0)) / 100;
 
@@ -166,15 +163,13 @@ export default function InvoicesLabPage() {
         const subtotal = Math.round(editingInvoice.items.reduce((acc: number, item: any) => acc + (item.quantity * item.price), 0));
         const discount = Math.round(editingInvoice.items.reduce((acc: number, item: any) => acc + (item.discountAmount || 0), 0));
         const total = subtotal - discount;
-        
+
         const oldPaid = Math.round(editingInvoice.amountTendered || 0);
         const paymentNow = Math.round(editingInvoice.paymentReceived || 0);
         const totalPaid = oldPaid + paymentNow;
-        
-        // Amount due for this specific modified invoice
+
         const amountDue = total - totalPaid;
-        
-        // Overall customer balance update
+
         const balanceChange = (total - Math.round(editingInvoice.total || 0)) - paymentNow;
         const newCustomerBalance = Math.round(editingInvoice.customerBalance || 0) + balanceChange;
 
@@ -185,7 +180,6 @@ export default function InvoicesLabPage() {
         const totals = calculateNewTotals();
         if (totals.amountDue < 0) {
             toast.error(`Payment exceeds amount due. Maximum additional payment allowed: PKR ${(totals.totalPaid - (editingInvoice.paymentReceived || 0) - totals.total) * -1}`);
-            // Wait, math is slightly complex here. Let's just say:
             toast.error("Total payment cannot exceed the invoice total.");
             return;
         }
@@ -594,7 +588,7 @@ export default function InvoicesLabPage() {
                                                 <span className="text-xs font-black text-foreground">PKR {Math.round(editingInvoice.amountTendered || 0).toLocaleString()}</span>
                                             </div>
                                         </div>
-                                        
+
                                         <div className="space-y-4">
                                             <div className="flex items-center justify-between">
                                                 <div className="space-y-0.5">
@@ -632,12 +626,12 @@ export default function InvoicesLabPage() {
                                         <div className="absolute top-0 right-0 p-4 opacity-5">
                                             <Receipt className="h-20 w-20 rotate-12" />
                                         </div>
-                                        
+
                                         <div className="flex items-end justify-between border-b border-emerald-500/10 pb-3 opacity-40">
                                             <span className="text-[10px] font-black uppercase tracking-widest">Original Total</span>
                                             <span className="font-black text-sm italic">PKR {Math.round(editingInvoice.total || 0).toLocaleString()}</span>
                                         </div>
-                                        
+
                                         <div className="flex items-end justify-between pt-1">
                                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600/70">Modified Total</span>
                                             <span className="text-3xl font-black italic text-foreground tracking-tighter leading-none">

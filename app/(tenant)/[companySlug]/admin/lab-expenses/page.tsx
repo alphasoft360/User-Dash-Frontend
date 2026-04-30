@@ -57,24 +57,18 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
     const [expenses, setExpenses] = useState<LabExpense[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // Filters
     const [searchQuery, setSearchQuery] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
-
-    // Pagination
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
     const limit = 15;
 
-    // Modals
     const [showAddModal, setShowAddModal] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [previewing, setPreviewing] = useState<number | null>(null);
     const [showHeader, setShowHeader] = useState(true);
-
-    // Form states
     const [newExpense, setNewExpense] = useState({
         title: '',
         description: '',
@@ -94,8 +88,6 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
             if (start) paramsList.startDate = start;
             if (end) paramsList.endDate = end;
 
-            // Ensure we use absolute URL or just normal relative URL but add trailing slash if it is throwing 404 because of symfony router config. But debug router didn't show trailing slash.
-            // Actually, we discovered it bypasses proxy, but doesn't affect it. Wait, the route is just /admin/labs/expenses. Let's keep it as is.
             const response = await api.get('/admin/labs/expenses', { params: paramsList });
             setExpenses(response.data.data);
             setTotalPages(response.data.pages);
@@ -108,7 +100,6 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
         }
     };
 
-    // Debounced search
     const debouncedSearch = useCallback(
         debounce((query: string, start: string, end: string) => {
             setCurrentPage(1);
@@ -233,9 +224,9 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
                 <div className="flex items-center gap-4">
                     <div className="flex bg-secondary/30 p-2 rounded-2xl border border-border items-center gap-4 px-4 h-11">
                         <div className="flex items-center gap-2">
-                            <Switch 
-                                id="show-header" 
-                                checked={showHeader} 
+                            <Switch
+                                id="show-header"
+                                checked={showHeader}
                                 onCheckedChange={setShowHeader}
                                 className="data-[state=checked]:bg-primary"
                             />
@@ -266,7 +257,7 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
                             />
                         </div>
                     </div>
-                    
+
                     <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-1"><Calendar className="h-3 w-3" /> Start Date</Label>
                         <Input
@@ -276,7 +267,7 @@ export default function LabExpensesPage({ params }: { params: Promise<{ companyS
                             className="bg-secondary/30 border-border rounded-xl h-11 font-bold text-sm focus-visible:ring-primary/50 w-full md:w-40"
                         />
                     </div>
-                    
+
                     <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-1"><Calendar className="h-3 w-3" /> End Date</Label>
                         <Input

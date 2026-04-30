@@ -54,7 +54,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
             try {
                 const [productRes, cartRes] = await Promise.all([
                     api.get(`/products/${slug}`),
-                    api.get('/cart').catch(() => ({ data: [] })) // Handle non-auth gracefully
+                    api.get('/cart').catch(() => ({ data: [] }))
                 ]);
 
                 const productData = productRes.data;
@@ -87,7 +87,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
             });
             if (!isSavedForLater) {
                 setInCartQuantity(prev => prev + quantity);
-                setQuantity(1); // Reset quantity to 1
+                setQuantity(1);
             }
             fetchCartCount();
         } catch (err) {

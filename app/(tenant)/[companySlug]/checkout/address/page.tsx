@@ -30,7 +30,7 @@ export default function AddressPage() {
             try {
                 const companyResponse = await api.get(`/public/company/${companySlug}`);
                 const settings = companyResponse.data.settings || {};
-                
+
                 if (settings.logo) {
                     setLogoPath(`/tenants/${companySlug}/images/${settings.logo}`);
                 }
@@ -50,7 +50,6 @@ export default function AddressPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // 1. Name Validation: At least 2 chars, not just numbers
         if (!formData.name || formData.name.length < 2) {
             toast.error("Please enter a valid full name");
             return;
@@ -60,7 +59,6 @@ export default function AddressPage() {
             return;
         }
 
-        // 2. Address Validation: Not just numbers, min 5 chars
         if (!formData.address || formData.address.length < 5) {
             toast.error("Please enter a more detailed address");
             return;
@@ -70,7 +68,6 @@ export default function AddressPage() {
             return;
         }
 
-        // 3. Phone Validation: Only digits, max 11
         const phoneDigits = formData.phone.replace(/\D/g, '');
         if (phoneDigits.length === 0) {
             toast.error("Please enter a phone number");

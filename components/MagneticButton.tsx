@@ -13,7 +13,6 @@ export default function MagneticButton({ children, className = '' }: { children:
             const { height, width, left, top } = boundingRect;
             const middleX = clientX - (left + width / 2);
             const middleY = clientY - (top + height / 2);
-            // The multiplier controls how intensely it stretches toward the mouse
             setPosition({ x: middleX * 0.35, y: middleY * 0.35 });
         }
     };

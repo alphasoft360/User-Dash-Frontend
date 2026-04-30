@@ -44,7 +44,6 @@ export default function StockManagementPage({ params }: { params: Promise<{ comp
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [previewingId, setPreviewingId] = useState<number | null>(null);
 
-    // Pagination & Filters
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -96,9 +95,9 @@ export default function StockManagementPage({ params }: { params: Promise<{ comp
                 </div>
                 <div className="flex gap-4 items-center">
                     <div className="flex bg-secondary/30 p-2 rounded-2xl border border-border items-center gap-3 px-4 h-14">
-                        <Switch 
-                            id="show-header" 
-                            checked={showHeader} 
+                        <Switch
+                            id="show-header"
+                            checked={showHeader}
                             onCheckedChange={setShowHeader}
                             className="data-[state=checked]:bg-primary"
                         />
@@ -209,9 +208,9 @@ export default function StockManagementPage({ params }: { params: Promise<{ comp
                                         const handleDownloadRecord = async () => {
                                             try {
                                                 toast.info("Preparing record...");
-                                                const response = await api.get(`/admin/labs/invoice/reagent/${product.id}`, { 
+                                                const response = await api.get(`/admin/labs/invoice/reagent/${product.id}`, {
                                                     params: { showHeader },
-                                                    responseType: 'blob' 
+                                                    responseType: 'blob'
                                                 });
                                                 const url = window.URL.createObjectURL(new Blob([response.data]));
                                                 const link = document.createElement('a');
@@ -230,9 +229,9 @@ export default function StockManagementPage({ params }: { params: Promise<{ comp
                                             setPreviewingId(product.id);
                                             try {
                                                 toast.info("Generating preview...");
-                                                const response = await api.get(`/admin/labs/invoice/reagent/${product.id}`, { 
+                                                const response = await api.get(`/admin/labs/invoice/reagent/${product.id}`, {
                                                     params: { showHeader },
-                                                    responseType: 'blob' 
+                                                    responseType: 'blob'
                                                 });
                                                 const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
                                                 setPreviewUrl(url);

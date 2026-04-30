@@ -57,7 +57,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const storedToken = localStorage.getItem('token');
             if (storedToken) {
                 try {
-                    // Quick check if it looks like a JWT (3 parts separated by dots)
                     if (storedToken.split('.').length !== 3) {
                         localStorage.removeItem('token');
                         setToken(null);
@@ -66,7 +65,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                         return;
                     }
                     const decoded = jwtDecode<JWTPayload>(storedToken);
-                    // Check if token is expired
                     if (decoded.exp * 1000 < Date.now()) {
                         logout();
                     } else {
@@ -105,9 +103,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else {
             const roles = decoded.roles || [];
             const companySlug = getCompanySlug();
-            
+
             if (companySlug) {
-                // If logging in from a company-specific page
                 if (roles.includes('ROLE_ADMIN') || roles.includes('ROLE_SUPER_ADMIN') || roles.includes('ROLE_ARCHITECTURAL')) {
                     router.push(`/${companySlug}/admin/dashboard-lab`);
                 } else if (roles.includes('ROLE_MODERATOR') || roles.includes('ROLE_EMPLOYEE')) {
@@ -116,13 +113,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     router.push(`/${companySlug}`);
                 }
             } else {
-                // If logging in from the root /login page
                 if (roles.includes('ROLE_SUPER_ADMIN')) {
                     router.push('/super-admin');
                 } else if (roles.includes('ROLE_ADMIN')) {
-                    // If an admin logins at root, we don't have a company context in URL
-                    // Fallback to a default or show error, but here we'll try to redirect 
-                    // to a default if they are ROLE_ADMIN
                     router.push('/unique-healthcare-solutions/admin/dashboard');
                 } else {
                     router.push('/');

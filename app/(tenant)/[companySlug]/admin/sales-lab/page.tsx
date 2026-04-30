@@ -80,13 +80,11 @@ export default function SalesLabPage() {
     const [appliedSearch, setAppliedSearch] = useState('');
     const [loadingProducts, setLoadingProducts] = useState(false);
 
-    // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
     const [pageSize] = useState(10);
 
-    // Filtering state
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
     const [cart, setCart] = useState<CartItem[]>([]);
@@ -98,7 +96,6 @@ export default function SalesLabPage() {
     const [previousBalancePayment, setPreviousBalancePayment] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
 
-    // Customer Search State
     const [customerSearchResults, setCustomerSearchResults] = useState<RegisteredCustomer[]>([]);
     const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null);
     const [selectedCustomerData, setSelectedCustomerData] = useState<RegisteredCustomer | null>(null);
@@ -106,7 +103,6 @@ export default function SalesLabPage() {
     const [showSearchDropdown, setShowSearchDropdown] = useState(false);
     const [searchSource, setSearchSource] = useState<'name' | 'phone'>('name');
 
-    // Success State
     const [lastOrderId, setLastOrderId] = useState<number | null>(null);
     const [isDownloadingInvoice, setIsDownloadingInvoice] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);

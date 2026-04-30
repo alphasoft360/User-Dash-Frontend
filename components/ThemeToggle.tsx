@@ -15,7 +15,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     }, [])
 
     if (!mounted) {
-        return <Button variant="ghost" size="icon" className={`rounded-xl ${className}`} disabled><span className="w-5 h-5" /></Button> // Placeholder to prevent hydration mismatch
+        return <Button variant="ghost" size="icon" className={`rounded-xl ${className}`} disabled><span className="w-5 h-5" /></Button>
     }
 
     const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -34,11 +34,9 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
             Math.max(y, window.innerHeight - y)
         );
 
-        // Pre-emptively write the coordinates so CSS can clip the first unstyled frame to prevent flashing
         document.documentElement.style.setProperty("--x", `${x}px`);
         document.documentElement.style.setProperty("--y", `${y}px`);
 
-        // Inject global style to perfectly freeze all native CSS transitions during the View Transition window
         const style = document.createElement("style");
         style.innerHTML = "* { transition: none !important; }";
         document.head.appendChild(style);

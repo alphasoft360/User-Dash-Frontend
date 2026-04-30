@@ -15,7 +15,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
             outline: 'border-2 border-border bg-transparent hover:bg-accent hover:text-accent-foreground',
             ghost: 'bg-transparent hover:bg-accent hover:text-accent-foreground text-muted-foreground',
-            danger: 'bg-red-600 text-white hover:bg-red-500', // Danger usually stays consistent
+            danger: 'bg-red-600 text-white hover:bg-red-500',
             link: 'text-primary underline-offset-4 hover:underline bg-transparent !h-auto !p-0',
         };
 

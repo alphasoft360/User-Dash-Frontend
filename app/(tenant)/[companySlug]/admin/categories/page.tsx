@@ -47,20 +47,15 @@ export default function CategoriesPage() {
     const [loading, setLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
 
-    // Pagination State
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
-    const [itemsPerPage] = useState(9); // 3x3 grid
+    const [itemsPerPage] = useState(9);
 
-    // Modal States
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-
-    // Form States
     const [categoryName, setCategoryName] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
 
-    // Assign Products States (during creation)
     const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
     const [productSearch, setProductSearch] = useState('');
 

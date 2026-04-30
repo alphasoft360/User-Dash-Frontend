@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { 
-    Search, 
-    Users, 
-    Download, 
-    CheckCircle2, 
-    X, 
-    Loader2, 
+import {
+    Search,
+    Users,
+    Download,
+    CheckCircle2,
+    X,
+    Loader2,
     Banknote,
     FileText,
     Eye
@@ -41,8 +41,7 @@ export default function CashRecoveryPage() {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [showBranding, setShowBranding] = useState(true);
-    
-    // Modal states
+
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
     const [recoveryAmount, setRecoveryAmount] = useState('');
     const [remarks, setRemarks] = useState('');
@@ -51,7 +50,6 @@ export default function CashRecoveryPage() {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [previewing, setPreviewing] = useState(false);
 
-    // Fetch customers
     const fetchCustomers = async () => {
         setLoading(true);
         try {
@@ -80,7 +78,7 @@ export default function CashRecoveryPage() {
 
     const handleRecovery = async () => {
         if (!selectedCustomer || !recoveryAmount) return;
-        
+
         const amount = parseFloat(recoveryAmount);
         if (isNaN(amount) || amount <= 0) {
             toast.error('Please enter a valid amount');
@@ -99,14 +97,14 @@ export default function CashRecoveryPage() {
                 amount: amount,
                 remarks: remarks
             });
-            
+
             setSuccessData({
                 recoveryId: response.data.recoveryId,
                 amount: amount
             });
-            
+
             toast.success('Payment recorded successfully');
-            fetchCustomers(); // Refresh list
+            fetchCustomers();
         } catch (error) {
             console.error('Payment failed', error);
             toast.error('Failed to record payment');
@@ -172,7 +170,7 @@ export default function CashRecoveryPage() {
                             <span className="text-xs font-black uppercase tracking-widest">Header & Footer</span>
                             <span className="text-[10px] text-muted-foreground font-bold">INCLUDE BRANDING IN PDFS</span>
                         </div>
-                        <Switch 
+                        <Switch
                             checked={showBranding}
                             onCheckedChange={setShowBranding}
                             className="data-[state=checked]:bg-primary"
@@ -198,8 +196,8 @@ export default function CashRecoveryPage() {
                 <CardHeader className="pb-4">
                     <div className="relative group">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                        <Input 
-                            placeholder="Search by name, phone or lab name..." 
+                        <Input
+                            placeholder="Search by name, phone or lab name..."
                             className="pl-12 bg-background/50 border-none h-14 rounded-2xl text-lg font-bold shadow-inner"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -268,7 +266,7 @@ export default function CashRecoveryPage() {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-5 text-center">
-                                                <Button 
+                                                <Button
                                                     onClick={() => {
                                                         setSelectedCustomer(customer);
                                                         setSuccessData(null);
@@ -310,7 +308,7 @@ export default function CashRecoveryPage() {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-300">
                     <Card className="w-full max-w-xl border-none shadow-2xl relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-2 bg-primary"></div>
-                        <button 
+                        <button
                             onClick={() => setSelectedCustomer(null)}
                             className="absolute top-6 right-6 p-2 rounded-xl hover:bg-secondary transition-colors"
                         >
@@ -338,9 +336,9 @@ export default function CashRecoveryPage() {
                                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Payment Amount</label>
                                             <div className="relative group">
                                                 <Banknote className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                                <Input 
-                                                    type="number" 
-                                                    placeholder="Enter amount received..." 
+                                                <Input
+                                                    type="number"
+                                                    placeholder="Enter amount received..."
                                                     className="pl-12 bg-secondary/30 border-none h-14 rounded-2xl text-xl font-black [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                                     value={recoveryAmount}
                                                     onChange={(e) => setRecoveryAmount(e.target.value)}
@@ -352,8 +350,8 @@ export default function CashRecoveryPage() {
                                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Remarks (Optional)</label>
                                             <div className="relative group">
                                                 <FileText className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                                <Input 
-                                                    placeholder="Reason for payment, cheque number, etc." 
+                                                <Input
+                                                    placeholder="Reason for payment, cheque number, etc."
                                                     className="pl-12 bg-secondary/30 border-none h-14 rounded-2xl font-bold"
                                                     value={remarks}
                                                     onChange={(e) => setRemarks(e.target.value)}
@@ -363,14 +361,14 @@ export default function CashRecoveryPage() {
                                     </div>
 
                                     <div className="pt-4 flex gap-3">
-                                        <Button 
-                                            variant="secondary" 
+                                        <Button
+                                            variant="secondary"
                                             className="flex-1 h-14 rounded-2xl font-bold text-lg"
                                             onClick={() => setSelectedCustomer(null)}
                                         >
                                             Cancel
                                         </Button>
-                                        <Button 
+                                        <Button
                                             className="flex-[2] h-14 rounded-2xl font-black text-lg shadow-lg shadow-primary/20"
                                             onClick={handleRecovery}
                                             disabled={isProcessing || !recoveryAmount}
@@ -398,7 +396,7 @@ export default function CashRecoveryPage() {
                                 </p>
 
                                 <div className="flex flex-col sm:flex-row gap-4 max-w-sm mx-auto">
-                                    <Button 
+                                    <Button
                                         className="flex-1 h-14 rounded-2xl font-black text-lg bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20"
                                         onClick={() => handlePreview(successData.recoveryId)}
                                         disabled={previewing}
@@ -406,7 +404,7 @@ export default function CashRecoveryPage() {
                                         {previewing ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Eye className="mr-2 h-5 w-5" />}
                                         Preview
                                     </Button>
-                                    <Button 
+                                    <Button
                                         className="flex-1 h-14 rounded-2xl font-black text-lg bg-primary shadow-lg shadow-primary/20"
                                         onClick={() => handleDownload(successData.recoveryId)}
                                     >
@@ -414,9 +412,9 @@ export default function CashRecoveryPage() {
                                         Download
                                     </Button>
                                 </div>
-                                
-                                <Button 
-                                    variant="link" 
+
+                                <Button
+                                    variant="link"
                                     className="mt-8 text-primary font-bold hover:no-underline hover:opacity-80"
                                     onClick={() => setSelectedCustomer(null)}
                                 >

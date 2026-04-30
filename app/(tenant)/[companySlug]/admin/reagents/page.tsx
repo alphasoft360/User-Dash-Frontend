@@ -62,11 +62,9 @@ export default function LabReagentsPage({ params }: { params: Promise<{ companyS
     const [categories, setCategories] = useState<Category[]>([]);
     const [isRecoveryOpen, setIsRecoveryOpen] = useState(false);
 
-    // Filters
     const [searchName, setSearchName] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-    // Pagination
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
@@ -174,8 +172,8 @@ export default function LabReagentsPage({ params }: { params: Promise<{ companyS
                     </div>
                     <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label>
-                        <Select 
-                            value={selectedCategory} 
+                        <Select
+                            value={selectedCategory}
                             onValueChange={(val) => {
                                 setSelectedCategory(val);
                                 setCurrentPage(1);
@@ -195,9 +193,9 @@ export default function LabReagentsPage({ params }: { params: Promise<{ companyS
                     <div className="flex items-end">
                         <Button
                             variant="ghost"
-                            onClick={() => { 
-                                setSearchName(''); 
-                                setSelectedCategory('all'); 
+                            onClick={() => {
+                                setSearchName('');
+                                setSelectedCategory('all');
                                 setCurrentPage(1);
                             }}
                             className="text-muted-foreground hover:text-foreground h-11 px-6 rounded-xl font-bold flex items-center gap-2"
@@ -314,7 +312,7 @@ export default function LabReagentsPage({ params }: { params: Promise<{ companyS
                             >
                                 <ChevronLeft className="h-4 w-4" />
                             </Button>
-                            
+
                             <div className="flex items-center gap-1 mx-2">
                                 <span className="text-xs font-black text-muted-foreground uppercase">Page</span>
                                 <div className="h-10 px-4 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
@@ -350,7 +348,7 @@ export default function LabReagentsPage({ params }: { params: Promise<{ companyS
                 <CategoryManagement companySlug={companySlug} />
             </div>
 
-            <ReagentRecoveryModal 
+            <ReagentRecoveryModal
                 isOpen={isRecoveryOpen}
                 onClose={() => setIsRecoveryOpen(false)}
                 onRestoreSuccess={() => fetchProducts()}

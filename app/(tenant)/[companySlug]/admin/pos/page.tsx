@@ -60,13 +60,11 @@ export default function POSPage() {
     const [appliedSearch, setAppliedSearch] = useState('');
     const [loadingProducts, setLoadingProducts] = useState(false);
 
-    // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
     const [pageSize] = useState(10);
 
-    // Filtering state
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
     const [cart, setCart] = useState<CartItem[]>([]);
@@ -76,7 +74,6 @@ export default function POSPage() {
     const [discountPercentage, setDiscountPercentage] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
 
-    // Success State
     const [lastOrderId, setLastOrderId] = useState<number | null>(null);
 
     const fetchCategories = async () => {
@@ -120,7 +117,7 @@ export default function POSPage() {
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setAppliedSearch(search);
-        setCurrentPage(1); // Reset to first page on search
+        setCurrentPage(1);
     };
 
     const addToCart = (product: Product) => {
@@ -148,7 +145,7 @@ export default function POSPage() {
         setCart(prev => prev.map(item => {
             if (item.id === id) {
                 const newQuantity = item.cartQuantity + delta;
-                if (newQuantity <= 0) return item; // Handled by remove
+                if (newQuantity <= 0) return item;
                 if (newQuantity > item.stock) {
                     toast.error(`Only ${item.stock} units available`);
                     return item;
@@ -197,10 +194,8 @@ export default function POSPage() {
             const response = await api.post('/admin/orders/walk-in', payload);
             toast.success("Transaction Complete");
 
-            // Show Success screen with Receipt ID
             setLastOrderId(response.data.orderId);
 
-            // Re-fetch products to get updated stock
             fetchProducts();
 
         } catch (err: any) {
@@ -228,7 +223,6 @@ export default function POSPage() {
                 responseType: 'blob'
             });
 
-            // Create blob link to download
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
@@ -236,7 +230,6 @@ export default function POSPage() {
             document.body.appendChild(link);
             link.click();
 
-            // Clean up
             link.parentNode?.removeChild(link);
             window.URL.revokeObjectURL(url);
 
@@ -244,7 +237,6 @@ export default function POSPage() {
         } catch (err: any) {
             console.error("Download error:", err);
 
-            // Try to read error message from blob
             if (err.response?.data instanceof Blob) {
                 const reader = new FileReader();
                 reader.onload = () => {

@@ -54,11 +54,9 @@ export default function CategoryDetailsPage() {
     const [loading, setLoading] = useState(true);
     const [isProcessing, setIsProcessing] = useState(false);
 
-    // Edit State
     const [editName, setEditName] = useState('');
     const [isEditingName, setIsEditingName] = useState(false);
 
-    // Assigned Products State (Server-Side)
     const [assignedProducts, setAssignedProducts] = useState<Product[]>([]);
     const [assignedSearch, setAssignedSearch] = useState('');
     const [assignedAppliedSearch, setAssignedAppliedSearch] = useState('');
@@ -66,7 +64,6 @@ export default function CategoryDetailsPage() {
     const [assignedTotalPages, setAssignedTotalPages] = useState(1);
     const [isAssignedLoading, setIsAssignedLoading] = useState(false);
 
-    // Add Products State (Server-Side)
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
     const [availableSearch, setAvailableSearch] = useState('');
@@ -104,7 +101,7 @@ export default function CategoryDetailsPage() {
                     category: id,
                     search: assignedAppliedSearch || undefined,
                     page: assignedPage,
-                    limit: 6 // Show 6 per page for a nice grid
+                    limit: 6
                 }
             });
             setAssignedProducts(response.data.data);
@@ -136,7 +133,6 @@ export default function CategoryDetailsPage() {
         }
     }, [isAddModalOpen, availableAppliedSearch, availablePage]);
 
-    // Initial Load
     useEffect(() => {
         const loadInitialData = async () => {
             setLoading(true);
@@ -146,7 +142,6 @@ export default function CategoryDetailsPage() {
         loadInitialData();
     }, [fetchCategoryStats]);
 
-    // Independent effects for lists
     useEffect(() => {
         fetchAssignedProducts();
     }, [fetchAssignedProducts]);

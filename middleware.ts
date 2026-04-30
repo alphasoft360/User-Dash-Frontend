@@ -4,7 +4,6 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
-    // Skip internal paths and super-admin
     if (
         pathname.startsWith('/_next') ||
         pathname.startsWith('/api') ||
@@ -21,8 +20,6 @@ export function middleware(request: NextRequest) {
     const segments = pathname.split('/').filter(Boolean);
     const firstSegment = segments[0];
 
-    // Known company slugs (this should ideally be fetched or cached, 
-    // but for now we can check if it's one of ours or default to Unique Healthcare)
     const knownSlugs = ['unique-healthcare-solutions', 'acme', 'tesla', 'demo'];
 
     if (

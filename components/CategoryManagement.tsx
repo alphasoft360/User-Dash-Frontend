@@ -6,12 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { 
-    Plus, 
-    Edit2, 
-    Trash2, 
-    Package, 
-    Search, 
+import {
+    Plus,
+    Edit2,
+    Trash2,
+    Package,
+    Search,
     Link as LinkIcon,
     Loader2,
     CheckCircle2,
@@ -61,7 +61,6 @@ export default function CategoryManagement({ companySlug }: { companySlug: strin
     const [totalItems, setTotalItems] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
 
-    // Product Assignment
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
     const [selectedCategoryForProducts, setSelectedCategoryForProducts] = useState<Category | null>(null);
     const [unassignedProducts, setUnassignedProducts] = useState<Product[]>([]);
@@ -72,12 +71,12 @@ export default function CategoryManagement({ companySlug }: { companySlug: strin
         setLoading(true);
         try {
             const [catRes, venRes] = await Promise.all([
-                api.get('/admin/categories/stats', { 
-                    params: { 
-                        page: targetPage, 
+                api.get('/admin/categories/stats', {
+                    params: {
+                        page: targetPage,
                         limit: 10,
                         search: searchTerm || undefined
-                    } 
+                    }
                 }),
                 api.get('/admin/vendors')
             ]);
@@ -97,7 +96,6 @@ export default function CategoryManagement({ companySlug }: { companySlug: strin
         fetchData();
     }, [page]);
 
-    // Debounced search
     useEffect(() => {
         const timer = setTimeout(() => {
             if (page === 1) {
@@ -171,11 +169,9 @@ export default function CategoryManagement({ companySlug }: { companySlug: strin
         setSelectedCategoryForProducts(cat);
         setIsProductModalOpen(true);
         setSelectedProductIds([]);
-        
+
         try {
-            // Fetch all products to find those NOT in this category or just all to allow move
             const res = await api.get('/admin/products', { params: { limit: 100 } });
-            // Filter out products already in this category
             setUnassignedProducts(res.data.data.filter((p: Product) => p.category?.id !== cat.id));
         } catch (err) {
             toast.error("Failed to load products");
@@ -184,7 +180,7 @@ export default function CategoryManagement({ companySlug }: { companySlug: strin
 
     const handleAssignProducts = async () => {
         if (!selectedCategoryForProducts || selectedProductIds.length === 0) return;
-        
+
         setAssigningProducts(true);
         try {
             await api.patch(`/admin/categories/${selectedCategoryForProducts.id}/products`, {
@@ -201,7 +197,7 @@ export default function CategoryManagement({ companySlug }: { companySlug: strin
     };
 
     const toggleProductSelection = (id: number) => {
-        setSelectedProductIds(prev => 
+        setSelectedProductIds(prev =>
             prev.includes(id) ? prev.filter(pId => pId !== id) : [...prev, id]
         );
     };
@@ -226,7 +222,7 @@ export default function CategoryManagement({ companySlug }: { companySlug: strin
                             className="bg-card border-border rounded-xl h-11 pl-10 pr-4 font-bold focus:ring-primary/20 transition-all placeholder:text-[10px] placeholder:uppercase placeholder:tracking-widest"
                         />
                     </div>
-                    <Button 
+                    <Button
                         onClick={() => openForm()}
                         className="bg-primary hover:opacity-90 text-primary-foreground font-black rounded-xl gap-2 h-11 px-6 shadow-lg shadow-primary/10"
                     >
@@ -291,26 +287,26 @@ export default function CategoryManagement({ companySlug }: { companySlug: strin
                                     </div>
                                 </td>
                                 <td className="p-6 text-right space-x-2">
-                                    <Button 
-                                        variant="ghost" 
-                                        size="icon" 
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
                                         onClick={() => openProductAssignment(cat)}
                                         className="h-9 w-9 text-muted-foreground hover:bg-indigo-500/10 hover:text-indigo-400 rounded-lg"
                                         title="Add Products"
                                     >
                                         <Plus className="h-4 w-4" />
                                     </Button>
-                                    <Button 
-                                        variant="ghost" 
-                                        size="icon" 
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
                                         onClick={() => openForm(cat)}
                                         className="h-9 w-9 text-muted-foreground hover:bg-primary/10 hover:text-primary rounded-lg"
                                     >
                                         <Edit2 className="h-4 w-4" />
                                     </Button>
-                                    <Button 
-                                        variant="ghost" 
-                                        size="icon" 
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
                                         onClick={() => handleDelete(cat.id)}
                                         className="h-9 w-9 text-muted-foreground hover:bg-red-500/10 hover:text-red-500 rounded-lg"
                                     >
@@ -321,7 +317,7 @@ export default function CategoryManagement({ companySlug }: { companySlug: strin
                         ))}
                     </TableBody>
                 </Table>
-                
+
                 {/* Pagination Controls */}
                 {!loading && (
                     <div className="p-4 bg-secondary/10 border-t border-border flex items-center justify-between">
@@ -354,7 +350,7 @@ export default function CategoryManagement({ companySlug }: { companySlug: strin
                                         .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
                                         .map((p, i, arr) => (
                                             <div key={p} className="flex items-center">
-                                                {i > 0 && arr[i-1] !== p - 1 && (
+                                                {i > 0 && arr[i - 1] !== p - 1 && (
                                                     <span className="text-muted-foreground px-1">...</span>
                                                 )}
                                                 <Button
@@ -407,7 +403,7 @@ export default function CategoryManagement({ companySlug }: { companySlug: strin
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category Name</Label>
-                                    <Input 
+                                    <Input
                                         value={formName}
                                         onChange={(e) => setFormName(e.target.value)}
                                         placeholder="Enter category name..."
@@ -429,15 +425,15 @@ export default function CategoryManagement({ companySlug }: { companySlug: strin
                                     </Select>
                                 </div>
                                 <div className="flex gap-4 pt-4">
-                                    <Button 
-                                        type="button" 
-                                        variant="outline" 
+                                    <Button
+                                        type="button"
+                                        variant="outline"
                                         onClick={() => setIsFormOpen(false)}
                                         className="flex-1 h-12 rounded-xl font-black uppercase tracking-widest border-border"
                                     >
                                         Cancel
                                     </Button>
-                                    <Button 
+                                    <Button
                                         disabled={submitting}
                                         className="flex-1 h-12 rounded-xl font-black uppercase tracking-widest bg-primary text-primary-foreground shadow-lg shadow-primary/10"
                                     >
@@ -467,8 +463,8 @@ export default function CategoryManagement({ companySlug }: { companySlug: strin
                                     {unassignedProducts.length === 0 ? (
                                         <p className="text-center py-10 text-muted-foreground font-bold uppercase text-[10px] tracking-widest italic opacity-50">All reagents already assigned or none available.</p>
                                     ) : unassignedProducts.map(p => (
-                                        <div 
-                                            key={p.id} 
+                                        <div
+                                            key={p.id}
                                             onClick={() => toggleProductSelection(p.id)}
                                             className={`p-4 border rounded-2xl flex items-center justify-between cursor-pointer transition-all duration-300 ${selectedProductIds.includes(p.id) ? 'bg-primary/10 border-primary shadow-inner scale-[0.98]' : 'bg-secondary/20 border-border hover:border-primary/30'}`}
                                         >
@@ -482,11 +478,11 @@ export default function CategoryManagement({ companySlug }: { companySlug: strin
                                                 </div>
                                             </div>
                                             <div className="transition-all duration-500">
-                                            {selectedProductIds.includes(p.id) ? (
-                                                <CheckCircle2 className="h-5 w-5 text-primary animate-in zoom-in spin-in-12 border-none" />
-                                            ) : (
-                                                <div className="h-5 w-5 rounded-full border-2 border-muted-foreground/20" />
-                                            )}
+                                                {selectedProductIds.includes(p.id) ? (
+                                                    <CheckCircle2 className="h-5 w-5 text-primary animate-in zoom-in spin-in-12 border-none" />
+                                                ) : (
+                                                    <div className="h-5 w-5 rounded-full border-2 border-muted-foreground/20" />
+                                                )}
                                             </div>
                                         </div>
                                     ))}
@@ -497,14 +493,14 @@ export default function CategoryManagement({ companySlug }: { companySlug: strin
                                     Selected: <span className="text-primary font-black">{selectedProductIds.length}</span> items
                                 </p>
                                 <div className="flex gap-3">
-                                    <Button 
-                                        variant="ghost" 
+                                    <Button
+                                        variant="ghost"
                                         onClick={() => setIsProductModalOpen(false)}
                                         className="h-11 rounded-xl font-black uppercase tracking-widest px-6"
                                     >
                                         Cancel
                                     </Button>
-                                    <Button 
+                                    <Button
                                         onClick={handleAssignProducts}
                                         disabled={selectedProductIds.length === 0 || assigningProducts}
                                         className="h-11 rounded-xl font-black uppercase tracking-widest bg-indigo-500 hover:bg-indigo-600 text-white px-8 shadow-lg shadow-indigo-500/20"

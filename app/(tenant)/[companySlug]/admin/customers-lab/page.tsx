@@ -75,7 +75,6 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                     pending: pending === 'all' ? undefined : (pending === 'pending' ? 'true' : 'false')
                 }
             });
-            // Handle both paginated response and old array response (just in case)
             if (response.data.data && Array.isArray(response.data.data)) {
                 setCustomers(response.data.data);
                 setTotalPages(response.data.pages || 1);
@@ -91,10 +90,9 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
         }
     };
 
-    // Debounced search to prevent excessive API calls
     const debouncedSearch = useCallback(
         debounce((query: string) => {
-            setPage(1); // Reset to first page on new search
+            setPage(1);
             fetchCustomers(1, query, pendingFilter);
         }, 500),
         [pendingFilter]
@@ -108,7 +106,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
 
     useEffect(() => {
         fetchCustomers(page, search, pendingFilter);
-    }, [page]); // Re-fetch only when page changes here, search is handled by debounce
+    }, [page]);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
@@ -182,7 +180,6 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
         }
     };
 
-    // Note: Filtering is now handled on the backend!
     const filteredCustomers = customers;
 
     return (
@@ -229,8 +226,8 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
 
                     <div className="w-full md:w-64 space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Filter by Status</Label>
-                        <Select 
-                            value={pendingFilter} 
+                        <Select
+                            value={pendingFilter}
                             onValueChange={(val) => {
                                 setPendingFilter(val);
                                 setPage(1);
@@ -422,18 +419,18 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                             <div className="grid grid-cols-1 gap-6">
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Range Initiation</Label>
-                                    <input 
-                                        type="date" 
-                                        value={startDate} 
+                                    <input
+                                        type="date"
+                                        value={startDate}
                                         onChange={(e) => setStartDate(e.target.value)}
                                         className="w-full bg-secondary/30 border border-border rounded-xl h-12 px-4 font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                                     />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Range Termination</Label>
-                                    <input 
-                                        type="date" 
-                                        value={endDate} 
+                                    <input
+                                        type="date"
+                                        value={endDate}
                                         onChange={(e) => setEndDate(e.target.value)}
                                         className="w-full bg-secondary/30 border border-border rounded-xl h-12 px-4 font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                                     />
@@ -445,8 +442,8 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                                     <Label className="text-[10px] font-black uppercase tracking-widest text-foreground">Header & Footer</Label>
                                     <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-tighter">Include UHS branding in PDF</p>
                                 </div>
-                                <Switch 
-                                    checked={showHeader} 
+                                <Switch
+                                    checked={showHeader}
                                     onCheckedChange={setShowHeader}
                                     className="data-[state=checked]:bg-primary"
                                 />
@@ -458,7 +455,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                                     onClick={handlePreviewLedger}
                                     disabled={previewing || downloading}
                                 >
-                                    {previewing ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5 group-hover:scale-110 transition-transform" /> }
+                                    {previewing ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5 group-hover:scale-110 transition-transform" />}
                                     PREVIEW
                                 </Button>
                                 <Button
@@ -488,7 +485,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Reviewing document before download</p>
                         </div>
                         <div className="flex items-center gap-4">
-                            <Button 
+                            <Button
                                 onClick={() => {
                                     const link = document.createElement('a');
                                     link.href = previewUrl;
@@ -503,9 +500,9 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                                 DOWNLOAD PDF
                             </Button>
                             <div className="w-px h-8 bg-border"></div>
-                            <Button 
-                                variant="ghost" 
-                                size="icon" 
+                            <Button
+                                variant="ghost"
+                                size="icon"
                                 onClick={() => {
                                     URL.revokeObjectURL(previewUrl);
                                     setPreviewUrl(null);
@@ -522,7 +519,7 @@ export default function CustomersLabPage({ params }: { params: Promise<{ company
                 </div>
             )}
 
-            <CustomerRecoveryModal 
+            <CustomerRecoveryModal
                 isOpen={isRecoveryOpen}
                 onClose={() => setIsRecoveryOpen(false)}
                 onRestoreSuccess={() => fetchCustomers(page, search, pendingFilter)}

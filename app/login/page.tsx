@@ -13,7 +13,6 @@ import { toast } from 'sonner';
 import { Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 import { useSearchParams } from 'next/navigation';
-// ...
 function LoginContent() {
     const searchParams = useSearchParams();
     const redirectTo = searchParams.get('redirectTo') || undefined;

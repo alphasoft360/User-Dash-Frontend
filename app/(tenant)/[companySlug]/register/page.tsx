@@ -32,7 +32,6 @@ export default function Register({ params }: { params: Promise<{ companySlug: st
         e.preventDefault();
         toast.dismiss();
 
-        // Basic domain validation
         const allowedDomains = ['gmail.com', 'outlook.com', 'yahoo.com'];
         const emailDomain = formData.email.split('@')[1];
         if (!allowedDomains.includes(emailDomain)) {
@@ -67,7 +66,7 @@ export default function Register({ params }: { params: Promise<{ companySlug: st
             } else if (err instanceof Error) {
                 errorMessage = err.message;
             }
-            
+
             toast.error("Registration failed", {
                 description: errorMessage,
             });

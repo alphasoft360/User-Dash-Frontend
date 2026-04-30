@@ -96,7 +96,6 @@ export default function ReagentForm({ initialData, isEditing = false }: ReagentF
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Client-side validation
         if (!formData.category?.id) {
             toast.error("Please select a category");
             return;
@@ -144,7 +143,7 @@ export default function ReagentForm({ initialData, isEditing = false }: ReagentF
             console.error(err);
             const error = err as { response?: { data?: { message?: string, errors?: string[] } } };
             const backendErrors = error.response?.data?.errors;
-            
+
             if (backendErrors && Array.isArray(backendErrors)) {
                 backendErrors.forEach(msg => toast.error(msg));
             } else {

@@ -79,12 +79,11 @@ export default function OrdersPage({ params }: { params: Promise<{ companySlug: 
     const fetchOrders = () => fetchOrdersWithParams();
 
     useEffect(() => {
-        // Only fetch on initial load or page change
         fetchOrders();
     }, [page]);
 
     const handleApplyFilters = () => {
-        setPage(1); // Reset to first page
+        setPage(1);
         fetchOrders();
     };
 

@@ -77,7 +77,6 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
           slug: companyResponse.data.slug
         });
 
-        // Setup Hero Images
         if (settings.hero_images && Array.isArray(settings.hero_images)) {
           setHeroImages(settings.hero_images.map((img: string) => `/tenants/${companySlug}/images/${img}`));
         } else {
@@ -88,7 +87,6 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
           ]);
         }
 
-        // Setup PDF Docs
         if (settings.resources && Array.isArray(settings.resources)) {
           setPdfDocs(settings.resources.map((doc: any) => ({
             ...doc,
@@ -98,7 +96,6 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
           setPdfDocs([]);
         }
 
-        // Setup Logo
         if (settings.logo) {
           setLogoPath(`/tenants/${companySlug}/images/${settings.logo}`);
         }
@@ -297,9 +294,9 @@ export default function Home({ params }: { params: Promise<{ companySlug: string
         {showBanner && (
           <div className="w-full max-w-4xl px-6 pb-6 animate-in slide-in-from-top-8 duration-1000 ease-out">
             <div className="relative group/banner scale-95 hover:scale-100 transition-all duration-700">
-               <AlphasoftBanner />
-               {/* Enhanced glow effect */}
-               <div className="absolute inset-0 bg-primary/5 blur-2xl rounded-3xl -z-10 group-hover/banner:bg-primary/10 transition-colors opacity-0 group-hover/banner:opacity-100 duration-1000"></div>
+              <AlphasoftBanner />
+              {/* Enhanced glow effect */}
+              <div className="absolute inset-0 bg-primary/5 blur-2xl rounded-3xl -z-10 group-hover/banner:bg-primary/10 transition-colors opacity-0 group-hover/banner:opacity-100 duration-1000"></div>
             </div>
           </div>
         )}

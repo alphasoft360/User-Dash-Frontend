@@ -45,7 +45,6 @@ export default function StockInForm({ initialProductId = '', products: initialPr
     const [isSuccess, setIsSuccess] = useState(false);
     const [lastEntry, setLastEntry] = useState<{ productId: string, quantity: string, unitPrice: string, supplier: string } | null>(null);
 
-    // Vendor Search States
     const [vendors, setVendors] = useState<Vendor[]>([]);
     const [vendorSearch, setVendorSearch] = useState('');
     const [isSearchingVendors, setIsSearchingVendors] = useState(false);
@@ -256,7 +255,7 @@ export default function StockInForm({ initialProductId = '', products: initialPr
                             <Loader2 className="animate-spin h-4 w-4 text-primary" />
                         </div>
                     )}
-                    
+
                     {showVendorSuggestions && vendors.length > 0 && (
                         <div className="absolute z-50 left-0 right-0 top-full mt-2 bg-slate-50 dark:bg-slate-950 border border-border rounded-2xl shadow-2xl overflow-hidden max-h-60 overflow-y-auto custom-scrollbar ring-1 ring-black/5 animate-in fade-in slide-in-from-top-2">
                             {vendors.map((vendor) => (

@@ -65,7 +65,6 @@ export default function NewOrderPage() {
 
     const [submitting, setSubmitting] = useState(false);
 
-    // Form states
     const [draftItems, setDraftItems] = useState<OrderItem[]>([]);
     const [currentQuantity, setCurrentQuantity] = useState<number>(1);
     const [currentComment, setCurrentComment] = useState<string>('');
@@ -74,7 +73,6 @@ export default function NewOrderPage() {
     const vendorRef = useRef<HTMLDivElement>(null);
     const productRef = useRef<HTMLDivElement>(null);
 
-    // Close suggestions when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (vendorRef.current && !vendorRef.current.contains(event.target as Node)) {
@@ -97,7 +95,7 @@ export default function NewOrderPage() {
                 ? `/admin/vendors?search=${encodeURIComponent(trimmedSearch)}`
                 : '/admin/vendors';
             const response = await api.get(endpoint);
-            setVendors(response.data.slice(0, 10)); // Show top 10 results
+            setVendors(response.data.slice(0, 10));
         } catch (err) {
             toast.error("Failed to load vendors");
         } finally {
@@ -115,7 +113,7 @@ export default function NewOrderPage() {
                 ? `/admin/products?category=${selectedVendor.category.id}&search=${encodeURIComponent(trimmedSearch)}`
                 : `/admin/products?category=${selectedVendor.category.id}`;
             const response = await api.get(endpoint);
-            setProducts(response.data.slice(0, 10)); // Show top 10 results
+            setProducts(response.data.slice(0, 10));
         } catch (err) {
             toast.error("Failed to load products");
         } finally {
@@ -123,7 +121,6 @@ export default function NewOrderPage() {
         }
     };
 
-    // Initial load for vendors
     useEffect(() => {
         fetchVendors();
     }, []);
@@ -195,10 +192,8 @@ export default function NewOrderPage() {
             }]);
         }
 
-        // Reset product selection
         setSelectedProduct(null);
         setProductSearch('');
-        // Re-load top 10 products
         fetchProducts();
         setCurrentQuantity(1);
         setCurrentComment('');
@@ -233,8 +228,6 @@ export default function NewOrderPage() {
             setSubmitting(false);
         }
     };
-
-    // Remove the global initializing screen as it blocks UI after selection
 
     return (
         <div className="space-y-12 animate-in fade-in duration-700 pb-20">

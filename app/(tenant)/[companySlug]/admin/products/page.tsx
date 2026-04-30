@@ -63,22 +63,16 @@ export default function AdminProductsPage() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [isRefreshing, setIsRefreshing] = useState(false);
 
-    // Pagination State
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState(10);
-
-    // Filters
     const [searchName, setSearchName] = useState('');
     const [searchId, setSearchId] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
     const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'hidden'>('all');
-
-    // Category Creation
-    // (Removed - now handled in dedicated categories page)
 
     const fetchCategories = async () => {
         try {
@@ -124,13 +118,11 @@ export default function AdminProductsPage() {
         fetchProducts();
     }, [fetchProducts]);
 
-    // handleAddCategory removed - moved to categories page
-
     const handleDelete = async (id: number) => {
         if (!confirm("Confirm entity deletion protocol? This action lis irreversible.")) return;
         try {
             await api.delete(`/admin/products/${id}`);
-            fetchProducts(); // Refresh list to account for pagination
+            fetchProducts();
             toast.success("Product scrubbed from database");
         } catch (err: unknown) {
             console.error(err);
