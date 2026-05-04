@@ -131,12 +131,6 @@ function LoginContent() {
                             Sign In
                             {!isLoading && <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />}
                         </Button>
-                        <p className="text-center text-sm text-gray-400 dark:text-gray-500">
-                            Don&apos;t have an account?{' '}
-                            <Link href="/register" className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors">
-                                Register now
-                            </Link>
-                        </p>
                     </CardFooter>
                 </form>
             </Card>
