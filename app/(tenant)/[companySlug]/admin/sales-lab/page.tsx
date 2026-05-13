@@ -56,6 +56,8 @@ interface Product {
 interface CartItem extends Product {
     cartQuantity: number;
     discountPercentage: number;
+    discountAmount: number;
+    discountType: 'percent' | 'amount';
 }
 
 interface Category {
@@ -272,16 +274,25 @@ export default function SalesLabPage() {
                     toast.error("Item out of stock");
                     return prev;
                 }
-                return [...prev, { ...product, cartQuantity: 1, discountPercentage: 0 }];
+                return [...prev, { ...product, cartQuantity: 1, discountPercentage: 0, discountAmount: 0, discountType: 'percent' }];
             }
         });
     };
 
-    const updateDiscount = (id: number, discount: number) => {
+    const updateDiscount = (id: number, value: number, type: 'percent' | 'amount') => {
         setCart(prev => prev.map(item => {
             if (item.id === id) {
-                const val = Math.min(100, Math.max(0, discount));
-                return { ...item, discountPercentage: val };
+                if (type === 'percent') {
+                    const val = Math.min(100, Math.max(0, value));
+                    const amount = Math.round((parseFloat(item.price) * item.cartQuantity * val) / 100);
+                    return { ...item, discountPercentage: val, discountAmount: amount, discountType: 'percent' };
+                } else {
+                    const val = Math.max(0, value);
+                    const percentage = (parseFloat(item.price) * item.cartQuantity) > 0 
+                        ? (val / (parseFloat(item.price) * item.cartQuantity)) * 100 
+                        : 0;
+                    return { ...item, discountPercentage: percentage, discountAmount: val, discountType: 'amount' };
+                }
             }
             return item;
         }));
@@ -308,6 +319,9 @@ export default function SalesLabPage() {
 
     const subtotal = Math.round(cart.reduce((acc, item) => acc + (parseFloat(item.price) * item.cartQuantity), 0));
     const totalDiscountAmount = Math.round(cart.reduce((acc, item) => {
+        if (item.discountType === 'amount') {
+            return acc + item.discountAmount;
+        }
         const itemSubtotal = parseFloat(item.price) * item.cartQuantity;
         return acc + (itemSubtotal * item.discountPercentage) / 100;
     }, 0));
@@ -338,7 +352,8 @@ export default function SalesLabPage() {
                 items: cart.map(item => ({
                     productId: item.id,
                     quantity: item.cartQuantity,
-                    discountPercentage: item.discountPercentage
+                    discountPercentage: item.discountType === 'percent' ? item.discountPercentage : undefined,
+                    discountAmount: item.discountType === 'amount' ? item.discountAmount : undefined
                 })),
                 amountTendered: Math.round(parseFloat(amountGiven) || 0),
                 changeDue: changeDue,
@@ -644,23 +659,30 @@ export default function SalesLabPage() {
                                                 <Plus className="h-3 w-3" />
                                             </Button>
                                         </div>
-                                        <div className="flex items-center gap-1.5 bg-secondary px-2 py-1 rounded-lg border border-border">
-                                            <Percent className="h-3 w-3 text-primary" />
+                                        <div className="flex items-center gap-1 bg-secondary px-2 py-1 rounded-lg border border-border">
+                                            <Button 
+                                                variant="ghost" 
+                                                size="sm" 
+                                                onClick={() => updateDiscount(item.id, item.discountType === 'percent' ? item.discountAmount : item.discountPercentage, item.discountType === 'percent' ? 'amount' : 'percent')}
+                                                className="h-6 w-6 p-0 rounded hover:bg-background text-primary"
+                                            >
+                                                {item.discountType === 'percent' ? <Percent className="h-3 w-3" /> : <span className="text-[10px] font-bold">PKR</span>}
+                                            </Button>
                                             <input
                                                 type="number"
-                                                value={item.discountPercentage}
-                                                onChange={(e) => updateDiscount(item.id, parseFloat(e.target.value) || 0)}
-                                                className="w-10 bg-transparent font-black text-[10px] focus:outline-hidden [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                value={item.discountType === 'percent' ? item.discountPercentage : item.discountAmount}
+                                                onChange={(e) => updateDiscount(item.id, parseFloat(e.target.value) || 0, item.discountType)}
+                                                className="w-12 bg-transparent font-black text-[10px] focus:outline-hidden [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                                 placeholder="0"
                                             />
-                                            <span className="text-[8px] font-bold opacity-30">%</span>
+                                            <span className="text-[8px] font-bold opacity-30">{item.discountType === 'percent' ? '%' : ''}</span>
                                         </div>
-                                        {item.discountPercentage > 0 && (
+                                        {item.discountPercentage > 0 || item.discountAmount > 0 ? (
                                             <div className="flex flex-col items-end mr-3">
-                                                <span className="text-[13px] font-black text-primary uppercase italic">-PKR {Math.round((parseFloat(item.price) * item.cartQuantity * item.discountPercentage) / 100).toLocaleString()}</span>
+                                                <span className="text-[13px] font-black text-primary uppercase italic">-PKR {Math.round(item.discountType === 'amount' ? item.discountAmount : (parseFloat(item.price) * item.cartQuantity * item.discountPercentage) / 100).toLocaleString()}</span>
                                                 <span className="text-[10px] font-black text-muted-foreground/80 uppercase tracking-tighter leading-none">Savings</span>
                                             </div>
-                                        )}
+                                        ) : null}
                                         <Button variant="ghost" size="sm" onClick={() => removeFromCart(item.id)} className="h-8 w-8 p-0 rounded-lg text-red-500 hover:bg-red-500 hover:text-white transition-colors">
                                             <Trash2 className="h-4 w-4" />
                                         </Button>

@@ -103,7 +103,12 @@ export default function InvoicesLabPage() {
         setIsEditModalOpen(true);
         try {
             const response = await api.get(`/admin/labs/invoices/${id}`);
-            setEditingInvoice(response.data);
+            const invoice = response.data;
+            invoice.items = (invoice.items || []).map((item: any) => ({
+                ...item,
+                discountType: 'percent'
+            }));
+            setEditingInvoice(invoice);
         } catch (err) {
             toast.error("Failed to fetch invoice details");
             setIsEditModalOpen(false);
@@ -120,7 +125,8 @@ export default function InvoicesLabPage() {
             quantity: 1,
             price: parseFloat(product.price),
             discountPercentage: 0,
-            discountAmount: 0
+            discountAmount: 0,
+            discountType: 'percent'
         };
         setEditingInvoice({
             ...editingInvoice,
@@ -147,12 +153,35 @@ export default function InvoicesLabPage() {
                 item.productName = product.name;
                 item.price = parseFloat(product.price);
             }
+        } else if (field === 'discountType') {
+            item.discountType = value;
+            // Recalculate based on current values to keep them in sync if possible
+            const subtotal = item.quantity * item.price;
+            if (value === 'percent') {
+                item.discountAmount = (subtotal * (item.discountPercentage || 0)) / 100;
+            } else {
+                item.discountPercentage = subtotal > 0 ? (item.discountAmount / subtotal) * 100 : 0;
+            }
+        } else if (field === 'discountPercentage') {
+            item.discountPercentage = value;
+            const subtotal = item.quantity * item.price;
+            item.discountAmount = (subtotal * (value || 0)) / 100;
+        } else if (field === 'discountAmount') {
+            item.discountAmount = value;
+            const subtotal = item.quantity * item.price;
+            item.discountPercentage = subtotal > 0 ? (value / subtotal) * 100 : 0;
         } else {
             item[field] = value;
+            // If quantity or price changed, update discount amount if in percent mode
+            if (field === 'quantity' || field === 'price') {
+                const subtotal = item.quantity * item.price;
+                if (item.discountType === 'percent') {
+                    item.discountAmount = (subtotal * (item.discountPercentage || 0)) / 100;
+                } else {
+                    item.discountPercentage = subtotal > 0 ? (item.discountAmount / subtotal) * 100 : 0;
+                }
+            }
         }
-
-        const subtotal = item.quantity * item.price;
-        item.discountAmount = (subtotal * (item.discountPercentage || 0)) / 100;
 
         newItems[index] = item;
         setEditingInvoice({ ...editingInvoice, items: newItems });
@@ -190,7 +219,13 @@ export default function InvoicesLabPage() {
                 customerName: editingInvoice.customerName,
                 phone: editingInvoice.phone,
                 amountTendered: totals.totalPaid,
-                items: editingInvoice.items
+                items: editingInvoice.items.map((item: any) => ({
+                    productId: item.productId,
+                    quantity: item.quantity,
+                    price: item.price,
+                    discountPercentage: item.discountType === 'percent' ? item.discountPercentage : undefined,
+                    discountAmount: item.discountType === 'amount' ? item.discountAmount : undefined
+                }))
             };
             await api.put(`/admin/labs/invoices/${editingInvoice.id}`, payload);
             toast.success("Invoice updated and synchronized");
@@ -543,13 +578,23 @@ export default function InvoicesLabPage() {
                                                                 className="h-8 w-24 ml-auto bg-card border-border rounded-lg text-right font-black"
                                                             />
                                                         </TableCell>
-                                                        <TableCell className="text-right italic text-pink-500">
-                                                            <Input
-                                                                type="number"
-                                                                value={item.discountPercentage}
-                                                                onChange={e => updateItem(idx, 'discountPercentage', parseFloat(e.target.value))}
-                                                                className="h-8 w-16 ml-auto bg-card border-border rounded-lg text-right font-black"
-                                                            />
+                                                        <TableCell className="text-right">
+                                                            <div className="flex items-center justify-end gap-1">
+                                                                <Button 
+                                                                    variant="ghost" 
+                                                                    size="icon" 
+                                                                    onClick={() => updateItem(idx, 'discountType', item.discountType === 'percent' ? 'amount' : 'percent')}
+                                                                    className="h-6 w-6 p-0 rounded hover:bg-emerald-500/10 text-emerald-500"
+                                                                >
+                                                                    {item.discountType === 'percent' ? <Percent className="h-3 w-3" /> : <span className="text-[9px] font-bold">PKR</span>}
+                                                                </Button>
+                                                                <Input
+                                                                    type="number"
+                                                                    value={item.discountType === 'percent' ? item.discountPercentage : item.discountAmount}
+                                                                    onChange={e => updateItem(idx, item.discountType === 'percent' ? 'discountPercentage' : 'discountAmount', parseFloat(e.target.value) || 0)}
+                                                                    className="h-8 w-16 bg-card border-border rounded-lg text-right font-black p-1 text-[10px]"
+                                                                />
+                                                            </div>
                                                         </TableCell>
                                                         <TableCell className="text-right font-black">
                                                             PKR {Math.round(item.quantity * item.price - (item.discountAmount || 0)).toLocaleString()}
