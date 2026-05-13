@@ -6,7 +6,8 @@ import api from '@/lib/api';
 import { useRouter, useParams } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, Package, ShoppingBag, Activity } from 'lucide-react';
+import { ChevronRight, Package, ShoppingBag, Activity, Wallet } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface RecentSale {
     id: number;
@@ -19,6 +20,9 @@ interface LabDashboardData {
     totalProducts: number;
     stockValue: number;
     todaySales: number;
+    totalSales: number;
+    todayPending: number;
+    totalPending: number;
     lowStockCount: number;
     recentSales: RecentSale[];
 }
@@ -48,10 +52,30 @@ export default function LabDashboard() {
         return <div className="flex min-h-screen items-center justify-center bg-background text-foreground text-xl font-black text-cyan-500">AUTHENTICATING LAB...</div>;
     }
 
+    const [salesTimeframe, setSalesTimeframe] = useState<'today' | 'total'>('today');
+    const [pendingTimeframe, setPendingTimeframe] = useState<'today' | 'total'>('total');
+
     const statCards = [
         { label: 'Total Reagents', value: stats?.totalProducts || '0', color: 'from-blue-500 to-cyan-500', icon: <Package className="h-6 w-6" /> },
         { label: 'Stock Value', value: `PKR ${stats?.stockValue?.toLocaleString() || '0'}`, color: 'from-emerald-500 to-teal-600', icon: <Activity className="h-6 w-6" /> },
-        { label: 'Today Sales', value: `PKR ${stats?.todaySales?.toLocaleString() || '0'}`, color: 'from-indigo-500 to-purple-600', icon: <ShoppingBag className="h-6 w-6" /> },
+        { 
+            label: 'Sales', 
+            value: `PKR ${(salesTimeframe === 'today' ? stats?.todaySales : stats?.totalSales)?.toLocaleString() || '0'}`, 
+            color: 'from-indigo-500 to-purple-600', 
+            icon: <ShoppingBag className="h-6 w-6" />,
+            isDynamic: true,
+            timeframe: salesTimeframe,
+            setTimeframe: setSalesTimeframe
+        },
+        { 
+            label: 'Pending', 
+            value: `PKR ${(pendingTimeframe === 'today' ? stats?.todayPending : stats?.totalPending)?.toLocaleString() || '0'}`, 
+            color: 'from-orange-500 to-red-600', 
+            icon: <Wallet className="h-6 w-6" />,
+            isDynamic: true,
+            timeframe: pendingTimeframe,
+            setTimeframe: setPendingTimeframe
+        },
         { label: 'Low Stock', value: stats?.lowStockCount || '0', color: stats?.lowStockCount && stats.lowStockCount > 0 ? 'from-red-500 to-orange-600' : 'from-slate-500 to-slate-600', icon: <Activity className="h-6 w-6" /> }
     ];
 
@@ -62,7 +86,7 @@ export default function LabDashboard() {
                 <p className="text-muted-foreground font-medium">Pharmacy & Reagent Inventory Overview.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                 {statCards.map((stat, i) => {
                     const valueStr = stat.value.toString();
                     const isLong = valueStr.length > 12;
@@ -72,12 +96,25 @@ export default function LabDashboard() {
                         <Card key={i} className="bg-card border-border p-8 rounded-3xl relative overflow-hidden group hover:border-primary/30 transition-all shadow-sm hover:shadow-md h-full">
                             <div className="relative z-10 h-full flex flex-col justify-between">
                                 <div>
-                                    <p className="text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-4">{stat.label}</p>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <p className="text-muted-foreground text-[10px] font-black uppercase tracking-widest">{stat.label}</p>
+                                        {stat.isDynamic && (
+                                            <Select value={stat.timeframe} onValueChange={(v) => stat.setTimeframe?.(v as 'today' | 'total')}>
+                                                <SelectTrigger className="h-6 w-20 text-[9px] font-black uppercase tracking-tighter bg-secondary/50 border-none rounded-lg focus:ring-0">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent className="rounded-xl border-border bg-card">
+                                                    <SelectItem value="today" className="text-[10px] font-black uppercase">Today</SelectItem>
+                                                    <SelectItem value="total" className="text-[10px] font-black uppercase">Total</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        )}
+                                    </div>
                                     <h3 className={`${fontSizeClass} font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2 break-all leading-tight`}>
                                         {stat.value}
                                     </h3>
                                 </div>
-                                <div className="text-2xl opacity-20 group-hover:opacity-100 transition-opacity absolute top-0 right-0">
+                                <div className="text-2xl opacity-20 group-hover:opacity-100 transition-opacity self-end">
                                     {stat.icon}
                                 </div>
                             </div>
