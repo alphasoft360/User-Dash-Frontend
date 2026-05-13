@@ -146,6 +146,15 @@ export default function SalesLabPage() {
         fetchCategories();
     }, [fetchProducts, fetchCategories]);
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setAppliedSearch(search);
+            setCurrentPage(1);
+        }, 400);
+
+        return () => clearTimeout(timer);
+    }, [search]);
+
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setAppliedSearch(search);
