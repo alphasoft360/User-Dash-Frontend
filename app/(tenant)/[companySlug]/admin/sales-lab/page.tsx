@@ -313,6 +313,29 @@ export default function SalesLabPage() {
         }));
     };
 
+    const handleManualQuantityChange = (id: number, value: string) => {
+        if (value === '') {
+            setCart(prev => prev.map(item =>
+                item.id === id ? { ...item, cartQuantity: 0 } : item
+            ));
+            return;
+        }
+
+        const val = parseInt(value);
+        if (isNaN(val)) return;
+
+        setCart(prev => prev.map(item => {
+            if (item.id === id) {
+                if (val > item.stock) {
+                    toast.error(`Only ${item.stock} units available`);
+                    return { ...item, cartQuantity: item.stock };
+                }
+                return { ...item, cartQuantity: Math.max(0, val) };
+            }
+            return item;
+        }));
+    };
+
     const removeFromCart = (id: number) => {
         setCart(prev => prev.filter(item => item.id !== id));
     };
@@ -654,7 +677,17 @@ export default function SalesLabPage() {
                                             <Button variant="ghost" size="sm" onClick={() => updateQuantity(item.id, -1)} className="h-7 w-7 p-0 rounded hover:bg-background">
                                                 <Minus className="h-3 w-3" />
                                             </Button>
-                                            <span className="font-black text-xs w-6 text-center">{item.cartQuantity}</span>
+                                            <input
+                                                type="number"
+                                                value={item.cartQuantity || ''}
+                                                onChange={(e) => handleManualQuantityChange(item.id, e.target.value)}
+                                                onBlur={() => {
+                                                    if (item.cartQuantity < 1) {
+                                                        handleManualQuantityChange(item.id, '1');
+                                                    }
+                                                }}
+                                                className="font-black text-xs w-8 text-center bg-transparent border-none focus:outline-hidden [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                            />
                                             <Button variant="ghost" size="sm" onClick={() => updateQuantity(item.id, 1)} className="h-7 w-7 p-0 rounded hover:bg-background">
                                                 <Plus className="h-3 w-3" />
                                             </Button>
