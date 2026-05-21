@@ -51,6 +51,8 @@ interface Product {
     companyName?: string;
     packSize?: string;
     expiryDate?: string;
+    purchasePrice?: string;
+    batchNumber?: string;
 }
 
 interface CartItem extends Product {
@@ -575,7 +577,9 @@ export default function SalesLabPage() {
                                     <TableRow className="hover:bg-transparent border-border">
                                         <TableHead className="font-black uppercase tracking-widest text-[10px]">Reagent Name</TableHead>
                                         <TableHead className="font-black uppercase tracking-widest text-[10px]">Company</TableHead>
+                                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-right">Purchase Price</TableHead>
                                         <TableHead className="font-black uppercase tracking-widest text-[10px] text-right">Unit Price</TableHead>
+                                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-center">Lot/Batch</TableHead>
                                         <TableHead className="font-black uppercase tracking-widest text-[10px] text-right">Expiry</TableHead>
                                         <TableHead className="font-black uppercase tracking-widest text-[10px] text-right">Stock</TableHead>
                                         <TableHead className="w-[100px]"></TableHead>
@@ -595,8 +599,14 @@ export default function SalesLabPage() {
                                                 </div>
                                             </TableCell>
                                             <TableCell className="p-4 align-middle italic text-xs text-muted-foreground">{product.companyName || 'Generic'}</TableCell>
+                                            <TableCell className="p-4 text-right align-middle font-bold text-xs text-muted-foreground">
+                                                {product.purchasePrice ? `PKR ${Math.round(parseFloat(product.purchasePrice)).toLocaleString()}` : '—'}
+                                            </TableCell>
                                             <TableCell className="p-4 text-right align-middle font-black text-primary italic text-sm">
                                                 PKR {Math.round(parseFloat(product.price)).toLocaleString()}
+                                            </TableCell>
+                                            <TableCell className="p-4 text-center align-middle font-bold text-xs text-foreground/80">
+                                                {product.batchNumber || '—'}
                                             </TableCell>
                                             <TableCell className="p-4 text-right align-middle">
                                                 <div className="flex flex-col items-end">
